@@ -26,9 +26,24 @@ them do we track"):
      summary. No trading, no forecasting — that's the next layer.
 
 No API key / auth required for any of this (Gamma API is fully public read).
-Rate limits (per Polymarket docs, July 2026): /events 500 req/10s, /markets
-300 req/10s — this script pages at 500/request and sleeps briefly between
-pages, nowhere close to the limit for a coverage run.
+
+Pagination reality, confirmed empirically (2026-07-08), not from docs alone:
+  - /events honors `limit` up to 100 per page regardless of what you request
+    (asking for 500 silently returns 100).
+  - Offset-based paging on /events hits a hard ceiling around offset=2100
+    ("offset too large, use /events/keyset for deeper pagination" — a real
+    422 from the API, not a guess).
+  - /events/keyset is the documented replacement beyond that ceiling, but a
+    reported bug (Polymarket/agents#227, 2026-04-27) has its cursor not
+    advancing under some conditions. This script detects that symptom
+    (duplicate page / static cursor) and stops cleanly rather than looping
+    or double-counting — see fetch_events_keyset_continuation().
+
+Bottom line: full coverage beyond ~2,100 open events is not guaranteed by
+this script as of first-write. Check pagination.keyset_continuation in the
+report each run — if cursor_bug_suspected is True, coverage is capped at
+whatever offset pagination reached, and that's currently a known, logged
+limitation rather than a silent gap.
 
 NOT YET LIVE-TESTED — sandbox network access doesn't reach gamma-api.polymarket.com.
 Run this on your machine first and sanity-check the output before wiring it
@@ -89,7 +104,7 @@ class PaginationBoundaryError(Exception):
         super().__init__(f"HTTP {status_code} for {url}: {body_text[:500]}")
 
 
-def _get(session: requests.Session, path: str, params: dict) -> list[dict]:
+def _get(session: requests.Session, path: str, params: dict) -> list[dict] | dict:
     url = f"{GAMMA_BASE}{path}"
     last_exc = None
     for attempt in range(1, MAX_RETRIES + 1):
@@ -114,6 +129,116 @@ def _get(session: requests.Session, path: str, params: dict) -> list[dict]:
             print(f"  [request error] {exc} — retrying in {wait}s (attempt {attempt}/{MAX_RETRIES})")
             time.sleep(wait)
     raise RuntimeError(f"Failed GET {url} after {MAX_RETRIES} attempts") from last_exc
+
+
+def fetch_events_keyset_continuation(
+    session: requests.Session,
+    already_seen_event_ids: set[str],
+    active: bool = True,
+    closed: bool = False,
+    max_pages: int = 100,
+) -> tuple[list[dict], dict]:
+    """Extend coverage past the offset ceiling using /events/keyset.
+
+    Deduplicates against already_seen_event_ids (from the offset-based fetch)
+    rather than trying to align keyset's cursor position with a specific
+    offset — the two endpoints aren't guaranteed to share sort order, so
+    "resume from offset 2100" isn't a coherent request against keyset.
+
+    Defends against a known bug (Polymarket/agents#227, reported 2026-04-27):
+    /events/keyset's cursor was observed to be silently ignored server-side,
+    with page 2 returning identical data to page 1 instead of advancing. If
+    that symptom appears (page N's event IDs == page N-1's event IDs, or
+    next_cursor stops changing), we log it clearly and stop rather than loop
+    forever or silently treat duplicate data as new coverage. Not assumed to
+    still be broken as of this run — just checked for, defensively.
+    """
+    KEYSET_PAGE_LIMIT = 100  # hard max per Polymarket's 2026-05-14 changelog
+    new_events: list[dict] = []
+    meta = {
+        "attempted": True,
+        "pages_fetched": 0,
+        "new_events_found": 0,
+        "stopped_reason": None,
+        "cursor_bug_suspected": False,
+    }
+
+    after_cursor = None
+    prev_page_ids: list[str] | None = None
+    prev_cursor: str | None = None
+
+    for page_num in range(1, max_pages + 1):
+        params = {
+            "limit": KEYSET_PAGE_LIMIT,
+            "active": str(active).lower(),
+            "closed": str(closed).lower(),
+        }
+        if after_cursor:
+            params["after_cursor"] = after_cursor
+        try:
+            resp = _get(session, "/events/keyset", params)
+        except PaginationBoundaryError as exc:
+            print(f"  [keyset] page {page_num}: HTTP {exc.status_code} — {exc.body_text[:300]}")
+            meta["stopped_reason"] = f"http_error_{exc.status_code}"
+            break
+
+        # Response wrapper per changelog: {"events": [...], "next_cursor": "..."}
+        page_events = resp.get("events") if isinstance(resp, dict) else None
+        next_cursor = resp.get("next_cursor") if isinstance(resp, dict) else None
+        if page_events is None:
+            print(f"  [keyset] page {page_num}: unexpected response shape (keys={list(resp.keys()) if isinstance(resp, dict) else type(resp)}) — stopping")
+            meta["stopped_reason"] = "unexpected_response_shape"
+            break
+
+        page_ids = [str(e.get("id")) for e in page_events]
+
+        # Bug check 1: identical event IDs to the immediately prior page
+        if prev_page_ids is not None and page_ids == prev_page_ids and page_ids:
+            print(f"  [keyset] page {page_num}: returned identical event IDs to page {page_num - 1} — "
+                  f"cursor does not appear to be advancing (matches Polymarket/agents#227 symptom). "
+                  f"Stopping keyset continuation here; coverage beyond this point is unverified.")
+            meta["stopped_reason"] = "cursor_not_advancing_duplicate_page"
+            meta["cursor_bug_suspected"] = True
+            break
+
+        # Bug check 2: next_cursor itself isn't changing
+        if next_cursor is not None and next_cursor == prev_cursor:
+            print(f"  [keyset] page {page_num}: next_cursor unchanged from previous page ('{next_cursor}') — "
+                  f"treating as the same known cursor-not-advancing symptom. Stopping.")
+            meta["stopped_reason"] = "cursor_not_advancing_static_token"
+            meta["cursor_bug_suspected"] = True
+            break
+
+        if not page_events:
+            print(f"  [keyset] page {page_num}: empty — stopping")
+            meta["stopped_reason"] = "empty_page"
+            break
+
+        genuinely_new = [e for e in page_events if str(e.get("id")) not in already_seen_event_ids]
+        for e in genuinely_new:
+            already_seen_event_ids.add(str(e.get("id")))
+        new_events.extend(genuinely_new)
+        meta["pages_fetched"] = page_num
+        print(f"  [keyset] page {page_num}: {len(page_events)} events, {len(genuinely_new)} new "
+              f"(running new total={len(new_events)})")
+
+        prev_page_ids = page_ids
+        prev_cursor = next_cursor
+
+        if not next_cursor or next_cursor == "LTE=":
+            meta["stopped_reason"] = "no_next_cursor"
+            break
+
+        after_cursor = next_cursor
+        time.sleep(SLEEP_BETWEEN_PAGES)
+    else:
+        meta["stopped_reason"] = "max_pages_safety"
+
+    meta["new_events_found"] = len(new_events)
+    return new_events, meta
+
+
+
 
 
 MAX_PAGES_SAFETY = 200  # hard stop at 200 * observed page size, in case "empty page" never arrives
@@ -365,7 +490,21 @@ def run(dry_run: bool = False) -> None:
 
     print("Fetching active, open events from Gamma API...")
     events, pagination_meta = fetch_all_events(session, active=True, closed=False)
-    print(f"Total events fetched: {len(events)}")
+    print(f"Total events fetched via offset pagination: {len(events)}")
+
+    keyset_meta = {"attempted": False}
+    if pagination_meta.get("hit_boundary"):
+        print("\nOffset pagination hit its ceiling — attempting to extend coverage via /events/keyset...")
+        seen_ids = {str(e.get("id")) for e in events}
+        new_events, keyset_meta = fetch_events_keyset_continuation(session, seen_ids, active=True, closed=False)
+        events.extend(new_events)
+        print(f"Keyset continuation added {len(new_events)} new events "
+              f"(stopped: {keyset_meta['stopped_reason']}). Total events now: {len(events)}")
+        if keyset_meta.get("cursor_bug_suspected"):
+            print("[warning] keyset cursor appears not to be advancing — this matches a previously "
+                  "reported Polymarket bug (Polymarket/agents#227). Coverage beyond the offset ceiling "
+                  "may be incomplete. Worth re-checking this in a few weeks in case it's since been fixed.")
+    pagination_meta["keyset_continuation"] = keyset_meta
 
     records: list[MarketRecord] = []
     skipped_raw_samples: list[dict] = []
@@ -408,15 +547,30 @@ def run(dry_run: bool = False) -> None:
     report["top_25_tags_by_event_count"] = top_tags
     report["total_distinct_tags_seen"] = len(tag_counts)
 
-    print("\n--- Coverage report ---")
+    print("\n--- Coverage report (summary) ---")
+    summary_only_as_count = {
+        "missing_clob_token_id_sample", "neg_risk_group_price_sum_flags",
+        "skipped_missing_condition_id_raw_sample", "top_25_tags_by_event_count",
+    }
     for k, v in report.items():
-        if isinstance(v, list):
+        if isinstance(v, list) and k in summary_only_as_count:
             print(f"{k}: {len(v)} item(s)")
         else:
             print(f"{k}: {v}")
 
+    print("\n--- Full diagnostic detail (these don't show above, and this is the whole point of a dry run) ---")
+    print(f"\ntop_25_tags_by_event_count:\n{json.dumps(top_tags, indent=2)}")
+    print(f"\nneg_risk_group_price_sum_flags:\n{json.dumps(report['neg_risk_group_price_sum_flags'], indent=2)}")
+    print(f"\nskipped_missing_condition_id_raw_sample:\n{json.dumps(skipped_raw_samples, indent=2)}")
+
+    # Report is diagnostics only — always write it, dry-run or not, since it costs
+    # nothing and saves a round trip when you just want to eyeball numbers.
+    STATE_DIR.mkdir(exist_ok=True)
+    REPORT_FILE.write_text(json.dumps(report, indent=2))
+    print(f"\nWrote diagnostics to {REPORT_FILE}")
+
     if dry_run:
-        print("\n[dry-run] Not writing state files.")
+        print("[dry-run] Not writing coverage.json (the actual covered-market state).")
         return
 
     coverage_out = {
@@ -425,9 +579,7 @@ def run(dry_run: bool = False) -> None:
         if r.covered
     }
     COVERAGE_FILE.write_text(json.dumps(coverage_out, indent=2))
-    REPORT_FILE.write_text(json.dumps(report, indent=2))
-    print(f"\nWrote {len(coverage_out)} covered markets to {COVERAGE_FILE}")
-    print(f"Wrote diagnostics to {REPORT_FILE}")
+    print(f"Wrote {len(coverage_out)} covered markets to {COVERAGE_FILE}")
 
 
 if __name__ == "__main__":
