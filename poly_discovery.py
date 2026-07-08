@@ -78,6 +78,17 @@ NEG_RISK_SUM_TOLERANCE = 0.05  # flag if group's lead-outcome prices sum outside
 # HTTP
 # ---------------------------------------------------------------------------
 
+class PaginationBoundaryError(Exception):
+    """Raised when the API rejects a request with a 4xx that isn't a rate limit —
+    most often a deep-offset pagination ceiling. Not worth retrying: the answer
+    will be identical on attempt 2 and 3."""
+    def __init__(self, status_code: int, body_text: str, url: str):
+        self.status_code = status_code
+        self.body_text = body_text
+        self.url = url
+        super().__init__(f"HTTP {status_code} for {url}: {body_text[:500]}")
+
+
 def _get(session: requests.Session, path: str, params: dict) -> list[dict]:
     url = f"{GAMMA_BASE}{path}"
     last_exc = None
@@ -89,8 +100,14 @@ def _get(session: requests.Session, path: str, params: dict) -> list[dict]:
                 print(f"  [rate limited] sleeping {wait}s (attempt {attempt}/{MAX_RETRIES})")
                 time.sleep(wait)
                 continue
+            if 400 <= resp.status_code < 500:
+                # Deterministic client error — retrying won't change the response.
+                # Surface the real body instead of a generic "HTTPError" message.
+                raise PaginationBoundaryError(resp.status_code, resp.text, resp.url)
             resp.raise_for_status()
             return resp.json()
+        except PaginationBoundaryError:
+            raise  # not retryable, propagate immediately
         except requests.RequestException as exc:
             last_exc = exc
             wait = RETRY_BACKOFF_SECONDS * attempt
@@ -102,7 +119,7 @@ def _get(session: requests.Session, path: str, params: dict) -> list[dict]:
 MAX_PAGES_SAFETY = 200  # hard stop at 200 * observed page size, in case "empty page" never arrives
 
 
-def fetch_all_events(session: requests.Session, active: bool = True, closed: bool = False) -> list[dict]:
+def fetch_all_events(session: requests.Session, active: bool = True, closed: bool = False) -> tuple[list[dict], dict]:
     """Page through /events until a genuinely empty page signals we've hit the end.
 
     Deliberately does NOT stop just because a page came back shorter than the
@@ -110,10 +127,15 @@ def fetch_all_events(session: requests.Session, active: bool = True, closed: boo
     effective page size below whatever you ask for. Requesting limit=500 and
     getting exactly 100 back on page 1 previously caused this loop to assume
     that was the whole dataset. Only an empty page (or the safety cap) ends it.
+
+    Returns (events, pagination_meta) — pagination_meta records whether we hit
+    a hard boundary (deep-offset 4xx) so downstream reporting can flag the
+    results as a possible lower bound rather than silently treating them as complete.
     """
     events: list[dict] = []
     offset = 0
     observed_page_size = None
+    pagination_meta = {"hit_boundary": False, "boundary_offset": None, "boundary_detail": None}
     for page_num in range(1, MAX_PAGES_SAFETY + 1):
         params = {
             "limit": PAGE_LIMIT,
@@ -121,7 +143,20 @@ def fetch_all_events(session: requests.Session, active: bool = True, closed: boo
             "active": str(active).lower(),
             "closed": str(closed).lower(),
         }
-        page = _get(session, "/events", params)
+        try:
+            page = _get(session, "/events", params)
+        except PaginationBoundaryError as exc:
+            print(f"  page {page_num}: HTTP {exc.status_code} at offset={offset} — {exc.body_text[:500]}")
+            if offset == 0:
+                raise  # first page failing is a real problem, not a pagination ceiling
+            print(f"  [note] treating this as a pagination ceiling, not a crash. "
+                  f"Stopping with {len(events)} events collected. This may be a LOWER BOUND "
+                  f"on total open events — see coverage_report for total_events_fetched and "
+                  f"cross-check against Polymarket's site count if this number looks low.")
+            pagination_meta["hit_boundary"] = True
+            pagination_meta["boundary_offset"] = offset
+            pagination_meta["boundary_detail"] = f"HTTP {exc.status_code}: {exc.body_text[:300]}"
+            break
         if not page:
             print(f"  page {page_num}: empty — stopping (offset={offset})")
             break
@@ -142,7 +177,7 @@ def fetch_all_events(session: requests.Session, active: bool = True, closed: boo
     else:
         print(f"  [warning] hit MAX_PAGES_SAFETY={MAX_PAGES_SAFETY} without an empty page — "
               f"data may be incomplete, investigate before trusting coverage numbers")
-    return events
+    return events, pagination_meta
 
 
 # ---------------------------------------------------------------------------
@@ -329,7 +364,7 @@ def run(dry_run: bool = False) -> None:
     session.headers.update({"User-Agent": "mike-poly-bot-discovery/0.1"})
 
     print("Fetching active, open events from Gamma API...")
-    events = fetch_all_events(session, active=True, closed=False)
+    events, pagination_meta = fetch_all_events(session, active=True, closed=False)
     print(f"Total events fetched: {len(events)}")
 
     records: list[MarketRecord] = []
@@ -358,6 +393,7 @@ def run(dry_run: bool = False) -> None:
                     })
 
     report = run_diagnostics(records, events)
+    report["pagination"] = pagination_meta
     report["skipped_missing_condition_id_raw_sample"] = skipped_raw_samples
 
     # Tag frequency across everything seen — sanity check for whether the
