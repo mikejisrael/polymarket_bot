@@ -417,6 +417,7 @@ class MarketRecord:
     covered: bool
     coverage_reason: str
     noise_excluded: bool          # hard-excluded via NOISE_TAG_SLUGS regardless of floor/priority
+    stale_expired: bool           # hard-excluded — days_to_end < 0 but Polymarket still shows it open
 
     # sports research-suitability signals — descriptive only, not used to exclude.
     # See Mike's "delve deeper before deciding" call: gameId presence marks a
@@ -453,12 +454,24 @@ def normalize_market(event: dict, market: dict, event_market_count: int, now: dt
     is_sports_futures_like = bool(set(tags) & SPORTS_TAG_SLUGS) and not slug_tied
     priority = bool(set(tags) & PRIORITY_TAG_SLUGS) or is_sports_futures_like
     noise_excluded = bool(set(tags) & NOISE_TAG_SLUGS)
+    days_to_end = _days_to_end(market.get("endDate"), now)
+    # Some markets sit past their real-world deadline while still flagged
+    # active/open on Polymarket's side — likely stuck in an unresolved UMA
+    # dispute or just abandoned. Confirmed via real pilot sample (2026-07-08):
+    # "kraken-ipo-in-2025", "macron-out-in-2025" etc. were still showing as
+    # covered despite 2025 deadlines. Forecasting these burns research budget
+    # on questions whose real-world outcome is already effectively known —
+    # exclude them the same way noise tags are excluded, not silently.
+    stale_expired = days_to_end is not None and days_to_end < 0
 
     liquidity = _to_float(market.get("liquidity"))
     volume = _to_float(market.get("volume"))
 
     meets_floor = liquidity >= COVERAGE_LIQUIDITY_MIN or volume >= COVERAGE_VOLUME_MIN
-    if noise_excluded:
+    if stale_expired:
+        covered = False
+        reason = "stale_expired_but_still_open"
+    elif noise_excluded:
         covered = False
         reason = "noise_excluded"
     elif priority and not meets_floor:
@@ -501,9 +514,10 @@ def normalize_market(event: dict, market: dict, event_market_count: int, now: dt
         covered=covered,
         coverage_reason=reason,
         noise_excluded=noise_excluded,
+        stale_expired=stale_expired,
         has_game_id=bool(market.get("gameId")),
         slug_looks_game_tied=slug_tied,
-        days_to_end=_days_to_end(market.get("endDate"), now),
+        days_to_end=days_to_end,
         outcome_prices=_parse_json_field(market.get("outcomePrices"), []),
     )
 
@@ -583,6 +597,7 @@ def run_diagnostics(records: list[MarketRecord], events: list[dict]) -> dict:
     }
 
     noise_excluded = [r for r in records if r.noise_excluded]
+    stale_excluded = [r for r in records if r.stale_expired]
     covered = [r for r in records if r.covered]
     priority_covered = [r for r in covered if r.priority]
     sports_priority_covered = [r for r in covered if r.sports_priority]
@@ -595,7 +610,8 @@ def run_diagnostics(records: list[MarketRecord], events: list[dict]) -> dict:
         "markets_covered_via_priority_tag": len(priority_covered),
         "markets_covered_via_sports_futures_priority": len(sports_priority_covered),
         "markets_noise_excluded": len(noise_excluded),
-        "markets_excluded": len(records) - len(covered) - len(noise_excluded),
+        "markets_stale_expired_excluded": len(stale_excluded),
+        "markets_excluded": len(records) - len(covered) - len(noise_excluded) - len(stale_excluded),
         "markets_missing_clob_token_ids": len(missing_clob_tokens),
         "markets_missing_outcomes": len(missing_outcomes),
         "missing_clob_token_id_sample": missing_clob_tokens[:20],
