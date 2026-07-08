@@ -99,11 +99,22 @@ def _get(session: requests.Session, path: str, params: dict) -> list[dict]:
     raise RuntimeError(f"Failed GET {url} after {MAX_RETRIES} attempts") from last_exc
 
 
+MAX_PAGES_SAFETY = 200  # hard stop at 200 * observed page size, in case "empty page" never arrives
+
+
 def fetch_all_events(session: requests.Session, active: bool = True, closed: bool = False) -> list[dict]:
-    """Page through /events until a short page signals we've hit the end."""
+    """Page through /events until a genuinely empty page signals we've hit the end.
+
+    Deliberately does NOT stop just because a page came back shorter than the
+    requested `limit` — some APIs (this one, apparently) silently cap the
+    effective page size below whatever you ask for. Requesting limit=500 and
+    getting exactly 100 back on page 1 previously caused this loop to assume
+    that was the whole dataset. Only an empty page (or the safety cap) ends it.
+    """
     events: list[dict] = []
     offset = 0
-    while True:
+    observed_page_size = None
+    for page_num in range(1, MAX_PAGES_SAFETY + 1):
         params = {
             "limit": PAGE_LIMIT,
             "offset": offset,
@@ -112,13 +123,25 @@ def fetch_all_events(session: requests.Session, active: bool = True, closed: boo
         }
         page = _get(session, "/events", params)
         if not page:
+            print(f"  page {page_num}: empty — stopping (offset={offset})")
             break
+        if observed_page_size is None:
+            observed_page_size = len(page)
+            if observed_page_size < PAGE_LIMIT:
+                print(f"  [note] requested limit={PAGE_LIMIT} but server returned {observed_page_size} "
+                      f"on first page — effective page size appears capped at {observed_page_size}. "
+                      f"Continuing to page by actual returned count.")
         events.extend(page)
-        print(f"  fetched {len(page)} events (offset={offset}, total so far={len(events)})")
-        if len(page) < PAGE_LIMIT:
+        print(f"  page {page_num}: fetched {len(page)} events (offset={offset}, total so far={len(events)})")
+        offset += len(page)
+        if len(page) < observed_page_size:
+            # a page shorter than the established page size IS a reliable end-of-data signal
+            print(f"  page {page_num}: short page ({len(page)} < {observed_page_size}) — this is the last page")
             break
-        offset += PAGE_LIMIT
         time.sleep(SLEEP_BETWEEN_PAGES)
+    else:
+        print(f"  [warning] hit MAX_PAGES_SAFETY={MAX_PAGES_SAFETY} without an empty page — "
+              f"data may be incomplete, investigate before trusting coverage numbers")
     return events
 
 
@@ -310,6 +333,7 @@ def run(dry_run: bool = False) -> None:
     print(f"Total events fetched: {len(events)}")
 
     records: list[MarketRecord] = []
+    skipped_raw_samples: list[dict] = []
     for event in events:
         markets = event.get("markets") or []
         for market in markets:
@@ -318,8 +342,35 @@ def run(dry_run: bool = False) -> None:
                 records.append(rec)
             else:
                 print(f"  [skip] market with no conditionId in event {event.get('id')} ({event.get('slug')})")
+                if len(skipped_raw_samples) < 5:
+                    # capture the raw market fields (minus long text) so we can see
+                    # what's actually different about these instead of guessing
+                    skipped_raw_samples.append({
+                        "event_id": event.get("id"),
+                        "event_slug": event.get("slug"),
+                        "market_keys_present": sorted(market.keys()),
+                        "market_id": market.get("id"),
+                        "market_slug": market.get("slug"),
+                        "active": market.get("active"),
+                        "closed": market.get("closed"),
+                        "enableOrderBook": market.get("enableOrderBook"),
+                        "clobTokenIds": market.get("clobTokenIds"),
+                    })
 
     report = run_diagnostics(records, events)
+    report["skipped_missing_condition_id_raw_sample"] = skipped_raw_samples
+
+    # Tag frequency across everything seen — sanity check for whether the
+    # priority tags are genuinely narrow or effectively matching everything
+    tag_counts: dict[str, int] = {}
+    for event in events:
+        for t in (event.get("tags") or []):
+            slug = t.get("slug")
+            if slug:
+                tag_counts[slug] = tag_counts.get(slug, 0) + 1
+    top_tags = sorted(tag_counts.items(), key=lambda kv: -kv[1])[:25]
+    report["top_25_tags_by_event_count"] = top_tags
+    report["total_distinct_tags_seen"] = len(tag_counts)
 
     print("\n--- Coverage report ---")
     for k, v in report.items():
