@@ -1,0 +1,59 @@
+name: Poly Batch Forecast
+
+# Manual trigger for now — wire to cron-job.org + workflow_dispatch later,
+# same pattern as the Metaculus bot, once a few runs have been watched.
+on:
+  workflow_dispatch:
+    inputs:
+      live:
+        description: "Actually spend money (unchecked = dry preview only)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write   # needed to commit forecast_history.json / forecasts_log.jsonl back
+
+jobs:
+  batch-forecast:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests python-dotenv
+
+      - name: Run batch forecast
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ "${{ inputs.live }}" = "true" ]; then
+            python poly_batch_forecast.py --live
+          else
+            python poly_batch_forecast.py
+          fi
+
+      - name: Commit updated state
+        if: ${{ inputs.live == 'true' }}
+        run: |
+          git config user.name "mikejisrael"
+          git config user.email "mikejisrael@gmail.com"
+          git add poly_state/forecast_history.json poly_state/forecasts_log.jsonl
+          git diff --staged --quiet && echo "No state changes to commit" || git commit -m "Batch forecast run $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push
+
+      - name: Upload forecasts log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: forecasts-log
+          path: poly_state/forecasts_log.jsonl
+          if-no-files-found: ignore

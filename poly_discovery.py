@@ -628,27 +628,39 @@ def run_diagnostics(records: list[MarketRecord], events: list[dict]) -> dict:
 # Main
 # ---------------------------------------------------------------------------
 
-def run(dry_run: bool = False) -> None:
-    STATE_DIR.mkdir(exist_ok=True)
+def discover_all_markets(verbose: bool = True) -> tuple[list["MarketRecord"], list[dict], dict, list[dict]]:
+    """Full offset+keyset discovery, normalized into MarketRecords. Shared by
+    run() (the CLI diagnostic tool) and poly_batch_forecast.py — this loop
+    used to be duplicated in run(); pulled out so both stay in sync with any
+    future ID-mapping/coverage changes instead of drifting apart.
+
+    Returns (all_records, events, pagination_meta, skipped_raw_samples).
+    all_records includes non-covered markets too — callers filter with
+    [r for r in all_records if r.covered] for just the covered set.
+    """
+    def _log(msg):
+        if verbose:
+            print(msg)
+
     session = requests.Session()
     session.headers.update({"User-Agent": "mike-poly-bot-discovery/0.1"})
 
-    print("Fetching active, open events from Gamma API...")
+    _log("Fetching active, open events from Gamma API...")
     events, pagination_meta = fetch_all_events(session, active=True, closed=False)
-    print(f"Total events fetched via offset pagination: {len(events)}")
+    _log(f"Total events fetched via offset pagination: {len(events)}")
 
     keyset_meta = {"attempted": False}
     if pagination_meta.get("hit_boundary"):
-        print("\nOffset pagination hit its ceiling — attempting to extend coverage via /events/keyset...")
+        _log("\nOffset pagination hit its ceiling — attempting to extend coverage via /events/keyset...")
         seen_ids = {str(e.get("id")) for e in events}
         new_events, keyset_meta = fetch_events_keyset_continuation(session, seen_ids, active=True, closed=False)
         events.extend(new_events)
-        print(f"Keyset continuation added {len(new_events)} new events "
-              f"(stopped: {keyset_meta['stopped_reason']}). Total events now: {len(events)}")
+        _log(f"Keyset continuation added {len(new_events)} new events "
+             f"(stopped: {keyset_meta['stopped_reason']}). Total events now: {len(events)}")
         if keyset_meta.get("cursor_bug_suspected"):
-            print("[warning] keyset cursor appears not to be advancing — this matches a previously "
-                  "reported Polymarket bug (Polymarket/agents#227). Coverage beyond the offset ceiling "
-                  "may be incomplete. Worth re-checking this in a few weeks in case it's since been fixed.")
+            _log("[warning] keyset cursor appears not to be advancing — matches a previously "
+                 "reported Polymarket bug (Polymarket/agents#227). Coverage beyond the offset "
+                 "ceiling may be incomplete.")
     pagination_meta["keyset_continuation"] = keyset_meta
 
     records: list[MarketRecord] = []
@@ -661,10 +673,8 @@ def run(dry_run: bool = False) -> None:
             if rec is not None:
                 records.append(rec)
             else:
-                print(f"  [skip] market with no conditionId in event {event.get('id')} ({event.get('slug')})")
+                _log(f"  [skip] market with no conditionId in event {event.get('id')} ({event.get('slug')})")
                 if len(skipped_raw_samples) < 5:
-                    # capture the raw market fields (minus long text) so we can see
-                    # what's actually different about these instead of guessing
                     skipped_raw_samples.append({
                         "event_id": event.get("id"),
                         "event_slug": event.get("slug"),
@@ -676,6 +686,18 @@ def run(dry_run: bool = False) -> None:
                         "enableOrderBook": market.get("enableOrderBook"),
                         "clobTokenIds": market.get("clobTokenIds"),
                     })
+
+    return records, events, pagination_meta, skipped_raw_samples
+
+
+# ---------------------------------------------------------------------------
+# Main
+# ---------------------------------------------------------------------------
+
+def run(dry_run: bool = False) -> None:
+    STATE_DIR.mkdir(exist_ok=True)
+
+    records, events, pagination_meta, skipped_raw_samples = discover_all_markets(verbose=True)
 
     report = run_diagnostics(records, events)
     report["pagination"] = pagination_meta
