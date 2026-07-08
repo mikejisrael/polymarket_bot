@@ -6,6 +6,9 @@ name: Poly Discovery Connectivity Test
 on:
   workflow_dispatch:
 
+permissions:
+  contents: write   # needed to commit coverage_report.json back
+
 jobs:
   test-gamma-connectivity:
     runs-on: ubuntu-latest
@@ -44,3 +47,20 @@ jobs:
       - name: Run poly_discovery.py --dry-run
         if: always()
         run: python poly_discovery.py --dry-run
+
+      # This is --dry-run, so coverage.json (the actual covered-market state)
+      # is intentionally NOT written — only coverage_report.json (diagnostics)
+      # is, and until now that was never committed, so poly_status.py always
+      # showed "no coverage data" even right after a run. This closes that gap.
+      - name: Commit updated coverage report
+        if: always()
+        run: |
+          if [ ! -f poly_state/coverage_report.json ]; then
+            echo "No coverage_report.json to commit (run may have failed before writing it)"
+            exit 0
+          fi
+          git config user.name "mikejisrael"
+          git config user.email "mikejisrael@gmail.com"
+          git add poly_state/coverage_report.json
+          git diff --staged --quiet && echo "No state changes to commit" || git commit -m "Discovery connectivity test run $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push
