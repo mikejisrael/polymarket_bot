@@ -54,6 +54,7 @@ pattern from the Metaculus bot).
 from __future__ import annotations
 
 import json
+import re
 import time
 import argparse
 import datetime as dt
@@ -348,6 +349,19 @@ def _to_float(raw, default=0.0):
         return default
 
 
+# Single-game sports markets consistently embed the match date directly in
+# their slug (e.g. "nwsl-rac-das-2026-07-18", "mls-sea-rsl-2026-04-12").
+# Season-long futures slugs don't ("us-presidential-election"). Verified
+# against real data on 2026-07-08 — the gameId field originally used for
+# this was assumed present but turned out NOT to be populated on these
+# markets, so slug-date detection replaces it rather than supplementing it.
+_SLUG_DATE_PATTERN = re.compile(r"\d{4}-\d{2}-\d{2}")
+
+
+def _slug_looks_game_tied(slug: str | None) -> bool:
+    return bool(slug and _SLUG_DATE_PATTERN.search(slug))
+
+
 # ---------------------------------------------------------------------------
 # Canonical record
 # ---------------------------------------------------------------------------
@@ -398,7 +412,8 @@ class MarketRecord:
     # market as tied to one specific game (moneyline/spread/total/prop-style);
     # days_to_end gives the horizon. Season-long futures should show no gameId
     # and a long horizon; single-game props should show a gameId and <1-3 days.
-    has_game_id: bool
+    has_game_id: bool              # raw field presence — kept for transparency, NOT reliable alone (see below)
+    slug_looks_game_tied: bool     # date embedded in slug — the signal actually used for classification
     days_to_end: float | None
 
     # live implied probability snapshot (Metaculus CP analogue — not time-gated here)
@@ -473,6 +488,7 @@ def normalize_market(event: dict, market: dict, event_market_count: int, now: dt
         coverage_reason=reason,
         noise_excluded=noise_excluded,
         has_game_id=bool(market.get("gameId")),
+        slug_looks_game_tied=_slug_looks_game_tied(event.get("slug")),
         days_to_end=_days_to_end(market.get("endDate"), now),
         outcome_prices=_parse_json_field(market.get("outcomePrices"), []),
     )
@@ -497,7 +513,7 @@ def run_diagnostics(records: list[MarketRecord], events: list[dict]) -> dict:
     events_by_id = {str(e.get("id")): e for e in events}
     grouped: dict[str, list[MarketRecord]] = {}
     for r in records:
-        if r.neg_risk and r.is_group_member and not r.has_game_id:
+        if r.neg_risk and r.is_group_member and not r.slug_looks_game_tied:
             grouped.setdefault(r.event_id, []).append(r)
     for event_id, group in grouped.items():
         total = 0.0
@@ -521,8 +537,9 @@ def run_diagnostics(records: list[MarketRecord], events: list[dict]) -> dict:
     sports_records = [r for r in records if "sports" in r.tags or any(
         t in r.tags for t in ("soccer", "esports", "cricket", "nba", "nfl", "nhl", "mlb", "mma")
     )]
-    game_tied = [r for r in sports_records if r.has_game_id]
-    futures_like = [r for r in sports_records if not r.has_game_id]
+    game_tied = [r for r in sports_records if r.slug_looks_game_tied]
+    futures_like = [r for r in sports_records if not r.slug_looks_game_tied]
+    game_id_populated_count = sum(1 for r in sports_records if r.has_game_id)
 
     def _bucket_by_horizon(recs: list[MarketRecord]) -> dict:
         buckets = {name: 0 for name, _ in SPORTS_HORIZON_BUCKETS}
@@ -539,8 +556,9 @@ def run_diagnostics(records: list[MarketRecord], events: list[dict]) -> dict:
 
     sports_breakdown = {
         "total_sports_tagged_markets": len(sports_records),
-        "game_tied_has_game_id": len(game_tied),
-        "futures_like_no_game_id": len(futures_like),
+        "game_tied_by_slug_date": len(game_tied),
+        "futures_like_no_slug_date": len(futures_like),
+        "gameId_field_actually_populated_count": game_id_populated_count,  # sanity check — expect this to be low/0
         "game_tied_horizon_buckets": _bucket_by_horizon(game_tied),
         "futures_like_horizon_buckets": _bucket_by_horizon(futures_like),
         # a small sample of the futures-like candidates, for a gut check on
