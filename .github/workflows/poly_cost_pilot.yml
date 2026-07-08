@@ -1,0 +1,49 @@
+name: Poly Cost Pilot
+
+# Manual trigger only. Defaults to a dry preview (no spend) — check the
+# "live" box explicitly to actually spend real money. Needs Polymarket
+# access for sample selection, so this can't run locally (same ACMA-block
+# reason as the discovery connectivity test).
+on:
+  workflow_dispatch:
+    inputs:
+      live:
+        description: "Actually spend money (unchecked = dry preview only)"
+        type: boolean
+        default: false
+
+jobs:
+  cost-pilot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install requests python-dotenv
+
+      - name: Run cost pilot
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: |
+          if [ "${{ inputs.live }}" = "true" ]; then
+            python poly_cost_pilot.py --live
+          else
+            python poly_cost_pilot.py
+          fi
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cost-pilot-results
+          path: poly_state/cost_pilot_results.json
+          if-no-files-found: ignore
