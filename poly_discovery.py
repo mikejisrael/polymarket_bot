@@ -74,6 +74,16 @@ GAMMA_BASE = "https://gamma-api.polymarket.com"
 # to an event carrying one of these priority tag slugs (checked regardless
 # of floor). Adjust freely once you see what's actually flowing through.
 PRIORITY_TAG_SLUGS = {"crypto", "politics", "economy"}
+
+# Sports gets priority treatment too, but NOT via flat tag membership like the
+# three above — that would priority-flag all ~52k sports-tagged markets,
+# including the ~39k game-tied single-match props we specifically excluded
+# from the negRisk check as non-research-suitable noise. Confirmed via real
+# data (2026-07-08): futures-like sports (no match date in slug) skews long
+# horizon (58% are 14+ days out, e.g. World Cup winner markets) and IS a good
+# fit for LLM research; game-tied sports skews same-day and isn't. So sports
+# priority is gated on slug_looks_game_tied being False — see normalize_market.
+SPORTS_TAG_SLUGS = {"sports", "soccer", "esports", "cricket", "nba", "nfl", "nhl", "mlb", "mma"}
 COVERAGE_LIQUIDITY_MIN = 1000.0
 COVERAGE_VOLUME_MIN = 1000.0
 
@@ -403,6 +413,7 @@ class MarketRecord:
 
     # coverage
     priority: bool
+    sports_priority: bool         # True specifically when priority came from futures-like sports, not crypto/politics/economy
     covered: bool
     coverage_reason: str
     noise_excluded: bool          # hard-excluded via NOISE_TAG_SLUGS regardless of floor/priority
@@ -438,7 +449,9 @@ def normalize_market(event: dict, market: dict, event_market_count: int, now: dt
         return None  # can't build a canonical record without the canonical key
 
     tags = [t.get("slug") for t in (event.get("tags") or []) if t.get("slug")]
-    priority = bool(set(tags) & PRIORITY_TAG_SLUGS)
+    slug_tied = _slug_looks_game_tied(event.get("slug"))
+    is_sports_futures_like = bool(set(tags) & SPORTS_TAG_SLUGS) and not slug_tied
+    priority = bool(set(tags) & PRIORITY_TAG_SLUGS) or is_sports_futures_like
     noise_excluded = bool(set(tags) & NOISE_TAG_SLUGS)
 
     liquidity = _to_float(market.get("liquidity"))
@@ -484,11 +497,12 @@ def normalize_market(event: dict, market: dict, event_market_count: int, now: dt
         liquidity=liquidity,
         volume=volume,
         priority=priority,
+        sports_priority=is_sports_futures_like,
         covered=covered,
         coverage_reason=reason,
         noise_excluded=noise_excluded,
         has_game_id=bool(market.get("gameId")),
-        slug_looks_game_tied=_slug_looks_game_tied(event.get("slug")),
+        slug_looks_game_tied=slug_tied,
         days_to_end=_days_to_end(market.get("endDate"), now),
         outcome_prices=_parse_json_field(market.get("outcomePrices"), []),
     )
@@ -534,9 +548,7 @@ def run_diagnostics(records: list[MarketRecord], events: list[dict]) -> dict:
     # Sports research-suitability breakdown — descriptive, not a filter. Splits
     # by gameId presence (game-tied vs. futures) and time horizon, so the real
     # distribution can inform where to draw the line, rather than guessing.
-    sports_records = [r for r in records if "sports" in r.tags or any(
-        t in r.tags for t in ("soccer", "esports", "cricket", "nba", "nfl", "nhl", "mlb", "mma")
-    )]
+    sports_records = [r for r in records if set(r.tags) & SPORTS_TAG_SLUGS]
     game_tied = [r for r in sports_records if r.slug_looks_game_tied]
     futures_like = [r for r in sports_records if not r.slug_looks_game_tied]
     game_id_populated_count = sum(1 for r in sports_records if r.has_game_id)
@@ -573,6 +585,7 @@ def run_diagnostics(records: list[MarketRecord], events: list[dict]) -> dict:
     noise_excluded = [r for r in records if r.noise_excluded]
     covered = [r for r in records if r.covered]
     priority_covered = [r for r in covered if r.priority]
+    sports_priority_covered = [r for r in covered if r.sports_priority]
 
     return {
         "generated_at": dt.datetime.now(dt.timezone.utc).isoformat(),
@@ -580,6 +593,7 @@ def run_diagnostics(records: list[MarketRecord], events: list[dict]) -> dict:
         "total_markets_seen": len(records),
         "markets_covered": len(covered),
         "markets_covered_via_priority_tag": len(priority_covered),
+        "markets_covered_via_sports_futures_priority": len(sports_priority_covered),
         "markets_noise_excluded": len(noise_excluded),
         "markets_excluded": len(records) - len(covered) - len(noise_excluded),
         "markets_missing_clob_token_ids": len(missing_clob_tokens),
@@ -589,7 +603,8 @@ def run_diagnostics(records: list[MarketRecord], events: list[dict]) -> dict:
         "sports_research_suitability_breakdown": sports_breakdown,
         "coverage_liquidity_min": COVERAGE_LIQUIDITY_MIN,
         "coverage_volume_min": COVERAGE_VOLUME_MIN,
-        "priority_tag_slugs": sorted(PRIORITY_TAG_SLUGS),
+        "priority_tag_slugs_unconditional": sorted(PRIORITY_TAG_SLUGS),
+        "priority_sports_tag_slugs_conditional_on_futures_like": sorted(SPORTS_TAG_SLUGS),
     }
 
 
