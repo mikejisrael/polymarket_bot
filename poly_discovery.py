@@ -76,6 +76,26 @@ PRIORITY_TAG_SLUGS = {"crypto", "politics", "economy"}
 COVERAGE_LIQUIDITY_MIN = 1000.0
 COVERAGE_VOLUME_MIN = 1000.0
 
+# Hard-excluded regardless of floor/priority — these tags identify markets
+# structurally unsuited to LLM-research-based forecasting, not just "low volume."
+# up-or-down/5M/15M/30M/1H/1D: recurring ultra-short-interval crypto coin-flip
+# markets. There's no research edge on "will BTC be up in 5 minutes" — these
+# would just flood coverage with noise. hide-from-new: Polymarket's OWN signal
+# that a market is excluded from their New listing — trusted as a general
+# noise flag regardless of category, not just crypto.
+NOISE_TAG_SLUGS = {"up-or-down", "5M", "15M", "30M", "1H", "1D", "hide-from-new"}
+
+# Sports horizon buckets (days until endDate) — NOT used to exclude anything.
+# Mike's hypothesis is that some sports markets (season-long futures) suit
+# research-based forecasting while single-game props don't. Rather than guess
+# a cutoff, we bucket and report so the real distribution can inform the call.
+SPORTS_HORIZON_BUCKETS = [
+    ("same_day_or_past", 1),
+    ("1_to_3_days", 3),
+    ("3_to_14_days", 14),
+    ("14_plus_days", None),
+]
+
 PAGE_LIMIT = 500  # matches Gamma's practical page size; rate limit is 500 req/10s on /events
 REQUEST_TIMEOUT = 20
 MAX_RETRIES = 3
@@ -371,6 +391,15 @@ class MarketRecord:
     priority: bool
     covered: bool
     coverage_reason: str
+    noise_excluded: bool          # hard-excluded via NOISE_TAG_SLUGS regardless of floor/priority
+
+    # sports research-suitability signals — descriptive only, not used to exclude.
+    # See Mike's "delve deeper before deciding" call: gameId presence marks a
+    # market as tied to one specific game (moneyline/spread/total/prop-style);
+    # days_to_end gives the horizon. Season-long futures should show no gameId
+    # and a long horizon; single-game props should show a gameId and <1-3 days.
+    has_game_id: bool
+    days_to_end: float | None
 
     # live implied probability snapshot (Metaculus CP analogue — not time-gated here)
     outcome_prices: list[str]
@@ -378,26 +407,43 @@ class MarketRecord:
     fetched_at: str = field(default_factory=lambda: dt.datetime.now(dt.timezone.utc).isoformat())
 
 
-def normalize_market(event: dict, market: dict, event_market_count: int) -> MarketRecord | None:
+def _days_to_end(end_date_str: str | None, now: dt.datetime) -> float | None:
+    if not end_date_str:
+        return None
+    try:
+        end_dt = dt.datetime.fromisoformat(end_date_str.replace("Z", "+00:00"))
+        return round((end_dt - now).total_seconds() / 86400, 2)
+    except (ValueError, TypeError):
+        return None
+
+
+def normalize_market(event: dict, market: dict, event_market_count: int, now: dt.datetime) -> MarketRecord | None:
     condition_id = market.get("conditionId")
     if not condition_id:
         return None  # can't build a canonical record without the canonical key
 
     tags = [t.get("slug") for t in (event.get("tags") or []) if t.get("slug")]
     priority = bool(set(tags) & PRIORITY_TAG_SLUGS)
+    noise_excluded = bool(set(tags) & NOISE_TAG_SLUGS)
 
     liquidity = _to_float(market.get("liquidity"))
     volume = _to_float(market.get("volume"))
 
     meets_floor = liquidity >= COVERAGE_LIQUIDITY_MIN or volume >= COVERAGE_VOLUME_MIN
-    covered = meets_floor or priority
-    if priority and not meets_floor:
+    if noise_excluded:
+        covered = False
+        reason = "noise_excluded"
+    elif priority and not meets_floor:
+        covered = True
         reason = "priority_tag_below_floor"
     elif priority and meets_floor:
+        covered = True
         reason = "priority_tag_and_floor"
     elif meets_floor:
+        covered = True
         reason = "floor"
     else:
+        covered = False
         reason = "excluded"
 
     return MarketRecord(
@@ -425,6 +471,9 @@ def normalize_market(event: dict, market: dict, event_market_count: int) -> Mark
         priority=priority,
         covered=covered,
         coverage_reason=reason,
+        noise_excluded=noise_excluded,
+        has_game_id=bool(market.get("gameId")),
+        days_to_end=_days_to_end(market.get("endDate"), now),
         outcome_prices=_parse_json_field(market.get("outcomePrices"), []),
     )
 
@@ -437,11 +486,18 @@ def run_diagnostics(records: list[MarketRecord], events: list[dict]) -> dict:
     missing_clob_tokens = [r.condition_id for r in records if not r.clob_token_ids]
     missing_outcomes = [r.condition_id for r in records if not r.outcomes]
 
+    # negRisk sum-check, narrowed to exclude game-tied markets. A negRisk group
+    # of independent props bundled for capital efficiency (e.g. "exact score",
+    # 17 outcomes each ~0.5) is NOT a probability partition and will always
+    # legitimately sum to something >> 1 — that's not mispricing, it's a wrong
+    # assumption on this check's part. Real categorical partitions (election
+    # winner, inflation bucket) don't carry gameId, so filtering on that keeps
+    # this check meaningful instead of drowning in sports false positives.
     neg_risk_flags = []
     events_by_id = {str(e.get("id")): e for e in events}
     grouped: dict[str, list[MarketRecord]] = {}
     for r in records:
-        if r.neg_risk and r.is_group_member:
+        if r.neg_risk and r.is_group_member and not r.has_game_id:
             grouped.setdefault(r.event_id, []).append(r)
     for event_id, group in grouped.items():
         total = 0.0
@@ -459,6 +515,44 @@ def run_diagnostics(records: list[MarketRecord], events: list[dict]) -> dict:
                 "lead_outcome_price_sum": round(total, 4),
             })
 
+    # Sports research-suitability breakdown — descriptive, not a filter. Splits
+    # by gameId presence (game-tied vs. futures) and time horizon, so the real
+    # distribution can inform where to draw the line, rather than guessing.
+    sports_records = [r for r in records if "sports" in r.tags or any(
+        t in r.tags for t in ("soccer", "esports", "cricket", "nba", "nfl", "nhl", "mlb", "mma")
+    )]
+    game_tied = [r for r in sports_records if r.has_game_id]
+    futures_like = [r for r in sports_records if not r.has_game_id]
+
+    def _bucket_by_horizon(recs: list[MarketRecord]) -> dict:
+        buckets = {name: 0 for name, _ in SPORTS_HORIZON_BUCKETS}
+        buckets["unknown_end_date"] = 0
+        for r in recs:
+            if r.days_to_end is None:
+                buckets["unknown_end_date"] += 1
+                continue
+            for name, max_days in SPORTS_HORIZON_BUCKETS:
+                if max_days is None or r.days_to_end <= max_days:
+                    buckets[name] += 1
+                    break
+        return buckets
+
+    sports_breakdown = {
+        "total_sports_tagged_markets": len(sports_records),
+        "game_tied_has_game_id": len(game_tied),
+        "futures_like_no_game_id": len(futures_like),
+        "game_tied_horizon_buckets": _bucket_by_horizon(game_tied),
+        "futures_like_horizon_buckets": _bucket_by_horizon(futures_like),
+        # a small sample of the futures-like candidates, for a gut check on
+        # whether these actually look like research-suitable questions
+        "futures_like_sample": [
+            {"event_slug": r.event_slug, "question": r.question, "days_to_end": r.days_to_end,
+             "liquidity": r.liquidity, "volume": r.volume}
+            for r in sorted(futures_like, key=lambda x: -x.volume)[:15]
+        ],
+    }
+
+    noise_excluded = [r for r in records if r.noise_excluded]
     covered = [r for r in records if r.covered]
     priority_covered = [r for r in covered if r.priority]
 
@@ -468,11 +562,13 @@ def run_diagnostics(records: list[MarketRecord], events: list[dict]) -> dict:
         "total_markets_seen": len(records),
         "markets_covered": len(covered),
         "markets_covered_via_priority_tag": len(priority_covered),
-        "markets_excluded": len(records) - len(covered),
+        "markets_noise_excluded": len(noise_excluded),
+        "markets_excluded": len(records) - len(covered) - len(noise_excluded),
         "markets_missing_clob_token_ids": len(missing_clob_tokens),
         "markets_missing_outcomes": len(missing_outcomes),
         "missing_clob_token_id_sample": missing_clob_tokens[:20],
         "neg_risk_group_price_sum_flags": neg_risk_flags,
+        "sports_research_suitability_breakdown": sports_breakdown,
         "coverage_liquidity_min": COVERAGE_LIQUIDITY_MIN,
         "coverage_volume_min": COVERAGE_VOLUME_MIN,
         "priority_tag_slugs": sorted(PRIORITY_TAG_SLUGS),
@@ -508,10 +604,11 @@ def run(dry_run: bool = False) -> None:
 
     records: list[MarketRecord] = []
     skipped_raw_samples: list[dict] = []
+    fetch_now = dt.datetime.now(dt.timezone.utc)
     for event in events:
         markets = event.get("markets") or []
         for market in markets:
-            rec = normalize_market(event, market, event_market_count=len(markets))
+            rec = normalize_market(event, market, event_market_count=len(markets), now=fetch_now)
             if rec is not None:
                 records.append(rec)
             else:
@@ -555,6 +652,8 @@ def run(dry_run: bool = False) -> None:
     for k, v in report.items():
         if isinstance(v, list) and k in summary_only_as_count:
             print(f"{k}: {len(v)} item(s)")
+        elif k == "sports_research_suitability_breakdown":
+            print(f"{k}: (see full detail below)")
         else:
             print(f"{k}: {v}")
 
@@ -562,6 +661,7 @@ def run(dry_run: bool = False) -> None:
     print(f"\ntop_25_tags_by_event_count:\n{json.dumps(top_tags, indent=2)}")
     print(f"\nneg_risk_group_price_sum_flags:\n{json.dumps(report['neg_risk_group_price_sum_flags'], indent=2)}")
     print(f"\nskipped_missing_condition_id_raw_sample:\n{json.dumps(skipped_raw_samples, indent=2)}")
+    print(f"\nsports_research_suitability_breakdown:\n{json.dumps(report['sports_research_suitability_breakdown'], indent=2)}")
 
     # Report is diagnostics only — always write it, dry-run or not, since it costs
     # nothing and saves a round trip when you just want to eyeball numbers.
