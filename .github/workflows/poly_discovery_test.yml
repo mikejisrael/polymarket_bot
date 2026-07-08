@@ -1,0 +1,46 @@
+name: Poly Discovery Connectivity Test
+
+# Manual trigger only — this is a throwaway diagnostic, not a scheduled job.
+# Run it from the Actions tab ("Run workflow") or via workflow_dispatch
+# through cron-job.org exactly like your other workflow_dispatch triggers.
+on:
+  workflow_dispatch:
+
+jobs:
+  test-gamma-connectivity:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: main   # avoid stale-commit execution, per your existing lesson learned
+
+      # Cheapest possible test first: raw curl, no Python, no deps.
+      # Isolates "can the runner reach the host at all" from "does the
+      # script/requests library work correctly."
+      - name: Raw curl test against Gamma API
+        run: |
+          echo "=== DNS resolution ==="
+          getent hosts gamma-api.polymarket.com || echo "DNS resolution failed"
+          echo ""
+          echo "=== curl test ==="
+          curl -sS -m 20 -w "\nHTTP status: %{http_code}\nTotal time: %{time_total}s\n" \
+            "https://gamma-api.polymarket.com/events?limit=3&active=true&closed=false" \
+            -o response_sample.json
+          echo ""
+          echo "=== Response sample (first 1000 chars) ==="
+          head -c 1000 response_sample.json
+
+      - name: Set up Python
+        if: always()
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install requests
+        if: always()
+        run: pip install requests
+
+      - name: Run poly_discovery.py --dry-run
+        if: always()
+        run: python poly_discovery.py --dry-run
