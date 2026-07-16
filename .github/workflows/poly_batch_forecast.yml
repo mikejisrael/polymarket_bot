@@ -42,7 +42,7 @@ jobs:
           fi
 
       - name: Commit updated state
-        if: ${{ inputs.live == 'true' }}
+        if: ${{ inputs.live }}
         run: |
           git config user.name "mikejisrael"
           git config user.email "mikejisrael@gmail.com"

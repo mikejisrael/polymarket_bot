@@ -47,7 +47,7 @@ jobs:
       # touching disk), so this is a no-op on dry previews — that's expected,
       # not an error.
       - name: Commit updated cost pilot results
-        if: ${{ inputs.live == 'true' }}
+        if: ${{ inputs.live }}
         run: |
           if [ ! -f poly_state/cost_pilot_results.json ]; then
             echo "No cost_pilot_results.json to commit (run may have failed before writing it)"
