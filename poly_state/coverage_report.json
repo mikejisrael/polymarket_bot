@@ -1,0 +1,3629 @@
+{
+  "generated_at": "2026-07-16T05:45:32.010793+00:00",
+  "total_events_fetched": 10000,
+  "total_markets_seen": 85706,
+  "markets_covered": 39596,
+  "markets_covered_via_priority_tag": 27531,
+  "markets_covered_via_sports_futures_priority": 11051,
+  "markets_noise_excluded": 6127,
+  "markets_stale_expired_excluded": 17449,
+  "markets_excluded": 22534,
+  "markets_missing_clob_token_ids": 0,
+  "markets_missing_outcomes": 0,
+  "missing_clob_token_id_sample": [],
+  "neg_risk_group_price_sum_flags": [
+    {
+      "event_id": "79137",
+      "event_slug": "gdp-growth-in-2026",
+      "market_count": 6,
+      "lead_outcome_price_sum": 0.8325
+    },
+    {
+      "event_id": "79926",
+      "event_slug": "how-many-different-countries-will-israel-strike-in-2026",
+      "market_count": 16,
+      "lead_outcome_price_sum": 0.923
+    },
+    {
+      "event_id": "79932",
+      "event_slug": "how-many-different-countries-will-the-us-strike-in-2026",
+      "market_count": 16,
+      "lead_outcome_price_sum": 0.942
+    },
+    {
+      "event_id": "85579",
+      "event_slug": "jack-doherty-prison-time",
+      "market_count": 4,
+      "lead_outcome_price_sum": 0.93
+    },
+    {
+      "event_id": "86426",
+      "event_slug": "min-arctic-sea-ice-extent-this-summer",
+      "market_count": 7,
+      "lead_outcome_price_sum": 0.861
+    },
+    {
+      "event_id": "101977",
+      "event_slug": "how-many-republican-house-members-not-running-in-2026",
+      "market_count": 7,
+      "lead_outcome_price_sum": 0.8415
+    },
+    {
+      "event_id": "101979",
+      "event_slug": "how-many-democratic-house-members-not-running-in-2026",
+      "market_count": 7,
+      "lead_outcome_price_sum": 0.86
+    },
+    {
+      "event_id": "101980",
+      "event_slug": "how-many-republican-senators-not-running-in-2026",
+      "market_count": 9,
+      "lead_outcome_price_sum": 1.2545
+    },
+    {
+      "event_id": "103166",
+      "event_slug": "republican-house-seats-after-the-2026-midterm-elections",
+      "market_count": 10,
+      "lead_outcome_price_sum": 1.0625
+    },
+    {
+      "event_id": "133792",
+      "event_slug": "how-many-democratic-house-incumbents-will-not-win-their-primary",
+      "market_count": 6,
+      "lead_outcome_price_sum": 1.2685
+    },
+    {
+      "event_id": "133793",
+      "event_slug": "how-many-republican-house-incumbents-will-not-win-their-primary",
+      "market_count": 6,
+      "lead_outcome_price_sum": 1.6295
+    },
+    {
+      "event_id": "137182",
+      "event_slug": "canada-annual-inflation-2026",
+      "market_count": 8,
+      "lead_outcome_price_sum": 0.8485
+    },
+    {
+      "event_id": "147974",
+      "event_slug": "how-many-seats-will-united-russia-win-in-the-next-russian-legislative-election",
+      "market_count": 7,
+      "lead_outcome_price_sum": 0.9465
+    },
+    {
+      "event_id": "149882",
+      "event_slug": "how-many-spacex-launches-in-2026",
+      "market_count": 7,
+      "lead_outcome_price_sum": 0.929
+    },
+    {
+      "event_id": "150178",
+      "event_slug": "china-annual-inflation-2026",
+      "market_count": 9,
+      "lead_outcome_price_sum": 1.0975
+    },
+    {
+      "event_id": "150199",
+      "event_slug": "argentina-annual-inflation-2026",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.05
+    },
+    {
+      "event_id": "164439",
+      "event_slug": "strava-ipo-closing-market-cap",
+      "market_count": 9,
+      "lead_outcome_price_sum": 1.309
+    },
+    {
+      "event_id": "173199",
+      "event_slug": "uk-annual-gdp-growth-2026",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.0595
+    },
+    {
+      "event_id": "178817",
+      "event_slug": "argentina-official-usd-exchange-rate-end-of-2026",
+      "market_count": 9,
+      "lead_outcome_price_sum": 0.885
+    },
+    {
+      "event_id": "182146",
+      "event_slug": "2026-world-gdp-growth",
+      "market_count": 9,
+      "lead_outcome_price_sum": 0.9145
+    },
+    {
+      "event_id": "189770",
+      "event_slug": "argentina-official-usd-exchange-rate-end-of-2026-higher-brackets",
+      "market_count": 6,
+      "lead_outcome_price_sum": 0.917
+    },
+    {
+      "event_id": "200713",
+      "event_slug": "south-korea-annual-inflation-2026",
+      "market_count": 7,
+      "lead_outcome_price_sum": 0.944
+    },
+    {
+      "event_id": "201624",
+      "event_slug": "mexico-annual-inflation-2026",
+      "market_count": 8,
+      "lead_outcome_price_sum": 0.895
+    },
+    {
+      "event_id": "205029",
+      "event_slug": "brazil-presidential-election-first-round-margin-of-victory",
+      "market_count": 11,
+      "lead_outcome_price_sum": 0.891
+    },
+    {
+      "event_id": "215753",
+      "event_slug": "2026-midterms-house-popular-vote-margin-of-victory-224",
+      "market_count": 14,
+      "lead_outcome_price_sum": 1.4415
+    },
+    {
+      "event_id": "230330",
+      "event_slug": "us-trade-deficit-in-2026",
+      "market_count": 8,
+      "lead_outcome_price_sum": 0.926
+    },
+    {
+      "event_id": "403797",
+      "event_slug": "how-many-more-people-leave-the-trump-cabinet-this-year",
+      "market_count": 8,
+      "lead_outcome_price_sum": 0.925
+    },
+    {
+      "event_id": "431601",
+      "event_slug": "nz-election-labour-party-of-seats",
+      "market_count": 7,
+      "lead_outcome_price_sum": 0.893
+    },
+    {
+      "event_id": "431672",
+      "event_slug": "new-zealand-election-turnout",
+      "market_count": 6,
+      "lead_outcome_price_sum": 0.93
+    },
+    {
+      "event_id": "434741",
+      "event_slug": "us-gdp-growth-in-q2-2026",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.072
+    },
+    {
+      "event_id": "435884",
+      "event_slug": "which-coalition-will-form-the-next-new-zealand-government",
+      "market_count": 18,
+      "lead_outcome_price_sum": 1.1265
+    },
+    {
+      "event_id": "436403",
+      "event_slug": "mexico-gdp-growth-in-q2-2026",
+      "market_count": 8,
+      "lead_outcome_price_sum": 0.8995
+    },
+    {
+      "event_id": "436440",
+      "event_slug": "eurozone-gdp-growth-in-q2-2026",
+      "market_count": 7,
+      "lead_outcome_price_sum": 0.8895
+    },
+    {
+      "event_id": "452421",
+      "event_slug": "which-coalition-will-form-the-next-romanian-government",
+      "market_count": 32,
+      "lead_outcome_price_sum": 1.18
+    },
+    {
+      "event_id": "486133",
+      "event_slug": "uk-gdp-growth-in-q2-2026-qoq",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.0715
+    },
+    {
+      "event_id": "507875",
+      "event_slug": "what-will-openais-ipo-valuation-be",
+      "market_count": 8,
+      "lead_outcome_price_sum": 1.2435
+    },
+    {
+      "event_id": "507904",
+      "event_slug": "how-much-will-openai-raise-in-its-ipo",
+      "market_count": 9,
+      "lead_outcome_price_sum": 1.3745
+    },
+    {
+      "event_id": "518913",
+      "event_slug": "elon-musk-of-tweets-july-2026",
+      "market_count": 51,
+      "lead_outcome_price_sum": 1.062
+    },
+    {
+      "event_id": "547946",
+      "event_slug": "what-caused-the-blue-origin-new-glenn-explosion",
+      "market_count": 7,
+      "lead_outcome_price_sum": 2.57
+    },
+    {
+      "event_id": "552316",
+      "event_slug": "nigerian-presidential-election-winner-20260602162945585",
+      "market_count": 22,
+      "lead_outcome_price_sum": 9.491
+    },
+    {
+      "event_id": "552326",
+      "event_slug": "tallahassee-mayoral-election-winner-20260602161603006",
+      "market_count": 12,
+      "lead_outcome_price_sum": 4.4925
+    },
+    {
+      "event_id": "552327",
+      "event_slug": "iowa-democratic-senate-primary-margin-of-victory-20260602160244397",
+      "market_count": 6,
+      "lead_outcome_price_sum": 2.045
+    },
+    {
+      "event_id": "552329",
+      "event_slug": "world-cup-young-player-award-winner-20260602160649063",
+      "market_count": 41,
+      "lead_outcome_price_sum": 11.5015
+    },
+    {
+      "event_id": "555418",
+      "event_slug": "brazil-gdp-growth-in-q2-2026-qoq",
+      "market_count": 7,
+      "lead_outcome_price_sum": 0.822
+    },
+    {
+      "event_id": "556267",
+      "event_slug": "world-cup-bronze-boot-winner-20260603200444388",
+      "market_count": 41,
+      "lead_outcome_price_sum": 11.497
+    },
+    {
+      "event_id": "556268",
+      "event_slug": "world-cup-bronze-ball-winner-20260603194938828",
+      "market_count": 41,
+      "lead_outcome_price_sum": 11.46
+    },
+    {
+      "event_id": "556269",
+      "event_slug": "world-cup-silver-ball-winner-20260603194459107",
+      "market_count": 41,
+      "lead_outcome_price_sum": 11.5475
+    },
+    {
+      "event_id": "556270",
+      "event_slug": "world-cup-golden-ball-winner-20260603194031758",
+      "market_count": 41,
+      "lead_outcome_price_sum": 11.504
+    },
+    {
+      "event_id": "556677",
+      "event_slug": "world-cup-fair-play-award-winner-20260603201520240",
+      "market_count": 54,
+      "lead_outcome_price_sum": 4.046
+    },
+    {
+      "event_id": "556678",
+      "event_slug": "world-cup-silver-boot-winner-20260603195826159",
+      "market_count": 41,
+      "lead_outcome_price_sum": 11.4825
+    },
+    {
+      "event_id": "559302",
+      "event_slug": "world-cup-golden-glove-winner-20260603195306910",
+      "market_count": 41,
+      "lead_outcome_price_sum": 11.4995
+    },
+    {
+      "event_id": "563118",
+      "event_slug": "zambia-presidential-election-winner-20260604205247322",
+      "market_count": 30,
+      "lead_outcome_price_sum": 14.4425
+    },
+    {
+      "event_id": "563152",
+      "event_slug": "ga-13-special-election-winner-20260604224652888",
+      "market_count": 21,
+      "lead_outcome_price_sum": 8.4775
+    },
+    {
+      "event_id": "563153",
+      "event_slug": "world-cup-group-of-champion-20260605001357294",
+      "market_count": 13,
+      "lead_outcome_price_sum": 1.491
+    },
+    {
+      "event_id": "563639",
+      "event_slug": "world-cup-argentina-stage-of-elimination",
+      "market_count": 8,
+      "lead_outcome_price_sum": 1.499
+    },
+    {
+      "event_id": "563651",
+      "event_slug": "world-cup-spain-stage-of-elimination",
+      "market_count": 8,
+      "lead_outcome_price_sum": 1.51
+    },
+    {
+      "event_id": "563808",
+      "event_slug": "who-will-be-the-top-selling-artist-by-total-auction-sales-in-2026-20260605235158033",
+      "market_count": 4,
+      "lead_outcome_price_sum": 1.83
+    },
+    {
+      "event_id": "573779",
+      "event_slug": "ufc-who-will-gabriel-bonfim-fight-next-20260608203537472",
+      "market_count": 16,
+      "lead_outcome_price_sum": 7.5855
+    },
+    {
+      "event_id": "577009",
+      "event_slug": "july-2026-temperature-increase-c-20260608140824583",
+      "market_count": 6,
+      "lead_outcome_price_sum": 1.066
+    },
+    {
+      "event_id": "577021",
+      "event_slug": "how-many-tornadoes-in-the-us-in-july-20260608141657724",
+      "market_count": 9,
+      "lead_outcome_price_sum": 1.345
+    },
+    {
+      "event_id": "577053",
+      "event_slug": "junior-eurovision-winner-2026-20260608142820871",
+      "market_count": 34,
+      "lead_outcome_price_sum": 8.9535
+    },
+    {
+      "event_id": "577471",
+      "event_slug": "which-club-will-win-the-ewc-club-championship-20260609194119821",
+      "market_count": 43,
+      "lead_outcome_price_sum": 21.39
+    },
+    {
+      "event_id": "578085",
+      "event_slug": "next-mayor-of-johannesburg-20260609220245506",
+      "market_count": 42,
+      "lead_outcome_price_sum": 18.847
+    },
+    {
+      "event_id": "578421",
+      "event_slug": "how-many-senators-will-vote-for-todd-blanche-as-attorney-general-20260608212507372",
+      "market_count": 14,
+      "lead_outcome_price_sum": 3.8265
+    },
+    {
+      "event_id": "578437",
+      "event_slug": "para-governor-election-winner-20260609154623298",
+      "market_count": 18,
+      "lead_outcome_price_sum": 6.366
+    },
+    {
+      "event_id": "578439",
+      "event_slug": "goias-governor-election-winner-20260609165823163",
+      "market_count": 16,
+      "lead_outcome_price_sum": 6.7305
+    },
+    {
+      "event_id": "578440",
+      "event_slug": "santa-catarina-governor-election-winner-20260609164309743",
+      "market_count": 19,
+      "lead_outcome_price_sum": 6.485
+    },
+    {
+      "event_id": "578441",
+      "event_slug": "parana-governor-election-winner-20260608205118343",
+      "market_count": 18,
+      "lead_outcome_price_sum": 6.5185
+    },
+    {
+      "event_id": "578442",
+      "event_slug": "rio-de-janeiro-governor-election-winner-20260608202949176",
+      "market_count": 23,
+      "lead_outcome_price_sum": 4.995
+    },
+    {
+      "event_id": "580320",
+      "event_slug": "which-party-will-trump-endorse-in-the-2026-israeli-election-20260610144125261",
+      "market_count": 23,
+      "lead_outcome_price_sum": 6.143
+    },
+    {
+      "event_id": "580723",
+      "event_slug": "who-will-be-the-next-prime-minister-of-australia-after-the-next-election-20260610170604224",
+      "market_count": 17,
+      "lead_outcome_price_sum": 6.526
+    },
+    {
+      "event_id": "580843",
+      "event_slug": "japan-10y-bond-yield-end-of-2026",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.0515
+    },
+    {
+      "event_id": "580965",
+      "event_slug": "nikkei-225-close-price-end-of-2026",
+      "market_count": 8,
+      "lead_outcome_price_sum": 1.2105
+    },
+    {
+      "event_id": "581091",
+      "event_slug": "2026-song-of-the-summer-20260610191834334",
+      "market_count": 37,
+      "lead_outcome_price_sum": 13.8695
+    },
+    {
+      "event_id": "581100",
+      "event_slug": "usdjpy-close-price-end-of-2026",
+      "market_count": 6,
+      "lead_outcome_price_sum": 1.332
+    },
+    {
+      "event_id": "581315",
+      "event_slug": "georgia-senate-republican-primary-runoff-margin-of-victory-20260610202915154",
+      "market_count": 8,
+      "lead_outcome_price_sum": 1.5235
+    },
+    {
+      "event_id": "584273",
+      "event_slug": "cblol-ewc-qualifiers-which-team-will-qualify-20260611155035854",
+      "market_count": 7,
+      "lead_outcome_price_sum": 2.508
+    },
+    {
+      "event_id": "587427",
+      "event_slug": "georgia-governor-republican-primary-runoff-margin-of-victory-20260611155243082",
+      "market_count": 9,
+      "lead_outcome_price_sum": 1.5085
+    },
+    {
+      "event_id": "587443",
+      "event_slug": "maranhao-governor-election-winner-20260611182113297",
+      "market_count": 17,
+      "lead_outcome_price_sum": 6.503
+    },
+    {
+      "event_id": "587444",
+      "event_slug": "paraiba-governor-election-winner-20260611183326566",
+      "market_count": 18,
+      "lead_outcome_price_sum": 6.0345
+    },
+    {
+      "event_id": "587445",
+      "event_slug": "espirito-santo-governor-election-winner-20260611183840001",
+      "market_count": 16,
+      "lead_outcome_price_sum": 6.36
+    },
+    {
+      "event_id": "587618",
+      "event_slug": "world-cup-continent-to-score-the-most-goals-20260612155037505",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.496
+    },
+    {
+      "event_id": "587912",
+      "event_slug": "2-spotify-artist-2026-20260609190427525",
+      "market_count": 22,
+      "lead_outcome_price_sum": 7.181
+    },
+    {
+      "event_id": "587918",
+      "event_slug": "3-spotify-artist-2026-20260609190655679",
+      "market_count": 22,
+      "lead_outcome_price_sum": 7.11
+    },
+    {
+      "event_id": "588160",
+      "event_slug": "nhl-2027-champion-20260612185656162",
+      "market_count": 38,
+      "lead_outcome_price_sum": 4.0225
+    },
+    {
+      "event_id": "597912",
+      "event_slug": "where-will-emiliano-martinez-transfer-20260612234353773",
+      "market_count": 16,
+      "lead_outcome_price_sum": 6.2795
+    },
+    {
+      "event_id": "597920",
+      "event_slug": "where-will-leon-goretzka-transfer-20260612231121906",
+      "market_count": 17,
+      "lead_outcome_price_sum": 7.8205
+    },
+    {
+      "event_id": "597942",
+      "event_slug": "where-will-aurelien-tchouameni-transfer-20260612233725155",
+      "market_count": 17,
+      "lead_outcome_price_sum": 6.6745
+    },
+    {
+      "event_id": "597973",
+      "event_slug": "where-will-elliot-anderson-transfer-20260612233228513",
+      "market_count": 20,
+      "lead_outcome_price_sum": 6.5115
+    },
+    {
+      "event_id": "598073",
+      "event_slug": "where-will-vinicius-junior-transfer-20260612232836376",
+      "market_count": 19,
+      "lead_outcome_price_sum": 6.694
+    },
+    {
+      "event_id": "598082",
+      "event_slug": "where-will-casemiro-transfer-20260612232455096",
+      "market_count": 17,
+      "lead_outcome_price_sum": 6.9705
+    },
+    {
+      "event_id": "598111",
+      "event_slug": "where-will-mohamed-salah-transfer-20260612232101007",
+      "market_count": 20,
+      "lead_outcome_price_sum": 7.0635
+    },
+    {
+      "event_id": "598119",
+      "event_slug": "where-will-nico-schlotterbeck-transfer-20260612234038080",
+      "market_count": 17,
+      "lead_outcome_price_sum": 6.7435
+    },
+    {
+      "event_id": "598134",
+      "event_slug": "where-will-enzo-fernandez-transfer-20260612231640461",
+      "market_count": 17,
+      "lead_outcome_price_sum": 7.647
+    },
+    {
+      "event_id": "598375",
+      "event_slug": "where-will-dusan-vlahovic-transfer-20260612230821334",
+      "market_count": 20,
+      "lead_outcome_price_sum": 7.7775
+    },
+    {
+      "event_id": "598390",
+      "event_slug": "where-will-rodri-transfer-20260612230519201",
+      "market_count": 16,
+      "lead_outcome_price_sum": 6.4405
+    },
+    {
+      "event_id": "598391",
+      "event_slug": "where-will-julian-alvarez-transfer-20260612230221012",
+      "market_count": 17,
+      "lead_outcome_price_sum": 6.4385
+    },
+    {
+      "event_id": "598399",
+      "event_slug": "ny-12-democratic-primary-margin-of-victory-20260615182252199",
+      "market_count": 8,
+      "lead_outcome_price_sum": 1.484
+    },
+    {
+      "event_id": "598411",
+      "event_slug": "where-will-joao-cancelo-transfer-20260612225511908",
+      "market_count": 16,
+      "lead_outcome_price_sum": 6.5255
+    },
+    {
+      "event_id": "598427",
+      "event_slug": "where-will-eduardo-camavinga-transfer-20260612224955761",
+      "market_count": 19,
+      "lead_outcome_price_sum": 8.0825
+    },
+    {
+      "event_id": "598429",
+      "event_slug": "where-will-bradley-barcola-transfer-20260612224628256",
+      "market_count": 17,
+      "lead_outcome_price_sum": 6.915
+    },
+    {
+      "event_id": "598431",
+      "event_slug": "where-will-jack-grealish-transfer-20260612224322458",
+      "market_count": 21,
+      "lead_outcome_price_sum": 6.4085
+    },
+    {
+      "event_id": "598439",
+      "event_slug": "where-will-marcus-rashford-transfer-20260612223855109",
+      "market_count": 19,
+      "lead_outcome_price_sum": 6.7285
+    },
+    {
+      "event_id": "598441",
+      "event_slug": "where-will-bruno-fernandes-transfer-20260612223228777",
+      "market_count": 19,
+      "lead_outcome_price_sum": 6.438
+    },
+    {
+      "event_id": "598449",
+      "event_slug": "where-will-rafael-leao-transfer-20260612222809594",
+      "market_count": 21,
+      "lead_outcome_price_sum": 6.91
+    },
+    {
+      "event_id": "598471",
+      "event_slug": "where-will-yan-diomande-transfer-20260612220845266",
+      "market_count": 20,
+      "lead_outcome_price_sum": 6.834
+    },
+    {
+      "event_id": "601394",
+      "event_slug": "ufc-ilia-topuria-next-fight-20260616144855144",
+      "market_count": 9,
+      "lead_outcome_price_sum": 4.435
+    },
+    {
+      "event_id": "606421",
+      "event_slug": "june-inflation-uk-annual-20260617152237894",
+      "market_count": 6,
+      "lead_outcome_price_sum": 1.0715
+    },
+    {
+      "event_id": "606437",
+      "event_slug": "fed-decisions-juloct-20260617191209856",
+      "market_count": 9,
+      "lead_outcome_price_sum": 0.9455
+    },
+    {
+      "event_id": "606454",
+      "event_slug": "japan-core-core-cpi-yoy-in-2026-20260617223728725",
+      "market_count": 6,
+      "lead_outcome_price_sum": 0.9445
+    },
+    {
+      "event_id": "612193",
+      "event_slug": "netflix-nflx-q2-operating-margin-20260618173635047",
+      "market_count": 5,
+      "lead_outcome_price_sum": 1.223
+    },
+    {
+      "event_id": "612212",
+      "event_slug": "ny-17-democratic-primary-margin-of-victory-20260619001105497",
+      "market_count": 6,
+      "lead_outcome_price_sum": 1.5045
+    },
+    {
+      "event_id": "612227",
+      "event_slug": "greater-manchester-mayoral-election-winner-20260619154130299",
+      "market_count": 51,
+      "lead_outcome_price_sum": 19.5045
+    },
+    {
+      "event_id": "612303",
+      "event_slug": "taiwan-semiconductor-tsm-q2-gross-profit-margin-20260618160435009",
+      "market_count": 5,
+      "lead_outcome_price_sum": 1.9305
+    },
+    {
+      "event_id": "616085",
+      "event_slug": "pro-football-team-to-draft-brendan-sorsby-20260620180654958",
+      "market_count": 36,
+      "lead_outcome_price_sum": 7.5295
+    },
+    {
+      "event_id": "616128",
+      "event_slug": "where-will-crysencio-summerville-transfer-20260620183221173",
+      "market_count": 21,
+      "lead_outcome_price_sum": 9.145
+    },
+    {
+      "event_id": "619832",
+      "event_slug": "next-uk-chancellor-of-the-exchequer-in-2026-20260621005319178",
+      "market_count": 35,
+      "lead_outcome_price_sum": 13.015
+    },
+    {
+      "event_id": "622387",
+      "event_slug": "ufc-who-will-manel-kape-fight-next-20260620182559031",
+      "market_count": 14,
+      "lead_outcome_price_sum": 6.689
+    },
+    {
+      "event_id": "623791",
+      "event_slug": "nba-free-agency-bradley-beal-next-team-20260622180545948",
+      "market_count": 33,
+      "lead_outcome_price_sum": 9.75
+    },
+    {
+      "event_id": "623799",
+      "event_slug": "nba-free-agency-zach-lavine-next-team-20260622171011046",
+      "market_count": 33,
+      "lead_outcome_price_sum": 5.975
+    },
+    {
+      "event_id": "623822",
+      "event_slug": "nba-free-agency-draymond-green-next-team-20260622163117946",
+      "market_count": 33,
+      "lead_outcome_price_sum": 2.5095
+    },
+    {
+      "event_id": "623825",
+      "event_slug": "nba-free-agency-fred-vanvleet-next-team-20260622182154276",
+      "market_count": 33,
+      "lead_outcome_price_sum": 16.31
+    },
+    {
+      "event_id": "623833",
+      "event_slug": "nba-free-agency-jalen-duren-next-team-20260622170505392",
+      "market_count": 33,
+      "lead_outcome_price_sum": 2.7755
+    },
+    {
+      "event_id": "623869",
+      "event_slug": "nba-free-agency-jonathan-kuminga-next-team-20260622174039658",
+      "market_count": 33,
+      "lead_outcome_price_sum": 11.505
+    },
+    {
+      "event_id": "623870",
+      "event_slug": "nba-free-agency-james-harden-next-team-20260622160230346",
+      "market_count": 33,
+      "lead_outcome_price_sum": 2.738
+    },
+    {
+      "event_id": "623909",
+      "event_slug": "nba-free-agency-russell-westbrook-next-team-20260622171940843",
+      "market_count": 33,
+      "lead_outcome_price_sum": 12.35
+    },
+    {
+      "event_id": "624096",
+      "event_slug": "next-uk-foreign-secretary-in-2026-20260622175251556",
+      "market_count": 37,
+      "lead_outcome_price_sum": 13.0185
+    },
+    {
+      "event_id": "626855",
+      "event_slug": "world-cup-shirt-manufacturer-worn-by-champion-20260623192343445",
+      "market_count": 19,
+      "lead_outcome_price_sum": 3.995
+    },
+    {
+      "event_id": "627782",
+      "event_slug": "next-president-of-new-caledonia-20260623011924109",
+      "market_count": 39,
+      "lead_outcome_price_sum": 13.5235
+    },
+    {
+      "event_id": "627849",
+      "event_slug": "sao-tome-and-principe-presidential-election-winner-20260623195739298",
+      "market_count": 32,
+      "lead_outcome_price_sum": 14.4965
+    },
+    {
+      "event_id": "629851",
+      "event_slug": "next-uk-home-secretary-in-2026-20260622184449063",
+      "market_count": 36,
+      "lead_outcome_price_sum": 13.1635
+    },
+    {
+      "event_id": "629861",
+      "event_slug": "abbott-laboratories-abt-q2-comparable-sales-growth-20260618185049190",
+      "market_count": 5,
+      "lead_outcome_price_sum": 1.372
+    },
+    {
+      "event_id": "630022",
+      "event_slug": "nba-2027-western-conference-champion-20260624160106318",
+      "market_count": 18,
+      "lead_outcome_price_sum": 2.7535
+    },
+    {
+      "event_id": "630058",
+      "event_slug": "nba-2026-27-rookie-of-the-year-20260624161716143",
+      "market_count": 81,
+      "lead_outcome_price_sum": 26.4895
+    },
+    {
+      "event_id": "630177",
+      "event_slug": "httpsae-pic-a1ptaliexpress-mediaptcomkfs2ddfd0261cef448e9339d35f0b505603mptjpg",
+      "market_count": 32,
+      "lead_outcome_price_sum": 7.6115
+    },
+    {
+      "event_id": "630185",
+      "event_slug": "world-cup-boot-brand-worn-by-golden-ball-winner-20260623194803363",
+      "market_count": 17,
+      "lead_outcome_price_sum": 6.37
+    },
+    {
+      "event_id": "630186",
+      "event_slug": "world-cup-boot-sponsor-worn-by-golden-boot-winner-20260623194235153",
+      "market_count": 17,
+      "lead_outcome_price_sum": 6.303
+    },
+    {
+      "event_id": "630352",
+      "event_slug": "ewc-league-of-legends-winner-20260624162214234",
+      "market_count": 22,
+      "lead_outcome_price_sum": 4.098
+    },
+    {
+      "event_id": "630364",
+      "event_slug": "ewc-dota-2-winner-20260622213517296",
+      "market_count": 30,
+      "lead_outcome_price_sum": 4.046
+    },
+    {
+      "event_id": "630655",
+      "event_slug": "nba-free-agency-peyton-watson-next-team-20260622172733428",
+      "market_count": 33,
+      "lead_outcome_price_sum": 12.84
+    },
+    {
+      "event_id": "630845",
+      "event_slug": "largest-company-end-of-july-20260624192302727",
+      "market_count": 29,
+      "lead_outcome_price_sum": 11.4885
+    },
+    {
+      "event_id": "630905",
+      "event_slug": "charli-xcx-music-fashion-film-first-week-album-sales-20260624172022131",
+      "market_count": 6,
+      "lead_outcome_price_sum": 1.2855
+    },
+    {
+      "event_id": "630907",
+      "event_slug": "future-the-real-me-first-week-album-sales-20260624155724518",
+      "market_count": 5,
+      "lead_outcome_price_sum": 1.5335
+    },
+    {
+      "event_id": "631072",
+      "event_slug": "2nd-largest-company-end-of-july-20260624192727948",
+      "market_count": 29,
+      "lead_outcome_price_sum": 11.4975
+    },
+    {
+      "event_id": "631073",
+      "event_slug": "3rd-largest-company-end-of-july-20260624193025470",
+      "market_count": 29,
+      "lead_outcome_price_sum": 11.505
+    },
+    {
+      "event_id": "631083",
+      "event_slug": "stpt-petersburg-mayoral-election-winner-20260624160811880",
+      "market_count": 13,
+      "lead_outcome_price_sum": 4.0205
+    },
+    {
+      "event_id": "631085",
+      "event_slug": "who-will-be-the-trump-admin-next-nominate-as-scotus-justice-20260624144117702",
+      "market_count": 32,
+      "lead_outcome_price_sum": 12.3525
+    },
+    {
+      "event_id": "633839",
+      "event_slug": "how-many-senate-and-house-seats-will-republicans-have-after-the-midterms-20260625152833634",
+      "market_count": 13,
+      "lead_outcome_price_sum": 4.328
+    },
+    {
+      "event_id": "633848",
+      "event_slug": "nhl-2026-27-calder-trophy-20260625172243021",
+      "market_count": 81,
+      "lead_outcome_price_sum": 26.4805
+    },
+    {
+      "event_id": "633938",
+      "event_slug": "next-ceo-of-jpmorgan-chase-20260625175304642",
+      "market_count": 14,
+      "lead_outcome_price_sum": 6.635
+    },
+    {
+      "event_id": "633958",
+      "event_slug": "greater-manchester-mayoral-election-most-1st-preference-votes-20260625163310509",
+      "market_count": 36,
+      "lead_outcome_price_sum": 12.9865
+    },
+    {
+      "event_id": "634287",
+      "event_slug": "algeria-parliamentary-election-party-winner-20260625161521348",
+      "market_count": 33,
+      "lead_outcome_price_sum": 14.5035
+    },
+    {
+      "event_id": "634482",
+      "event_slug": "nba-2027-eastern-conference-champion-20260624155838911",
+      "market_count": 18,
+      "lead_outcome_price_sum": 2.574
+    },
+    {
+      "event_id": "637114",
+      "event_slug": "colorado-governor-democratic-primary-margin-of-victory-20260626151955736",
+      "market_count": 9,
+      "lead_outcome_price_sum": 1.509
+    },
+    {
+      "event_id": "637151",
+      "event_slug": "2026-los-angeles-county-sheriff-election-winner-20260626005329056",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.46
+    },
+    {
+      "event_id": "637161",
+      "event_slug": "2026-cameron-county-judge-election-winner-20260626005213910",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.47
+    },
+    {
+      "event_id": "637174",
+      "event_slug": "2026-fulton-county-commission-chair-election-winner-20260626005048754",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.3265
+    },
+    {
+      "event_id": "637175",
+      "event_slug": "2026-williamson-county-judge-election-winner-20260626004801174",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.34
+    },
+    {
+      "event_id": "637176",
+      "event_slug": "2026-montgomery-county-judge-election-winner-20260626004629130",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.336
+    },
+    {
+      "event_id": "637177",
+      "event_slug": "2026-el-paso-county-judge-election-winner-20260626004500794",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.3935
+    },
+    {
+      "event_id": "637192",
+      "event_slug": "2026-fort-bend-county-judge-election-winner-20260626004112792",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.49
+    },
+    {
+      "event_id": "637193",
+      "event_slug": "2026-denton-county-judge-election-winner-20260626003938310",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.485
+    },
+    {
+      "event_id": "637194",
+      "event_slug": "2026-collin-county-judge-election-winner-20260626003643462",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.495
+    },
+    {
+      "event_id": "637202",
+      "event_slug": "2026-bexar-county-judge-election-winner-20260626003501444",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.3815
+    },
+    {
+      "event_id": "637203",
+      "event_slug": "2026-tarrant-county-judge-election-winner-20260626003334863",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.52
+    },
+    {
+      "event_id": "637213",
+      "event_slug": "2026-dallas-county-judge-election-winner-20260626003212321",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.4205
+    },
+    {
+      "event_id": "637267",
+      "event_slug": "2026-harris-county-judge-election-winner-20260626003009337",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.095
+    },
+    {
+      "event_id": "637312",
+      "event_slug": "2026-louisville-mayoral-election-winner-20260626001838911",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.435
+    },
+    {
+      "event_id": "637320",
+      "event_slug": "2026-lexington-mayoral-election-winner-20260626001615088",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.5545
+    },
+    {
+      "event_id": "637321",
+      "event_slug": "2026-reno-mayoral-election-winner-20260626001418691",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.4525
+    },
+    {
+      "event_id": "637332",
+      "event_slug": "2026-north-las-vegas-mayoral-election-winner-20260626001143909",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.47
+    },
+    {
+      "event_id": "637388",
+      "event_slug": "2026-henderson-mayoral-election-winner-20260626001013587",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.67
+    },
+    {
+      "event_id": "637404",
+      "event_slug": "2026-chandler-mayoral-election-winner-20260626000820427",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.465
+    },
+    {
+      "event_id": "637442",
+      "event_slug": "next-prime-minister-of-spain-20260625005215443",
+      "market_count": 58,
+      "lead_outcome_price_sum": 21.9825
+    },
+    {
+      "event_id": "638084",
+      "event_slug": "closest-senate-race-20260626184244519",
+      "market_count": 16,
+      "lead_outcome_price_sum": 1.159
+    },
+    {
+      "event_id": "638386",
+      "event_slug": "next-google-gemini-pro-model-released-onptptpt-20260626213101460",
+      "market_count": 32,
+      "lead_outcome_price_sum": 1.14
+    },
+    {
+      "event_id": "638394",
+      "event_slug": "which-company-has-the-best-ai-agent-end-of-july-20260626204312502",
+      "market_count": 29,
+      "lead_outcome_price_sum": 8.009
+    },
+    {
+      "event_id": "638395",
+      "event_slug": "how-many-cities-will-waymo-operate-in-by-december-31-20260626203648850",
+      "market_count": 7,
+      "lead_outcome_price_sum": 0.825
+    },
+    {
+      "event_id": "638415",
+      "event_slug": "gpu-rental-prices-b200-end-of-july-20260626214212582",
+      "market_count": 6,
+      "lead_outcome_price_sum": 0.9435
+    },
+    {
+      "event_id": "638416",
+      "event_slug": "gpu-rental-prices-h100-end-of-july-20260626214740664",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.062
+    },
+    {
+      "event_id": "648018",
+      "event_slug": "nba-kawhi-leonard-next-team-20260629144203996",
+      "market_count": 33,
+      "lead_outcome_price_sum": 2.522
+    },
+    {
+      "event_id": "648066",
+      "event_slug": "number-of-north-korea-missile-tests-in-july-2026-20260626154530205",
+      "market_count": 4,
+      "lead_outcome_price_sum": 0.8705
+    },
+    {
+      "event_id": "648390",
+      "event_slug": "who-will-be-the-most-watched-twitch-streamer-in-july-20260629152809636",
+      "market_count": 26,
+      "lead_outcome_price_sum": 12.43
+    },
+    {
+      "event_id": "648712",
+      "event_slug": "carly-rae-jepsen-day-and-night-first-week-album-sales-20260629185320818",
+      "market_count": 6,
+      "lead_outcome_price_sum": 2.57
+    },
+    {
+      "event_id": "648748",
+      "event_slug": "elon-musk-net-worth-on-july-31-20260629141452413",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.0515
+    },
+    {
+      "event_id": "648785",
+      "event_slug": "largest-indian-company-at-end-of-2026-20260629145859074",
+      "market_count": 16,
+      "lead_outcome_price_sum": 1.4445
+    },
+    {
+      "event_id": "648852",
+      "event_slug": "closest-governors-race-20260629182258067",
+      "market_count": 18,
+      "lead_outcome_price_sum": 1.564
+    },
+    {
+      "event_id": "648860",
+      "event_slug": "az-01-democratic-primary-winner-20260629182915544",
+      "market_count": 8,
+      "lead_outcome_price_sum": 3.0225
+    },
+    {
+      "event_id": "648983",
+      "event_slug": "next-serbia-presidential-election-winner-20260629192336823",
+      "market_count": 57,
+      "lead_outcome_price_sum": 23.5165
+    },
+    {
+      "event_id": "649010",
+      "event_slug": "ufc-who-will-rafael-fiziev-fight-next-20260629205941824",
+      "market_count": 16,
+      "lead_outcome_price_sum": 6.2125
+    },
+    {
+      "event_id": "649201",
+      "event_slug": "the-international-2026-winner-20260629212545745",
+      "market_count": 20,
+      "lead_outcome_price_sum": 5.4385
+    },
+    {
+      "event_id": "651731",
+      "event_slug": "co-01-democratic-primary-margin-of-victory-20260630151427163",
+      "market_count": 8,
+      "lead_outcome_price_sum": 1.139
+    },
+    {
+      "event_id": "651921",
+      "event_slug": "3rd-largest-private-company-end-of-july-20260630020412620",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.3285
+    },
+    {
+      "event_id": "651922",
+      "event_slug": "2nd-largest-private-company-end-of-july-20260630020009816",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.1215
+    },
+    {
+      "event_id": "652354",
+      "event_slug": "nhl-2027-western-conference-champion-20260630185319860",
+      "market_count": 20,
+      "lead_outcome_price_sum": 3.2515
+    },
+    {
+      "event_id": "652355",
+      "event_slug": "nhl-2027-eastern-conference-champion-20260630185127005",
+      "market_count": 20,
+      "lead_outcome_price_sum": 3.245
+    },
+    {
+      "event_id": "652974",
+      "event_slug": "most-banned-hero-at-dota2-ewc-2026-20260630214858554",
+      "market_count": 118,
+      "lead_outcome_price_sum": 24.181
+    },
+    {
+      "event_id": "652975",
+      "event_slug": "most-picked-hero-at-dota-ewc-2026-20260630222436846",
+      "market_count": 108,
+      "lead_outcome_price_sum": 42.31
+    },
+    {
+      "event_id": "653423",
+      "event_slug": "databricks-ipo-closing-market-cap-20260630152322605",
+      "market_count": 9,
+      "lead_outcome_price_sum": 3.93
+    },
+    {
+      "event_id": "653446",
+      "event_slug": "next-leader-out-of-power-before-2027-no-starmer-or-petro-20260630194619406",
+      "market_count": 22,
+      "lead_outcome_price_sum": 1.086
+    },
+    {
+      "event_id": "653625",
+      "event_slug": "nba-how-much-will-lebrons-next-contract-be-20260630183002758",
+      "market_count": 6,
+      "lead_outcome_price_sum": 1.5215
+    },
+    {
+      "event_id": "655289",
+      "event_slug": "colorado-governor-republican-primary-margin-of-victory-20260701135055324",
+      "market_count": 11,
+      "lead_outcome_price_sum": 2.3745
+    },
+    {
+      "event_id": "655399",
+      "event_slug": "which-region-will-win-the-2026-esports-world-cup-dota-2-tournament-20260701152000046",
+      "market_count": 10,
+      "lead_outcome_price_sum": 3.0115
+    },
+    {
+      "event_id": "655483",
+      "event_slug": "next-prime-minister-of-serbia-20260629223938642",
+      "market_count": 53,
+      "lead_outcome_price_sum": 23.57
+    },
+    {
+      "event_id": "655664",
+      "event_slug": "central-bank-of-colombia-decision-in-september-20260630004643935",
+      "market_count": 5,
+      "lead_outcome_price_sum": 1.7105
+    },
+    {
+      "event_id": "655865",
+      "event_slug": "which-team-will-win-the-shortest-game-at-ewc-2026-20260701173915804",
+      "market_count": 28,
+      "lead_outcome_price_sum": 8.085
+    },
+    {
+      "event_id": "656017",
+      "event_slug": "jolts-job-openings-june-2026-20260630005931414",
+      "market_count": 8,
+      "lead_outcome_price_sum": 1.2815
+    },
+    {
+      "event_id": "656186",
+      "event_slug": "what-will-the-median-home-value-in-miami-be-on-september-30-20260630172328034",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.0705
+    },
+    {
+      "event_id": "656190",
+      "event_slug": "what-will-the-median-home-value-in-the-austin-metro-area-be-on-september-30-20260630180633090",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.0555
+    },
+    {
+      "event_id": "656191",
+      "event_slug": "what-will-the-median-home-value-in-the-san-francisco-metro-area-be-on-september-30-20260630181308201",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.091
+    },
+    {
+      "event_id": "656192",
+      "event_slug": "what-will-the-median-home-value-in-the-dc-metro-area-be-on-september-30-20260630181851462",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.298
+    },
+    {
+      "event_id": "656203",
+      "event_slug": "spacex-closing-market-cap-end-of-july-20260630213828808",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.5055
+    },
+    {
+      "event_id": "656219",
+      "event_slug": "stripe-ipo-closing-market-cap-20260630151339099",
+      "market_count": 10,
+      "lead_outcome_price_sum": 4.315
+    },
+    {
+      "event_id": "656311",
+      "event_slug": "who-will-be-the-2-most-watched-twitch-streamer-in-july-20260629155712175",
+      "market_count": 26,
+      "lead_outcome_price_sum": 10.671
+    },
+    {
+      "event_id": "656312",
+      "event_slug": "vote-winner-in-alaska-senate-primary-final-round-20260630164517313",
+      "market_count": 22,
+      "lead_outcome_price_sum": 4.115
+    },
+    {
+      "event_id": "656320",
+      "event_slug": "az-02-democratic-primary-winner-20260630194822311",
+      "market_count": 6,
+      "lead_outcome_price_sum": 2.9995
+    },
+    {
+      "event_id": "656321",
+      "event_slug": "az-04-democratic-primary-winner-20260630171843790",
+      "market_count": 6,
+      "lead_outcome_price_sum": 2.992
+    },
+    {
+      "event_id": "656322",
+      "event_slug": "az-05-democratic-primary-winner-20260630172138599",
+      "market_count": 8,
+      "lead_outcome_price_sum": 2.986
+    },
+    {
+      "event_id": "656451",
+      "event_slug": "james-fishback-vote-share-in-2026-florida-republican-governor-primary-20260701214154078",
+      "market_count": 6,
+      "lead_outcome_price_sum": 0.854
+    },
+    {
+      "event_id": "656452",
+      "event_slug": "south-dakota-governor-republican-primary-runoff-margin-of-victory-20260701162559108",
+      "market_count": 11,
+      "lead_outcome_price_sum": 2.664
+    },
+    {
+      "event_id": "659394",
+      "event_slug": "tour-de-france-2026-margin-of-victory-20260629213153542",
+      "market_count": 7,
+      "lead_outcome_price_sum": 3.019
+    },
+    {
+      "event_id": "659488",
+      "event_slug": "serie-a-2027-champion-20260701200118390",
+      "market_count": 24,
+      "lead_outcome_price_sum": 3.0465
+    },
+    {
+      "event_id": "659518",
+      "event_slug": "epl-2027-champion-20260701200428749",
+      "market_count": 24,
+      "lead_outcome_price_sum": 3.0585
+    },
+    {
+      "event_id": "659548",
+      "event_slug": "laliga-2027-champion-20260701200737375",
+      "market_count": 24,
+      "lead_outcome_price_sum": 2.535
+    },
+    {
+      "event_id": "659573",
+      "event_slug": "ligue-1-2027-champion-20260701201053335",
+      "market_count": 22,
+      "lead_outcome_price_sum": 3.0615
+    },
+    {
+      "event_id": "659670",
+      "event_slug": "primeira-liga-2027-champion-20260701201425834",
+      "market_count": 22,
+      "lead_outcome_price_sum": 3.0805
+    },
+    {
+      "event_id": "659671",
+      "event_slug": "uefa-champions-league-2027-champion-20260701202025549",
+      "market_count": 42,
+      "lead_outcome_price_sum": 7.536
+    },
+    {
+      "event_id": "659672",
+      "event_slug": "uefa-europa-league-2027-champion-20260701202403681",
+      "market_count": 42,
+      "lead_outcome_price_sum": 15.5975
+    },
+    {
+      "event_id": "659879",
+      "event_slug": "sao-tome-presidential-election-first-round-winner-20260702151121341",
+      "market_count": 32,
+      "lead_outcome_price_sum": 14.486
+    },
+    {
+      "event_id": "659888",
+      "event_slug": "norfolk-police-and-crime-commissioner-by-election-winner-20260702154145530",
+      "market_count": 28,
+      "lead_outcome_price_sum": 11.5365
+    },
+    {
+      "event_id": "659889",
+      "event_slug": "the-pas-kameesak-manitoba-legislative-assembly-by-election-winner-20260702160935687",
+      "market_count": 25,
+      "lead_outcome_price_sum": 11.49
+    },
+    {
+      "event_id": "659956",
+      "event_slug": "how-many-of-these-34-aipac-endorsees-will-lose-their-primaries-through-august-4-primaries-20260702145459068",
+      "market_count": 6,
+      "lead_outcome_price_sum": 0.9365
+    },
+    {
+      "event_id": "659974",
+      "event_slug": "arizona-attorney-general-republican-primary-winner-20260702185523323",
+      "market_count": 6,
+      "lead_outcome_price_sum": 2.9915
+    },
+    {
+      "event_id": "659975",
+      "event_slug": "arizona-secretary-of-state-republican-primary-winner-20260702190600142",
+      "market_count": 6,
+      "lead_outcome_price_sum": 3.008
+    },
+    {
+      "event_id": "660100",
+      "event_slug": "next-chairman-of-the-council-of-ministers-of-bosnia-and-herzegovina-20260702191248528",
+      "market_count": 59,
+      "lead_outcome_price_sum": 27.3445
+    },
+    {
+      "event_id": "660226",
+      "event_slug": "tour-de-france-2026-green-jersey-20260702204856818",
+      "market_count": 122,
+      "lead_outcome_price_sum": 52.656
+    },
+    {
+      "event_id": "660227",
+      "event_slug": "tour-de-france-2026-polka-dot-jersey-20260702204520371",
+      "market_count": 113,
+      "lead_outcome_price_sum": 49.161
+    },
+    {
+      "event_id": "660237",
+      "event_slug": "tour-de-france-2026-winner-20260702201214011",
+      "market_count": 113,
+      "lead_outcome_price_sum": 41.5205
+    },
+    {
+      "event_id": "660239",
+      "event_slug": "tour-de-france-2026-winner-nationality-20260702200226109",
+      "market_count": 33,
+      "lead_outcome_price_sum": 4.0295
+    },
+    {
+      "event_id": "660240",
+      "event_slug": "tour-de-france-2026-white-jersey-20260702205142928",
+      "market_count": 58,
+      "lead_outcome_price_sum": 11.295
+    },
+    {
+      "event_id": "660407",
+      "event_slug": "mlb-most-home-runs-team-20260702215911955",
+      "market_count": 36,
+      "lead_outcome_price_sum": 4.3
+    },
+    {
+      "event_id": "660408",
+      "event_slug": "mlb-highest-abs-challenge-success-rate-team-20260702220030937",
+      "market_count": 36,
+      "lead_outcome_price_sum": 7.3055
+    },
+    {
+      "event_id": "660461",
+      "event_slug": "july-unemployment-rate-20260702221240753",
+      "market_count": 9,
+      "lead_outcome_price_sum": 1.077
+    },
+    {
+      "event_id": "660634",
+      "event_slug": "ewc-2026-longest-game-duration-20260702171813900",
+      "market_count": 11,
+      "lead_outcome_price_sum": 4.39
+    },
+    {
+      "event_id": "660635",
+      "event_slug": "ewc-2026-team-with-the-widest-hero-pool-20260702161220804",
+      "market_count": 28,
+      "lead_outcome_price_sum": 6.268
+    },
+    {
+      "event_id": "660636",
+      "event_slug": "team-with-the-shallowest-hero-pool-at-ewc-2026-20260702161823740",
+      "market_count": 28,
+      "lead_outcome_price_sum": 4.2275
+    },
+    {
+      "event_id": "662874",
+      "event_slug": "what-song-will-be-played-first-at-the-world-cup-halftime-show-20260703154131021",
+      "market_count": 36,
+      "lead_outcome_price_sum": 16.21
+    },
+    {
+      "event_id": "663522",
+      "event_slug": "cblol-2026-split-2-winner-20260703174223681",
+      "market_count": 12,
+      "lead_outcome_price_sum": 3.0585
+    },
+    {
+      "event_id": "663523",
+      "event_slug": "lcs-2026-summer-split-winner-20260703174913255",
+      "market_count": 12,
+      "lead_outcome_price_sum": 2.91
+    },
+    {
+      "event_id": "663832",
+      "event_slug": "lec-2026-summer-split-winner-20260703203449415",
+      "market_count": 13,
+      "lead_outcome_price_sum": 3.172
+    },
+    {
+      "event_id": "670705",
+      "event_slug": "core-pce-yoy-june-2026-20260702040039732",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.052
+    },
+    {
+      "event_id": "670706",
+      "event_slug": "core-pce-mom-june-2026-20260702035317774",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.0625
+    },
+    {
+      "event_id": "674027",
+      "event_slug": "nba-free-agency-demar-derozan-next-team-20260706185505108",
+      "market_count": 33,
+      "lead_outcome_price_sum": 13.75
+    },
+    {
+      "event_id": "674267",
+      "event_slug": "mi-01-democratic-primary-winner-20260702201408652",
+      "market_count": 7,
+      "lead_outcome_price_sum": 2.976
+    },
+    {
+      "event_id": "674301",
+      "event_slug": "2026-espy-awards-best-mlb-player-20260706183438844",
+      "market_count": 10,
+      "lead_outcome_price_sum": 0.9005
+    },
+    {
+      "event_id": "674332",
+      "event_slug": "next-high-representative-for-bosnia-in-2026-20260705194510727",
+      "market_count": 33,
+      "lead_outcome_price_sum": 14.0055
+    },
+    {
+      "event_id": "674379",
+      "event_slug": "next-uk-defence-secretary-in-2026-20260706182213394",
+      "market_count": 36,
+      "lead_outcome_price_sum": 14.481
+    },
+    {
+      "event_id": "674381",
+      "event_slug": "next-uk-culture-secretary-in-2026-20260706190332026",
+      "market_count": 33,
+      "lead_outcome_price_sum": 10.5965
+    },
+    {
+      "event_id": "674406",
+      "event_slug": "who-will-be-the-democratic-nominee-in-the-maine-senate-race-on-july-27-20260706182929391",
+      "market_count": 18,
+      "lead_outcome_price_sum": 2.976
+    },
+    {
+      "event_id": "674422",
+      "event_slug": "ewc-2026-pubg-battlegrounds-winner-20260706200954503",
+      "market_count": 29,
+      "lead_outcome_price_sum": 13.629
+    },
+    {
+      "event_id": "674437",
+      "event_slug": "ewc-mobile-legends-bang-bang-winner-womens-international-20260706163056754",
+      "market_count": 20,
+      "lead_outcome_price_sum": 9.959
+    },
+    {
+      "event_id": "674438",
+      "event_slug": "ewc-2026-fatal-fury-cotw-winner-20260706183506351",
+      "market_count": 37,
+      "lead_outcome_price_sum": 18.0695
+    },
+    {
+      "event_id": "674441",
+      "event_slug": "ewc-mobile-legends-bang-bang-winner-mid-season-cup-20260706163822232",
+      "market_count": 20,
+      "lead_outcome_price_sum": 8.633
+    },
+    {
+      "event_id": "674442",
+      "event_slug": "ewc-2026-free-fire-winner-20260706185155582",
+      "market_count": 29,
+      "lead_outcome_price_sum": 14.16
+    },
+    {
+      "event_id": "674483",
+      "event_slug": "arizona-state-treasurer-republican-primary-winner-20260702191958255",
+      "market_count": 6,
+      "lead_outcome_price_sum": 3.0
+    },
+    {
+      "event_id": "674528",
+      "event_slug": "arizona-superintendent-of-public-instruction-republican-primary-winner-20260702211117571",
+      "market_count": 6,
+      "lead_outcome_price_sum": 2.91
+    },
+    {
+      "event_id": "674540",
+      "event_slug": "arizona-superintendent-of-public-instruction-democratic-primary-winner-20260706145902302",
+      "market_count": 7,
+      "lead_outcome_price_sum": 2.9835
+    },
+    {
+      "event_id": "674583",
+      "event_slug": "ca-04-house-election-winner-by-individual-20260630172946503",
+      "market_count": 6,
+      "lead_outcome_price_sum": 3.04
+    },
+    {
+      "event_id": "674585",
+      "event_slug": "ca-07-house-election-winner-by-individual-20260706153650362",
+      "market_count": 6,
+      "lead_outcome_price_sum": 2.99
+    },
+    {
+      "event_id": "674587",
+      "event_slug": "who-will-mallory-mcmorrow-endorse-in-the-michigan-senate-primary-20260706155756486",
+      "market_count": 5,
+      "lead_outcome_price_sum": 2.085
+    },
+    {
+      "event_id": "674588",
+      "event_slug": "m0-02-republican-primary-winner-20260706194255478",
+      "market_count": 9,
+      "lead_outcome_price_sum": 2.9935
+    },
+    {
+      "event_id": "674590",
+      "event_slug": "michigan-democratic-senate-primary-margin-of-victory-20260706180330731",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.649
+    },
+    {
+      "event_id": "674591",
+      "event_slug": "wa-03-primary-first-place-20260706195611094",
+      "market_count": 16,
+      "lead_outcome_price_sum": 4.5175
+    },
+    {
+      "event_id": "674592",
+      "event_slug": "va-01-democratic-primary-winner-20260706200157031",
+      "market_count": 13,
+      "lead_outcome_price_sum": 4.005
+    },
+    {
+      "event_id": "675373",
+      "event_slug": "ted-cruz-of-tweets-july-10-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.156
+    },
+    {
+      "event_id": "676802",
+      "event_slug": "tarsier-pharma-ipo-closing-market-cap-20260706015028159",
+      "market_count": 7,
+      "lead_outcome_price_sum": 2.249
+    },
+    {
+      "event_id": "677008",
+      "event_slug": "clacton-by-election-winner-20260707143521303",
+      "market_count": 52,
+      "lead_outcome_price_sum": 22.9945
+    },
+    {
+      "event_id": "677326",
+      "event_slug": "player-with-highest-kda-at-ewc-2026-20260707161132121",
+      "market_count": 125,
+      "lead_outcome_price_sum": 62.435
+    },
+    {
+      "event_id": "677938",
+      "event_slug": "which-player-will-have-the-highest-gold-per-minute-at-esports-world-cup-2026-dota-2-20260707203350299",
+      "market_count": 125,
+      "lead_outcome_price_sum": 62.4245
+    },
+    {
+      "event_id": "678041",
+      "event_slug": "player-with-the-highest-total-deaths-at-ewc-2026-20260707212302685",
+      "market_count": 125,
+      "lead_outcome_price_sum": 47.43
+    },
+    {
+      "event_id": "678508",
+      "event_slug": "mo-02-democratic-primary-winner-20260707172424563",
+      "market_count": 8,
+      "lead_outcome_price_sum": 3.068
+    },
+    {
+      "event_id": "678683",
+      "event_slug": "berlin-state-election-2nd-place-20260708005726718",
+      "market_count": 24,
+      "lead_outcome_price_sum": 8.9505
+    },
+    {
+      "event_id": "678684",
+      "event_slug": "berlin-state-election-3rd-place-20260708010022790",
+      "market_count": 24,
+      "lead_outcome_price_sum": 8.961
+    },
+    {
+      "event_id": "678765",
+      "event_slug": "clacton-by-election-2nd-place-20260707214539733",
+      "market_count": 53,
+      "lead_outcome_price_sum": 20.5415
+    },
+    {
+      "event_id": "680786",
+      "event_slug": "clacton-by-election-margin-of-victory-20260708144145603",
+      "market_count": 6,
+      "lead_outcome_price_sum": 1.288
+    },
+    {
+      "event_id": "681261",
+      "event_slug": "bundesliga-2027-champion-20260708164840303",
+      "market_count": 22,
+      "lead_outcome_price_sum": 3.048
+    },
+    {
+      "event_id": "681406",
+      "event_slug": "which-month-will-strait-of-hormuz-traffic-return-to-normal-20260702155718114",
+      "market_count": 7,
+      "lead_outcome_price_sum": 0.95
+    },
+    {
+      "event_id": "681514",
+      "event_slug": "precipitation-in-hong-kong-in-july-20260708182244488",
+      "market_count": 10,
+      "lead_outcome_price_sum": 1.0965
+    },
+    {
+      "event_id": "681950",
+      "event_slug": "mo-04-democratic-primary-winner-20260708140335388",
+      "market_count": 11,
+      "lead_outcome_price_sum": 3.0685
+    },
+    {
+      "event_id": "681965",
+      "event_slug": "mo-05-republican-primary-winner-20260708141645769",
+      "market_count": 10,
+      "lead_outcome_price_sum": 3.075
+    },
+    {
+      "event_id": "682056",
+      "event_slug": "mi-01-republican-primary-winner-20260708150030409",
+      "market_count": 7,
+      "lead_outcome_price_sum": 3.0135
+    },
+    {
+      "event_id": "682071",
+      "event_slug": "mi-12-democratic-primary-winner-20260708150545717",
+      "market_count": 7,
+      "lead_outcome_price_sum": 2.9785
+    },
+    {
+      "event_id": "682072",
+      "event_slug": "mi-02-democratic-primary-winner-20260708150842017",
+      "market_count": 7,
+      "lead_outcome_price_sum": 3.03
+    },
+    {
+      "event_id": "682073",
+      "event_slug": "mi-04-democratic-primary-winner-20260708151156141",
+      "market_count": 6,
+      "lead_outcome_price_sum": 2.9895
+    },
+    {
+      "event_id": "682108",
+      "event_slug": "az-01-republican-primary-margin-of-victory-20260708152700439",
+      "market_count": 10,
+      "lead_outcome_price_sum": 1.862
+    },
+    {
+      "event_id": "682148",
+      "event_slug": "intel-intc-q2-adjusted-gross-margin-non-gaap-20260708224300021",
+      "market_count": 5,
+      "lead_outcome_price_sum": 0.912
+    },
+    {
+      "event_id": "682172",
+      "event_slug": "coca-cola-ko-q2-global-unit-case-volume-growth-20260708225258638",
+      "market_count": 5,
+      "lead_outcome_price_sum": 1.0605
+    },
+    {
+      "event_id": "682187",
+      "event_slug": "coca-cola-ko-q2-organic-revenue-non-gaap-growth-20260708230136292",
+      "market_count": 5,
+      "lead_outcome_price_sum": 1.254
+    },
+    {
+      "event_id": "682195",
+      "event_slug": "intuitive-surgical-isrg-q2-da-vinci-procedure-growth-20260708230402369",
+      "market_count": 5,
+      "lead_outcome_price_sum": 0.776
+    },
+    {
+      "event_id": "682196",
+      "event_slug": "danaher-dhr-q2-non-gaap-core-revenue-growth-20260708034836496",
+      "market_count": 5,
+      "lead_outcome_price_sum": 1.0895
+    },
+    {
+      "event_id": "682248",
+      "event_slug": "next-president-of-the-national-rally-in-2026-20260708193244734",
+      "market_count": 35,
+      "lead_outcome_price_sum": 14.492
+    },
+    {
+      "event_id": "682614",
+      "event_slug": "big-brother-season-28-winner-20260708173711844",
+      "market_count": 41,
+      "lead_outcome_price_sum": 12.98
+    },
+    {
+      "event_id": "684307",
+      "event_slug": "big-brother-season-28-2nd-place-20260708174327962",
+      "market_count": 41,
+      "lead_outcome_price_sum": 13.123
+    },
+    {
+      "event_id": "684315",
+      "event_slug": "big-brother-season-28-3rd-place-20260708174910761",
+      "market_count": 41,
+      "lead_outcome_price_sum": 13.1285
+    },
+    {
+      "event_id": "684331",
+      "event_slug": "next-uk-transport-secretary-in-2026-20260708221906407",
+      "market_count": 35,
+      "lead_outcome_price_sum": 14.5435
+    },
+    {
+      "event_id": "684444",
+      "event_slug": "top-artist-in-july-20260708185955937",
+      "market_count": 40,
+      "lead_outcome_price_sum": 13.9895
+    },
+    {
+      "event_id": "684498",
+      "event_slug": "blast-bounty-2026-season-2-winner-20260709030103861",
+      "market_count": 38,
+      "lead_outcome_price_sum": 4.095
+    },
+    {
+      "event_id": "684586",
+      "event_slug": "tft-set-17-tacticians-crown-winner-20260709152528387",
+      "market_count": 46,
+      "lead_outcome_price_sum": 14.1745
+    },
+    {
+      "event_id": "685402",
+      "event_slug": "blast-bounty-2026-season-2-total-knife-kills-20260709192419423",
+      "market_count": 6,
+      "lead_outcome_price_sum": 1.319
+    },
+    {
+      "event_id": "686049",
+      "event_slug": "emmys-2026-outstanding-guest-actor-in-a-drama-series",
+      "market_count": 6,
+      "lead_outcome_price_sum": 0.9115
+    },
+    {
+      "event_id": "686058",
+      "event_slug": "emmys-2026-outstanding-guest-actor-in-a-comedy-series",
+      "market_count": 6,
+      "lead_outcome_price_sum": 0.9255
+    },
+    {
+      "event_id": "686059",
+      "event_slug": "emmys-2026-outstanding-variety-special-live",
+      "market_count": 5,
+      "lead_outcome_price_sum": 0.929
+    },
+    {
+      "event_id": "686123",
+      "event_slug": "emmys-2026-outstanding-lead-actor-in-a-comedy-series",
+      "market_count": 5,
+      "lead_outcome_price_sum": 1.4405
+    },
+    {
+      "event_id": "686196",
+      "event_slug": "tn-05-democratic-primary-winner-20260708201408896",
+      "market_count": 9,
+      "lead_outcome_price_sum": 3.3825
+    },
+    {
+      "event_id": "686198",
+      "event_slug": "precipitation-in-nyc-in-july-20260709144730212",
+      "market_count": 6,
+      "lead_outcome_price_sum": 1.365
+    },
+    {
+      "event_id": "686207",
+      "event_slug": "pernambuco-governor-election-winner-20260709143134925",
+      "market_count": 12,
+      "lead_outcome_price_sum": 5.4415
+    },
+    {
+      "event_id": "686211",
+      "event_slug": "precipitation-in-seattle-in-july-20260709145533821",
+      "market_count": 7,
+      "lead_outcome_price_sum": 3.12
+    },
+    {
+      "event_id": "686222",
+      "event_slug": "which-of-these-democrats-will-be-the-first-to-announce-a-run-for-president-20260709150125604",
+      "market_count": 12,
+      "lead_outcome_price_sum": 1.642
+    },
+    {
+      "event_id": "686223",
+      "event_slug": "mi-03-republican-primary-winner-20260709155850151",
+      "market_count": 6,
+      "lead_outcome_price_sum": 2.97
+    },
+    {
+      "event_id": "686242",
+      "event_slug": "mi-08-republican-primary-winner-20260709160420334",
+      "market_count": 7,
+      "lead_outcome_price_sum": 3.47
+    },
+    {
+      "event_id": "686252",
+      "event_slug": "va-05-democratic-primary-winner-20260709161352815",
+      "market_count": 7,
+      "lead_outcome_price_sum": 2.9765
+    },
+    {
+      "event_id": "686260",
+      "event_slug": "va-08-democratic-primary-winner-20260709161722817",
+      "market_count": 9,
+      "lead_outcome_price_sum": 3.1565
+    },
+    {
+      "event_id": "686263",
+      "event_slug": "va-09-democratic-primary-winner-20260709162042914",
+      "market_count": 7,
+      "lead_outcome_price_sum": 3.405
+    },
+    {
+      "event_id": "686285",
+      "event_slug": "ca-11-house-election-winner-individual-20260710015446690",
+      "market_count": 6,
+      "lead_outcome_price_sum": 2.95
+    },
+    {
+      "event_id": "686300",
+      "event_slug": "ca-12-house-election-winner-individual-20260710020058719",
+      "market_count": 6,
+      "lead_outcome_price_sum": 3.325
+    },
+    {
+      "event_id": "686301",
+      "event_slug": "ca-14-house-election-winner-individual-20260710020305940",
+      "market_count": 6,
+      "lead_outcome_price_sum": 2.945
+    },
+    {
+      "event_id": "686303",
+      "event_slug": "ca-29-house-election-winner-individual-20260710020355243",
+      "market_count": 6,
+      "lead_outcome_price_sum": 3.165
+    },
+    {
+      "event_id": "686319",
+      "event_slug": "ca-34-house-election-winner-individual-20260710020736883",
+      "market_count": 6,
+      "lead_outcome_price_sum": 3.175
+    },
+    {
+      "event_id": "686320",
+      "event_slug": "ca-37-house-election-winner-individual-20260710020839627",
+      "market_count": 6,
+      "lead_outcome_price_sum": 3.21
+    },
+    {
+      "event_id": "686321",
+      "event_slug": "ca-40-house-election-winner-individual-20260710020901480",
+      "market_count": 6,
+      "lead_outcome_price_sum": 2.92
+    },
+    {
+      "event_id": "688041",
+      "event_slug": "gpu-rental-prices-h100-end-of-2026-20260709164334623",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.1235
+    },
+    {
+      "event_id": "688063",
+      "event_slug": "gpu-rental-prices-h200-end-of-2026-20260709164949059",
+      "market_count": 12,
+      "lead_outcome_price_sum": 1.923
+    },
+    {
+      "event_id": "688065",
+      "event_slug": "gpu-rental-prices-b200-end-of-2026-20260709165336437",
+      "market_count": 10,
+      "lead_outcome_price_sum": 1.0735
+    },
+    {
+      "event_id": "688356",
+      "event_slug": "solana-price-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.054
+    },
+    {
+      "event_id": "688369",
+      "event_slug": "xrp-price-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0705
+    },
+    {
+      "event_id": "688516",
+      "event_slug": "emmys-2026-outstanding-supporting-actor-in-a-limited-or-anthology-series-or-movie-20260710152129711",
+      "market_count": 6,
+      "lead_outcome_price_sum": 1.053
+    },
+    {
+      "event_id": "688518",
+      "event_slug": "emmys-2026-outstanding-lead-actor-in-a-limited-or-anthology-series-or-movie-20260710152618149",
+      "market_count": 5,
+      "lead_outcome_price_sum": 0.927
+    },
+    {
+      "event_id": "688534",
+      "event_slug": "ism-services-pmi-july-2026-20260710153544980",
+      "market_count": 10,
+      "lead_outcome_price_sum": 1.118
+    },
+    {
+      "event_id": "688535",
+      "event_slug": "ism-manufacturing-pmi-july-2026-20260710154022499",
+      "market_count": 10,
+      "lead_outcome_price_sum": 2.4505
+    },
+    {
+      "event_id": "689276",
+      "event_slug": "aapl-week-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.4555
+    },
+    {
+      "event_id": "689292",
+      "event_slug": "msft-week-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.563
+    },
+    {
+      "event_id": "689313",
+      "event_slug": "amzn-week-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.3515
+    },
+    {
+      "event_id": "689334",
+      "event_slug": "googl-week-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.427
+    },
+    {
+      "event_id": "689356",
+      "event_slug": "meta-week-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.4005
+    },
+    {
+      "event_id": "689365",
+      "event_slug": "tsla-week-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.37
+    },
+    {
+      "event_id": "689370",
+      "event_slug": "nvda-week-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.246
+    },
+    {
+      "event_id": "689373",
+      "event_slug": "nflx-week-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.193
+    },
+    {
+      "event_id": "689376",
+      "event_slug": "pltr-week-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.4035
+    },
+    {
+      "event_id": "689379",
+      "event_slug": "open-week-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.306
+    },
+    {
+      "event_id": "689381",
+      "event_slug": "mu-week-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.425
+    },
+    {
+      "event_id": "689384",
+      "event_slug": "spcx-week-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.6965
+    },
+    {
+      "event_id": "689453",
+      "event_slug": "florida-governor-republican-primary-second-place-20260710143927093",
+      "market_count": 18,
+      "lead_outcome_price_sum": 6.74
+    },
+    {
+      "event_id": "690169",
+      "event_slug": "donald-trump-of-truth-social-posts-july-14-july-21",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.182
+    },
+    {
+      "event_id": "690171",
+      "event_slug": "khamenei-of-tweets-july-14-july-21-2026",
+      "market_count": 13,
+      "lead_outcome_price_sum": 1.2485
+    },
+    {
+      "event_id": "691831",
+      "event_slug": "1-song-this-week-july-17-20260710181249822",
+      "market_count": 18,
+      "lead_outcome_price_sum": 5.01
+    },
+    {
+      "event_id": "691839",
+      "event_slug": "1-song-in-the-us-this-week-july-17-20260710182515621",
+      "market_count": 18,
+      "lead_outcome_price_sum": 5.011
+    },
+    {
+      "event_id": "691840",
+      "event_slug": "billboard-hot-100-1-song-week-of-july-25-20260710183940927",
+      "market_count": 16,
+      "lead_outcome_price_sum": 5.0125
+    },
+    {
+      "event_id": "691848",
+      "event_slug": "billboard-hot-100-2-song-week-of-july-25-20260710184055374",
+      "market_count": 18,
+      "lead_outcome_price_sum": 6.017
+    },
+    {
+      "event_id": "691849",
+      "event_slug": "billboard-200-1-album-week-of-july-25-20260710184218493",
+      "market_count": 16,
+      "lead_outcome_price_sum": 4.62
+    },
+    {
+      "event_id": "695520",
+      "event_slug": "south-carolina-republican-senate-special-primary-winner-20260712135206676",
+      "market_count": 50,
+      "lead_outcome_price_sum": 18.9495
+    },
+    {
+      "event_id": "699166",
+      "event_slug": "which-continent-will-win-the-2026-wsop-main-event-20260702145015737",
+      "market_count": 9,
+      "lead_outcome_price_sum": 2.953
+    },
+    {
+      "event_id": "699262",
+      "event_slug": "ethereum-price-on-july-20-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.075
+    },
+    {
+      "event_id": "699278",
+      "event_slug": "solana-price-on-july-20-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.132
+    },
+    {
+      "event_id": "699297",
+      "event_slug": "xrp-price-on-july-20-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.1145
+    },
+    {
+      "event_id": "699757",
+      "event_slug": "2-free-app-in-the-us-apple-app-store-on-july-17-20260713171454255",
+      "market_count": 13,
+      "lead_outcome_price_sum": 4.54
+    },
+    {
+      "event_id": "700114",
+      "event_slug": "who-will-max-holloway-fight-next-20260713185228591",
+      "market_count": 14,
+      "lead_outcome_price_sum": 5.76
+    },
+    {
+      "event_id": "700115",
+      "event_slug": "world-cup-4th-place-finish-20260713190429234",
+      "market_count": 7,
+      "lead_outcome_price_sum": 2.505
+    },
+    {
+      "event_id": "700140",
+      "event_slug": "world-cup-2nd-place-finish-20260713185633181",
+      "market_count": 7,
+      "lead_outcome_price_sum": 2.495
+    },
+    {
+      "event_id": "700141",
+      "event_slug": "world-cup-3rd-place-finish-20260713190252671",
+      "market_count": 7,
+      "lead_outcome_price_sum": 2.495
+    },
+    {
+      "event_id": "700295",
+      "event_slug": "csquare-ipo-closing-market-cap-20260713020719620",
+      "market_count": 7,
+      "lead_outcome_price_sum": 2.0965
+    },
+    {
+      "event_id": "700296",
+      "event_slug": "standard-nuclear-ipo-closing-market-cap-20260713020919887",
+      "market_count": 7,
+      "lead_outcome_price_sum": 2.1315
+    },
+    {
+      "event_id": "700661",
+      "event_slug": "next-italian-national-team-head-coach-20260713215145150",
+      "market_count": 23,
+      "lead_outcome_price_sum": 8.37
+    },
+    {
+      "event_id": "700777",
+      "event_slug": "socialist-party-of-france-presidential-nominee-20260710182042067",
+      "market_count": 49,
+      "lead_outcome_price_sum": 20.646
+    },
+    {
+      "event_id": "700815",
+      "event_slug": "ewc-2026-region-to-win-the-most-series-20260713211730040",
+      "market_count": 9,
+      "lead_outcome_price_sum": 2.747
+    },
+    {
+      "event_id": "700841",
+      "event_slug": "kespa-cup-2026-winner-20260713163611195",
+      "market_count": 14,
+      "lead_outcome_price_sum": 3.161
+    },
+    {
+      "event_id": "700843",
+      "event_slug": "call-of-duty-world-championship-winner-20260713232838220",
+      "market_count": 11,
+      "lead_outcome_price_sum": 3.875
+    },
+    {
+      "event_id": "700851",
+      "event_slug": "ewc-2026-winning-region-20260713211818606",
+      "market_count": 9,
+      "lead_outcome_price_sum": 2.4705
+    },
+    {
+      "event_id": "700875",
+      "event_slug": "kazakhstan-kurultai-election-2nd-place-20260713225045611",
+      "market_count": 34,
+      "lead_outcome_price_sum": 14.5075
+    },
+    {
+      "event_id": "700920",
+      "event_slug": "how-long-will-trumps-speech-to-the-nation-be-20260713212218644",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.155
+    },
+    {
+      "event_id": "700984",
+      "event_slug": "1-free-app-in-the-us-apple-app-store-on-july-17-20260713171335738",
+      "market_count": 13,
+      "lead_outcome_price_sum": 4.0185
+    },
+    {
+      "event_id": "700992",
+      "event_slug": "1-paid-app-in-the-us-apple-app-store-on-july-17-20260713191310840",
+      "market_count": 15,
+      "lead_outcome_price_sum": 4.5325
+    },
+    {
+      "event_id": "700993",
+      "event_slug": "how-many-5pt5-or-above-earthquakes-july-14-july-19-20260713182205496",
+      "market_count": 8,
+      "lead_outcome_price_sum": 1.11
+    },
+    {
+      "event_id": "701237",
+      "event_slug": "liga-mx-2026-apertura-champion-20260713222753208",
+      "market_count": 24,
+      "lead_outcome_price_sum": 4.318
+    },
+    {
+      "event_id": "701283",
+      "event_slug": "avgpt-of-ships-transiting-bab-el-mandeb-strait-end-of-july-20260713195907051",
+      "market_count": 7,
+      "lead_outcome_price_sum": 1.28
+    },
+    {
+      "event_id": "701326",
+      "event_slug": "how-many-ships-transit-bab-el-mandeb-strait-week-of-july-20-20260713200946341",
+      "market_count": 6,
+      "lead_outcome_price_sum": 1.075
+    },
+    {
+      "event_id": "701413",
+      "event_slug": "ted-cruz-of-tweets-july-17-july-24-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 2.547
+    },
+    {
+      "event_id": "701414",
+      "event_slug": "zelenskyy-of-tweets-july-17-july-24-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.3725
+    },
+    {
+      "event_id": "701416",
+      "event_slug": "khamenei-of-tweets-july-17-july-24-2026",
+      "market_count": 13,
+      "lead_outcome_price_sum": 3.3175
+    },
+    {
+      "event_id": "701417",
+      "event_slug": "nyc-mayor-of-tweets-july-17-july-24-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.1135
+    },
+    {
+      "event_id": "701418",
+      "event_slug": "cz-binance-of-tweets-july-17-july-24-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.1285
+    },
+    {
+      "event_id": "701420",
+      "event_slug": "donald-trump-of-truth-social-posts-july-17-july-24",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0795
+    },
+    {
+      "event_id": "701550",
+      "event_slug": "highest-temperature-in-ankara-on-july-16-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.051
+    },
+    {
+      "event_id": "701554",
+      "event_slug": "highest-temperature-in-tokyo-on-july-16-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.073
+    },
+    {
+      "event_id": "701564",
+      "event_slug": "highest-temperature-in-wuhan-on-july-16-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.055
+    },
+    {
+      "event_id": "701565",
+      "event_slug": "highest-temperature-in-chengdu-on-july-16-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.1295
+    },
+    {
+      "event_id": "701569",
+      "event_slug": "highest-temperature-in-busan-on-july-16-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 0.947
+    },
+    {
+      "event_id": "701574",
+      "event_slug": "highest-temperature-in-guangzhou-on-july-16-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 0.877
+    },
+    {
+      "event_id": "703248",
+      "event_slug": "ethereum-price-on-july-21-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.107
+    },
+    {
+      "event_id": "703274",
+      "event_slug": "solana-price-on-july-21-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.136
+    },
+    {
+      "event_id": "703298",
+      "event_slug": "xrp-price-on-july-21-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.127
+    },
+    {
+      "event_id": "703403",
+      "event_slug": "next-prime-minister-of-greece-20260714160853421",
+      "market_count": 61,
+      "lead_outcome_price_sum": 26.1075
+    },
+    {
+      "event_id": "703412",
+      "event_slug": "road-of-legends-2026-summer-20260714161646807",
+      "market_count": 11,
+      "lead_outcome_price_sum": 5.5
+    },
+    {
+      "event_id": "703499",
+      "event_slug": "next-greek-parliamentary-election-party-winner-20260713191440377",
+      "market_count": 34,
+      "lead_outcome_price_sum": 13.64
+    },
+    {
+      "event_id": "703516",
+      "event_slug": "wsop-main-event-winner-20260714164336205",
+      "market_count": 12,
+      "lead_outcome_price_sum": 2.47
+    },
+    {
+      "event_id": "703573",
+      "event_slug": "july-inflation-us-annual-20260714150613267",
+      "market_count": 12,
+      "lead_outcome_price_sum": 1.22
+    },
+    {
+      "event_id": "703588",
+      "event_slug": "july-inflation-us-monthly-20260714151042665",
+      "market_count": 9,
+      "lead_outcome_price_sum": 1.11
+    },
+    {
+      "event_id": "703589",
+      "event_slug": "price-of-dozen-eggs-in-july-20260714151433730",
+      "market_count": 10,
+      "lead_outcome_price_sum": 1.053
+    },
+    {
+      "event_id": "703599",
+      "event_slug": "core-cpi-yoy-july-2026-20260714151811920",
+      "market_count": 10,
+      "lead_outcome_price_sum": 3.285
+    },
+    {
+      "event_id": "704545",
+      "event_slug": "hi-01-democratic-primary-winner-20260714153639754",
+      "market_count": 12,
+      "lead_outcome_price_sum": 4.8995
+    },
+    {
+      "event_id": "704563",
+      "event_slug": "hawaii-governor-democratic-primary-winner-20260714153902435",
+      "market_count": 8,
+      "lead_outcome_price_sum": 3.7405
+    },
+    {
+      "event_id": "704638",
+      "event_slug": "kazakhstan-kurultai-election-party-winner-20260713224438118",
+      "market_count": 34,
+      "lead_outcome_price_sum": 14.5155
+    },
+    {
+      "event_id": "704646",
+      "event_slug": "argentina-monthly-inflation-july-20260714204403042",
+      "market_count": 8,
+      "lead_outcome_price_sum": 1.07
+    },
+    {
+      "event_id": "704654",
+      "event_slug": "top-us-artist-2026-20260714171850366",
+      "market_count": 46,
+      "lead_outcome_price_sum": 18.6525
+    },
+    {
+      "event_id": "704669",
+      "event_slug": "top-song-2026-20260714195249188",
+      "market_count": 63,
+      "lead_outcome_price_sum": 27.063
+    },
+    {
+      "event_id": "704672",
+      "event_slug": "top-us-song-2026-20260714200101906",
+      "market_count": 63,
+      "lead_outcome_price_sum": 26.47
+    },
+    {
+      "event_id": "704716",
+      "event_slug": "highest-temperature-in-sao-paulo-on-july-16-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.057
+    },
+    {
+      "event_id": "704725",
+      "event_slug": "highest-temperature-in-toronto-on-july-16-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0605
+    },
+    {
+      "event_id": "704727",
+      "event_slug": "highest-temperature-in-nyc-on-july-16-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.073
+    },
+    {
+      "event_id": "704728",
+      "event_slug": "highest-temperature-in-dallas-on-july-16-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0555
+    },
+    {
+      "event_id": "704729",
+      "event_slug": "highest-temperature-in-atlanta-on-july-16-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.068
+    },
+    {
+      "event_id": "704734",
+      "event_slug": "highest-temperature-in-houston-on-july-16-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0665
+    },
+    {
+      "event_id": "704736",
+      "event_slug": "highest-temperature-in-san-francisco-on-july-16-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0605
+    },
+    {
+      "event_id": "704769",
+      "event_slug": "next-claude-opus-released-onptptpt-20260714203533730",
+      "market_count": 18,
+      "lead_outcome_price_sum": 2.25
+    },
+    {
+      "event_id": "704770",
+      "event_slug": "hawaii-governor-republican-primary-winner-20260714201347549",
+      "market_count": 30,
+      "lead_outcome_price_sum": 14.775
+    },
+    {
+      "event_id": "704793",
+      "event_slug": "lowest-temperature-in-miami-on-july-16-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 0.8875
+    },
+    {
+      "event_id": "704829",
+      "event_slug": "vct-emea-stage-2-2026-winner-20260714204228825",
+      "market_count": 16,
+      "lead_outcome_price_sum": 8.0
+    },
+    {
+      "event_id": "704837",
+      "event_slug": "which-company-has-the-best-text-to-image-ai-end-of-july-20260715013745213",
+      "market_count": 27,
+      "lead_outcome_price_sum": 8.0355
+    },
+    {
+      "event_id": "704855",
+      "event_slug": "vct-amer-stage-2-2026-winner-20260714211500956",
+      "market_count": 16,
+      "lead_outcome_price_sum": 6.685
+    },
+    {
+      "event_id": "705021",
+      "event_slug": "wsop-player-of-the-year-winner-20260713170058489",
+      "market_count": 61,
+      "lead_outcome_price_sum": 30.255
+    },
+    {
+      "event_id": "705022",
+      "event_slug": "vct-pacific-2026-stage-2-winner-20260715031204084",
+      "market_count": 16,
+      "lead_outcome_price_sum": 7.86
+    },
+    {
+      "event_id": "705197",
+      "event_slug": "highest-temperature-in-london-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.059
+    },
+    {
+      "event_id": "705199",
+      "event_slug": "highest-temperature-in-seoul-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0585
+    },
+    {
+      "event_id": "705200",
+      "event_slug": "highest-temperature-in-ankara-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.058
+    },
+    {
+      "event_id": "705202",
+      "event_slug": "highest-temperature-in-munich-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 0.935
+    },
+    {
+      "event_id": "705204",
+      "event_slug": "highest-temperature-in-tokyo-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0645
+    },
+    {
+      "event_id": "705205",
+      "event_slug": "highest-temperature-in-hong-kong-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0755
+    },
+    {
+      "event_id": "705206",
+      "event_slug": "highest-temperature-in-shanghai-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0515
+    },
+    {
+      "event_id": "705212",
+      "event_slug": "highest-temperature-in-chongqing-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 0.94
+    },
+    {
+      "event_id": "705217",
+      "event_slug": "highest-temperature-in-moscow-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.053
+    },
+    {
+      "event_id": "705219",
+      "event_slug": "highest-temperature-in-busan-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0645
+    },
+    {
+      "event_id": "705220",
+      "event_slug": "highest-temperature-in-amsterdam-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0625
+    },
+    {
+      "event_id": "705223",
+      "event_slug": "highest-temperature-in-jeddah-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.065
+    },
+    {
+      "event_id": "705224",
+      "event_slug": "highest-temperature-in-guangzhou-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.051
+    },
+    {
+      "event_id": "705225",
+      "event_slug": "highest-temperature-in-qingdao-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.058
+    },
+    {
+      "event_id": "705287",
+      "event_slug": "lowest-temperature-in-london-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0635
+    },
+    {
+      "event_id": "705288",
+      "event_slug": "lowest-temperature-in-paris-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0665
+    },
+    {
+      "event_id": "705289",
+      "event_slug": "lowest-temperature-in-seoul-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.099
+    },
+    {
+      "event_id": "705290",
+      "event_slug": "lowest-temperature-in-tokyo-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0755
+    },
+    {
+      "event_id": "705367",
+      "event_slug": "highest-temperature-in-lucknow-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0595
+    },
+    {
+      "event_id": "706725",
+      "event_slug": "the-odyssey-opening-day-box-office-20260715142952116",
+      "market_count": 6,
+      "lead_outcome_price_sum": 1.4425
+    },
+    {
+      "event_id": "706908",
+      "event_slug": "solana-price-on-july-22-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.1305
+    },
+    {
+      "event_id": "706924",
+      "event_slug": "xrp-price-on-july-22-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.1225
+    },
+    {
+      "event_id": "707270",
+      "event_slug": "the-odyssey-opening-weekend-box-office-higher-strikes-20260715181713972",
+      "market_count": 6,
+      "lead_outcome_price_sum": 2.612
+    },
+    {
+      "event_id": "707390",
+      "event_slug": "poker-2026-money-list-1-20260714173014547",
+      "market_count": 56,
+      "lead_outcome_price_sum": 27.75
+    },
+    {
+      "event_id": "707391",
+      "event_slug": "ewc-2026-which-team-will-win-the-shortest-game-20260713215629586",
+      "market_count": 19,
+      "lead_outcome_price_sum": 6.5435
+    },
+    {
+      "event_id": "707739",
+      "event_slug": "minnesota-democratic-senate-primary-margin-of-victory-20260715150700515",
+      "market_count": 11,
+      "lead_outcome_price_sum": 4.69
+    },
+    {
+      "event_id": "707761",
+      "event_slug": "wi-03-democratic-primary-winner-20260714154921992",
+      "market_count": 6,
+      "lead_outcome_price_sum": 3.0
+    },
+    {
+      "event_id": "708305",
+      "event_slug": "what-will-be-the-top-global-netflix-movie-this-week-20260715153437552",
+      "market_count": 18,
+      "lead_outcome_price_sum": 8.1
+    },
+    {
+      "event_id": "708313",
+      "event_slug": "what-will-be-the-2-global-netflix-movie-this-week-20260715153657937",
+      "market_count": 18,
+      "lead_outcome_price_sum": 8.145
+    },
+    {
+      "event_id": "708321",
+      "event_slug": "what-will-be-the-top-us-netflix-movie-this-week-20260715153749649",
+      "market_count": 18,
+      "lead_outcome_price_sum": 8.29
+    },
+    {
+      "event_id": "708336",
+      "event_slug": "what-will-be-the-2-us-netflix-movie-this-week-20260715153837280",
+      "market_count": 18,
+      "lead_outcome_price_sum": 8.36
+    },
+    {
+      "event_id": "708344",
+      "event_slug": "3rd-largest-company-end-of-august-20260715203029875",
+      "market_count": 29,
+      "lead_outcome_price_sum": 12.715
+    },
+    {
+      "event_id": "708345",
+      "event_slug": "2nd-largest-company-end-of-august-20260715202554129",
+      "market_count": 29,
+      "lead_outcome_price_sum": 12.645
+    },
+    {
+      "event_id": "708346",
+      "event_slug": "largest-company-end-of-august-20260715202138598",
+      "market_count": 29,
+      "lead_outcome_price_sum": 12.695
+    },
+    {
+      "event_id": "708347",
+      "event_slug": "what-will-be-the-top-global-netflix-show-this-week-20260715162306637",
+      "market_count": 18,
+      "lead_outcome_price_sum": 8.29
+    },
+    {
+      "event_id": "708366",
+      "event_slug": "highest-temperature-in-buenos-aires-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0855
+    },
+    {
+      "event_id": "708369",
+      "event_slug": "highest-temperature-in-nyc-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0695
+    },
+    {
+      "event_id": "708370",
+      "event_slug": "highest-temperature-in-dallas-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.113
+    },
+    {
+      "event_id": "708372",
+      "event_slug": "highest-temperature-in-miami-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0505
+    },
+    {
+      "event_id": "708374",
+      "event_slug": "highest-temperature-in-austin-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0815
+    },
+    {
+      "event_id": "708379",
+      "event_slug": "highest-temperature-in-san-francisco-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.078
+    },
+    {
+      "event_id": "708380",
+      "event_slug": "highest-temperature-in-mexico-city-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.1
+    },
+    {
+      "event_id": "708381",
+      "event_slug": "highest-temperature-in-panama-city-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.0995
+    },
+    {
+      "event_id": "708382",
+      "event_slug": "what-will-be-the-2-global-netflix-show-this-week-20260715162431454",
+      "market_count": 18,
+      "lead_outcome_price_sum": 8.34
+    },
+    {
+      "event_id": "708398",
+      "event_slug": "what-will-be-the-top-us-netflix-show-this-week-20260715162849089",
+      "market_count": 18,
+      "lead_outcome_price_sum": 8.275
+    },
+    {
+      "event_id": "708399",
+      "event_slug": "what-will-be-the-2-us-netflix-show-this-week-20260715162953457",
+      "market_count": 18,
+      "lead_outcome_price_sum": 8.285
+    },
+    {
+      "event_id": "708440",
+      "event_slug": "lowest-temperature-in-miami-on-july-17-2026",
+      "market_count": 11,
+      "lead_outcome_price_sum": 1.1115
+    },
+    {
+      "event_id": "708462",
+      "event_slug": "which-company-has-the-best-code-arena-webdev-ai-model-end-of-july-20260715140712903",
+      "market_count": 29,
+      "lead_outcome_price_sum": 10.361
+    },
+    {
+      "event_id": "708477",
+      "event_slug": "bank-of-canada-decision-in-october-20260715203359314",
+      "market_count": 5,
+      "lead_outcome_price_sum": 1.435
+    }
+  ],
+  "sports_research_suitability_breakdown": {
+    "total_sports_tagged_markets": 56474,
+    "game_tied_by_slug_date": 45189,
+    "futures_like_no_slug_date": 11285,
+    "gameId_field_actually_populated_count": 1592,
+    "game_tied_horizon_buckets": {
+      "same_day_or_past": 18592,
+      "1_to_3_days": 4423,
+      "3_to_14_days": 21889,
+      "14_plus_days": 285,
+      "unknown_end_date": 0
+    },
+    "futures_like_horizon_buckets": {
+      "same_day_or_past": 189,
+      "1_to_3_days": 930,
+      "3_to_14_days": 898,
+      "14_plus_days": 7281,
+      "unknown_end_date": 1987
+    },
+    "futures_like_sample": [
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will Egypt win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 0.0,
+        "volume": 158580818.67117897
+      },
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will Morocco win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 0.0,
+        "volume": 152254451.3257818
+      },
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will Argentina win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 6147413.17945,
+        "volume": 151792490.0399316
+      },
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will USA win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 0.0,
+        "volume": 142460221.86557126
+      },
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will Mexico win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 0.0,
+        "volume": 137807960.8917842
+      },
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will Norway win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 0.0,
+        "volume": 137345387.0652803
+      },
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will Switzerland win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 0.0,
+        "volume": 132837715.7947361
+      },
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will France win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 0.0,
+        "volume": 132448346.86106883
+      },
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will Belgium win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 0.0,
+        "volume": 129278677.369467
+      },
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will Spain win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 5746969.08934,
+        "volume": 120643303.1456938
+      },
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will Cape Verde win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 0.0,
+        "volume": 119207233.3327582
+      },
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will Ivory Coast win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 0.0,
+        "volume": 111749187.63597094
+      },
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will England win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 0.0,
+        "volume": 110162254.18757918
+      },
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will Croatia win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 0.0,
+        "volume": 109483286.88874409
+      },
+      {
+        "event_slug": "world-cup-winner",
+        "question": "Will Portugal win the 2026 FIFA World Cup?",
+        "days_to_end": 3.76,
+        "liquidity": 0.0,
+        "volume": 109092961.84747173
+      }
+    ]
+  },
+  "coverage_liquidity_min": 1000.0,
+  "coverage_volume_min": 1000.0,
+  "priority_tag_slugs_unconditional": [
+    "crypto",
+    "economy",
+    "politics"
+  ],
+  "priority_sports_tag_slugs_conditional_on_futures_like": [
+    "cricket",
+    "esports",
+    "mlb",
+    "mma",
+    "nba",
+    "nfl",
+    "nhl",
+    "soccer",
+    "sports"
+  ],
+  "pagination": {
+    "hit_boundary": true,
+    "boundary_offset": 2100,
+    "boundary_detail": "HTTP 422: {\"type\":\"validation error\",\"error\":\"offset too large, use /events/keyset for deeper pagination\"}\n",
+    "keyset_continuation": {
+      "attempted": true,
+      "pages_fetched": 100,
+      "new_events_found": 7900,
+      "stopped_reason": "max_pages_safety",
+      "cursor_bug_suspected": false
+    }
+  },
+  "skipped_missing_condition_id_raw_sample": [
+    {
+      "event_id": "16183",
+      "event_slug": "kraken-ipo-in-2025",
+      "market_keys_present": [
+        "active",
+        "approved",
+        "archived",
+        "bestAsk",
+        "bestBid",
+        "clearBookOnStart",
+        "closed",
+        "comboStatus",
+        "competitive",
+        "conditionId",
+        "createdAt",
+        "customLiveness",
+        "cyom",
+        "deploying",
+        "description",
+        "enableOrderBook",
+        "endDate",
+        "endDateIso",
+        "featured",
+        "feeType",
+        "feesEnabled",
+        "funded",
+        "groupItemThreshold",
+        "groupItemTitle",
+        "hasReviewedDates",
+        "holdingRewardsEnabled",
+        "icon",
+        "id",
+        "image",
+        "lastTradePrice",
+        "liquidity",
+        "liquidityAmm",
+        "liquidityClob",
+        "liquidityNum",
+        "manualActivation",
+        "marketMakerAddress",
+        "negRisk",
+        "negRiskOther",
+        "new",
+        "oneDayPriceChange",
+        "oneHourPriceChange",
+        "oneMonthPriceChange",
+        "oneWeekPriceChange",
+        "oneYearPriceChange",
+        "orderMinSize",
+        "orderPriceMinTickSize",
+        "outcomes",
+        "pagerDutyNotificationEnabled",
+        "pendingDeployment",
+        "question",
+        "ready",
+        "requiresTranslation",
+        "resolutionSource",
+        "restricted",
+        "rewardsMaxSpread",
+        "rewardsMinSize",
+        "rfqEnabled",
+        "seriesColor",
+        "showGmpOutcome",
+        "showGmpSeries",
+        "slug",
+        "spread",
+        "submitted_by",
+        "umaBond",
+        "umaResolutionStatuses",
+        "umaReward",
+        "updatedAt",
+        "volume",
+        "volume1mo",
+        "volume1moAmm",
+        "volume1moClob",
+        "volume1wk",
+        "volume1wkAmm",
+        "volume1wkClob",
+        "volume1yr",
+        "volume1yrAmm",
+        "volume1yrClob",
+        "volume24hr",
+        "volume24hrAmm",
+        "volume24hrClob",
+        "volumeAmm",
+        "volumeClob",
+        "volumeNum"
+      ],
+      "market_id": "1642124",
+      "market_slug": "kraken-ipo-by-june-30-2026",
+      "active": false,
+      "closed": false,
+      "enableOrderBook": true,
+      "clobTokenIds": null
+    },
+    {
+      "event_id": "41359",
+      "event_slug": "israeli-parliament-dissolved-by-october-31",
+      "market_keys_present": [
+        "active",
+        "approved",
+        "archived",
+        "bestAsk",
+        "bestBid",
+        "clearBookOnStart",
+        "closed",
+        "comboStatus",
+        "competitive",
+        "conditionId",
+        "createdAt",
+        "customLiveness",
+        "cyom",
+        "deploying",
+        "description",
+        "enableOrderBook",
+        "endDate",
+        "endDateIso",
+        "featured",
+        "feeType",
+        "feesEnabled",
+        "funded",
+        "groupItemThreshold",
+        "groupItemTitle",
+        "hasReviewedDates",
+        "holdingRewardsEnabled",
+        "icon",
+        "id",
+        "image",
+        "lastTradePrice",
+        "liquidity",
+        "liquidityAmm",
+        "liquidityClob",
+        "liquidityNum",
+        "manualActivation",
+        "marketMakerAddress",
+        "negRisk",
+        "negRiskOther",
+        "new",
+        "oneDayPriceChange",
+        "oneHourPriceChange",
+        "oneMonthPriceChange",
+        "oneWeekPriceChange",
+        "oneYearPriceChange",
+        "orderMinSize",
+        "orderPriceMinTickSize",
+        "outcomes",
+        "pagerDutyNotificationEnabled",
+        "pendingDeployment",
+        "question",
+        "ready",
+        "requiresTranslation",
+        "resolutionSource",
+        "restricted",
+        "rewardsMaxSpread",
+        "rewardsMinSize",
+        "rfqEnabled",
+        "seriesColor",
+        "showGmpOutcome",
+        "showGmpSeries",
+        "slug",
+        "spread",
+        "submitted_by",
+        "umaBond",
+        "umaResolutionStatuses",
+        "umaReward",
+        "updatedAt",
+        "volume",
+        "volume1mo",
+        "volume1moAmm",
+        "volume1moClob",
+        "volume1wk",
+        "volume1wkAmm",
+        "volume1wkClob",
+        "volume1yr",
+        "volume1yrAmm",
+        "volume1yrClob",
+        "volume24hr",
+        "volume24hrAmm",
+        "volume24hrClob",
+        "volumeAmm",
+        "volumeClob",
+        "volumeNum"
+      ],
+      "market_id": "1280207",
+      "market_slug": "israeli-parliament-dissolved-by-february-28",
+      "active": false,
+      "closed": false,
+      "enableOrderBook": true,
+      "clobTokenIds": null
+    },
+    {
+      "event_id": "57057",
+      "event_slug": "israel-x-hamas-ceasefire-cancelled-by-october-31",
+      "market_keys_present": [
+        "active",
+        "approved",
+        "archived",
+        "bestAsk",
+        "bestBid",
+        "clearBookOnStart",
+        "closed",
+        "comboStatus",
+        "competitive",
+        "conditionId",
+        "createdAt",
+        "customLiveness",
+        "cyom",
+        "deploying",
+        "description",
+        "enableOrderBook",
+        "endDate",
+        "endDateIso",
+        "featured",
+        "feeType",
+        "feesEnabled",
+        "funded",
+        "groupItemThreshold",
+        "groupItemTitle",
+        "hasReviewedDates",
+        "holdingRewardsEnabled",
+        "icon",
+        "id",
+        "image",
+        "lastTradePrice",
+        "liquidity",
+        "liquidityAmm",
+        "liquidityClob",
+        "liquidityNum",
+        "manualActivation",
+        "marketMakerAddress",
+        "negRisk",
+        "negRiskOther",
+        "new",
+        "oneDayPriceChange",
+        "oneHourPriceChange",
+        "oneMonthPriceChange",
+        "oneWeekPriceChange",
+        "oneYearPriceChange",
+        "orderMinSize",
+        "orderPriceMinTickSize",
+        "outcomes",
+        "pagerDutyNotificationEnabled",
+        "pendingDeployment",
+        "question",
+        "ready",
+        "requiresTranslation",
+        "resolutionSource",
+        "restricted",
+        "rewardsMaxSpread",
+        "rewardsMinSize",
+        "rfqEnabled",
+        "seriesColor",
+        "showGmpOutcome",
+        "showGmpSeries",
+        "slug",
+        "spread",
+        "submitted_by",
+        "umaBond",
+        "umaResolutionStatuses",
+        "umaReward",
+        "updatedAt",
+        "volume",
+        "volume1mo",
+        "volume1moAmm",
+        "volume1moClob",
+        "volume1wk",
+        "volume1wkAmm",
+        "volume1wkClob",
+        "volume1yr",
+        "volume1yrAmm",
+        "volume1yrClob",
+        "volume24hr",
+        "volume24hrAmm",
+        "volume24hrClob",
+        "volumeAmm",
+        "volumeClob",
+        "volumeNum"
+      ],
+      "market_id": "1090488",
+      "market_slug": "israel-x-hamas-ceasefire-cancelled-by-january-31",
+      "active": false,
+      "closed": false,
+      "enableOrderBook": true,
+      "clobTokenIds": null
+    },
+    {
+      "event_id": "57088",
+      "event_slug": "israel-x-hamas-ceasefire-phase-ii-by-october-31",
+      "market_keys_present": [
+        "active",
+        "approved",
+        "archived",
+        "bestAsk",
+        "bestBid",
+        "clearBookOnStart",
+        "closed",
+        "comboStatus",
+        "competitive",
+        "conditionId",
+        "createdAt",
+        "customLiveness",
+        "cyom",
+        "deploying",
+        "description",
+        "enableOrderBook",
+        "endDate",
+        "endDateIso",
+        "featured",
+        "feeType",
+        "feesEnabled",
+        "funded",
+        "groupItemThreshold",
+        "groupItemTitle",
+        "hasReviewedDates",
+        "holdingRewardsEnabled",
+        "icon",
+        "id",
+        "image",
+        "lastTradePrice",
+        "liquidity",
+        "liquidityAmm",
+        "liquidityClob",
+        "liquidityNum",
+        "manualActivation",
+        "marketMakerAddress",
+        "negRisk",
+        "negRiskOther",
+        "new",
+        "oneDayPriceChange",
+        "oneHourPriceChange",
+        "oneMonthPriceChange",
+        "oneWeekPriceChange",
+        "oneYearPriceChange",
+        "orderMinSize",
+        "orderPriceMinTickSize",
+        "outcomes",
+        "pagerDutyNotificationEnabled",
+        "pendingDeployment",
+        "question",
+        "ready",
+        "requiresTranslation",
+        "resolutionSource",
+        "restricted",
+        "rewardsMaxSpread",
+        "rewardsMinSize",
+        "rfqEnabled",
+        "seriesColor",
+        "showGmpOutcome",
+        "showGmpSeries",
+        "slug",
+        "spread",
+        "submitted_by",
+        "umaBond",
+        "umaResolutionStatuses",
+        "umaReward",
+        "updatedAt",
+        "volume",
+        "volume1mo",
+        "volume1moAmm",
+        "volume1moClob",
+        "volume1wk",
+        "volume1wkAmm",
+        "volume1wkClob",
+        "volume1yr",
+        "volume1yrAmm",
+        "volume1yrClob",
+        "volume24hr",
+        "volume24hrAmm",
+        "volume24hrClob",
+        "volumeAmm",
+        "volumeClob",
+        "volumeNum"
+      ],
+      "market_id": "957645",
+      "market_slug": "israel-x-hamas-ceasefire-phase-ii-by-february-28",
+      "active": false,
+      "closed": false,
+      "enableOrderBook": true,
+      "clobTokenIds": null
+    },
+    {
+      "event_id": "73871",
+      "event_slug": "who-will-trump-meet-with-in-2026",
+      "market_keys_present": [
+        "active",
+        "approved",
+        "archived",
+        "bestAsk",
+        "bestBid",
+        "clearBookOnStart",
+        "closed",
+        "comboStatus",
+        "competitive",
+        "conditionId",
+        "createdAt",
+        "customLiveness",
+        "cyom",
+        "deploying",
+        "description",
+        "enableOrderBook",
+        "endDate",
+        "endDateIso",
+        "featured",
+        "feeSchedule",
+        "feeType",
+        "feesEnabled",
+        "funded",
+        "groupItemThreshold",
+        "groupItemTitle",
+        "hasReviewedDates",
+        "holdingRewardsEnabled",
+        "icon",
+        "id",
+        "image",
+        "lastTradePrice",
+        "liquidity",
+        "liquidityAmm",
+        "liquidityClob",
+        "liquidityNum",
+        "makerBaseFee",
+        "manualActivation",
+        "marketMakerAddress",
+        "negRisk",
+        "negRiskOther",
+        "new",
+        "oneDayPriceChange",
+        "oneHourPriceChange",
+        "oneMonthPriceChange",
+        "oneWeekPriceChange",
+        "oneYearPriceChange",
+        "orderMinSize",
+        "orderPriceMinTickSize",
+        "outcomes",
+        "pagerDutyNotificationEnabled",
+        "pendingDeployment",
+        "question",
+        "ready",
+        "requiresTranslation",
+        "resolutionSource",
+        "restricted",
+        "rewardsMaxSpread",
+        "rewardsMinSize",
+        "rfqEnabled",
+        "seriesColor",
+        "showGmpOutcome",
+        "showGmpSeries",
+        "slug",
+        "spread",
+        "submitted_by",
+        "takerBaseFee",
+        "umaBond",
+        "umaResolutionStatuses",
+        "umaReward",
+        "volume",
+        "volume1mo",
+        "volume1moAmm",
+        "volume1moClob",
+        "volume1wk",
+        "volume1wkAmm",
+        "volume1wkClob",
+        "volume1yr",
+        "volume1yrAmm",
+        "volume1yrClob",
+        "volume24hr",
+        "volume24hrAmm",
+        "volume24hrClob",
+        "volumeAmm",
+        "volumeClob",
+        "volumeNum"
+      ],
+      "market_id": "2643221",
+      "market_slug": "will-trump-meet-with-joseph-aoun-in-2026",
+      "active": false,
+      "closed": false,
+      "enableOrderBook": true,
+      "clobTokenIds": null
+    }
+  ],
+  "top_25_tags_by_event_count": [
+    [
+      "sports",
+      4208
+    ],
+    [
+      "games",
+      3770
+    ],
+    [
+      "hide-from-new",
+      3291
+    ],
+    [
+      "crypto",
+      3220
+    ],
+    [
+      "recurring",
+      3090
+    ],
+    [
+      "crypto-prices",
+      2991
+    ],
+    [
+      "up-or-down",
+      2928
+    ],
+    [
+      "soccer",
+      2585
+    ],
+    [
+      "5M",
+      1873
+    ],
+    [
+      "politics",
+      1434
+    ],
+    [
+      "elections",
+      867
+    ],
+    [
+      "us-presidential-election",
+      696
+    ],
+    [
+      "esports",
+      675
+    ],
+    [
+      "15M",
+      615
+    ],
+    [
+      "midterms",
+      553
+    ],
+    [
+      "bitcoin",
+      458
+    ],
+    [
+      "house-elections",
+      444
+    ],
+    [
+      "nov-4-elections",
+      442
+    ],
+    [
+      "ethereum",
+      439
+    ],
+    [
+      "counter-strike-2",
+      437
+    ],
+    [
+      "xrp",
+      434
+    ],
+    [
+      "solana",
+      432
+    ],
+    [
+      "ripple",
+      432
+    ],
+    [
+      "finance",
+      419
+    ],
+    [
+      "dogecoin",
+      407
+    ]
+  ],
+  "total_distinct_tags_seen": 1901
+}
