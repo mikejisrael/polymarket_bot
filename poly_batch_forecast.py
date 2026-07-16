@@ -62,6 +62,25 @@ OPENROUTER_SPEND_CEILING = 0.10   # vs. $1.00 stated worst case
 ANTHROPIC_SPEND_CEILING = 0.05    # vs. $0.50 stated worst case
 REFRESH_GATE_HOURS = 72           # don't re-forecast the same event within 3 days — prioritize breadth first
 
+# Contested-market band for candidate selection (2026-07-08): a market priced
+# outside this range is close enough to a settled "yes"/"no" that research
+# spend adds little — the whole point of paying for research is to inform a
+# genuinely uncertain estimate, not confirm what the market already knows.
+UNCERTAINTY_PRICE_MIN = 0.05
+UNCERTAINTY_PRICE_MAX = 0.95
+
+
+def _yes_price(rec) -> float | None:
+    """Best-effort parse of the market's implied Yes probability from
+    outcome_prices[0] — same convention used elsewhere in poly_discovery.py's
+    negRisk sum-check."""
+    if not rec.outcome_prices:
+        return None
+    try:
+        return float(rec.outcome_prices[0])
+    except (TypeError, ValueError, IndexError):
+        return None
+
 STATE_DIR = Path("poly_state")
 HISTORY_FILE = STATE_DIR / "forecast_history.json"
 FORECASTS_LOG_FILE = STATE_DIR / "forecasts_log.jsonl"
@@ -96,6 +115,7 @@ def select_candidates(history: dict) -> list[dict]:
         by_event.setdefault(r.event_id, []).append(r)
 
     now = dt.datetime.now(dt.timezone.utc)
+    candidates_skipped_no_contested_market = 0
     candidates = []
     for event_id, recs in by_event.items():
         last = history.get(event_id, {}).get("last_forecast_at")
@@ -104,12 +124,28 @@ def select_candidates(history: dict) -> list[dict]:
             hours_since = (now - last_dt).total_seconds() / 3600
             if hours_since < REFRESH_GATE_HOURS:
                 continue
-        top_market = max(recs, key=lambda r: r.volume)
+
+        # Within a categorical event, the highest-VOLUME market is often a
+        # novelty/meme longshot (e.g. a celebrity candidate), not the one
+        # that's actually contested — those draw disproportionate volume
+        # precisely because they're a fun bet, not because the outcome is
+        # uncertain. Research spend is wasted on a market that's already
+        # priced near-certain. Filter to genuinely contested markets first
+        # (price inside the uncertainty band), THEN pick by volume among
+        # those — keeps liquidity as a tiebreaker without picking obvious "no"s.
+        contested = [r for r in recs if (p := _yes_price(r)) is not None
+                     and UNCERTAINTY_PRICE_MIN <= p <= UNCERTAINTY_PRICE_MAX]
+        if not contested:
+            candidates_skipped_no_contested_market += 1
+            continue
+        top_market = max(contested, key=lambda r: r.volume)
         candidates.append(top_market)
 
     candidates.sort(key=lambda r: (not r.priority, -r.volume))
     print(f"Candidate events after refresh-gate filter: {len(candidates)} "
           f"(gate: {REFRESH_GATE_HOURS}h since last forecast)")
+    print(f"Events skipped — no market priced in the contested "
+          f"[{UNCERTAINTY_PRICE_MIN}, {UNCERTAINTY_PRICE_MAX}] band: {candidates_skipped_no_contested_market}")
     return candidates[:DAILY_EVENT_CAP]
 
 
@@ -208,7 +244,10 @@ def run_forecast_loop(live: bool) -> None:
 
     print(f"\nSelected {len(candidates)} events for this run (cap={DAILY_EVENT_CAP}):")
     for c in candidates:
-        print(f"  [{'priority' if c.priority else 'floor'}] {c.event_slug}: {c.question} (vol=${c.volume:,.0f})")
+        price = _yes_price(c)
+        price_str = f"{price:.2f}" if price is not None else "?"
+        print(f"  [{'priority' if c.priority else 'floor'}] {c.event_slug}: {c.question} "
+              f"(vol=${c.volume:,.0f}, price={price_str})")
 
     if not live:
         print(f"\n[dry-run] Not spending anything. Would process up to {len(candidates)} events, "
