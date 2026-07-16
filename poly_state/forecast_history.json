@@ -73,5 +73,30 @@
     "last_forecast_at": "2026-07-16T05:28:10.388375+00:00",
     "event_slug": "2026-f1-drivers-champion",
     "last_probability": 0.7
+  },
+  "89502": {
+    "last_forecast_at": "2026-07-16T06:12:39.059707+00:00",
+    "event_slug": "what-price-will-bitcoin-hit-before-2027",
+    "last_probability": 0.52
+  },
+  "255195": {
+    "last_forecast_at": "2026-07-16T06:13:42.599844+00:00",
+    "event_slug": "iran-leadership-change-by",
+    "last_probability": 1.0
+  },
+  "237598": {
+    "last_forecast_at": "2026-07-16T06:14:03.649914+00:00",
+    "event_slug": "iran-leader-end-of-2026",
+    "last_probability": 0.52
+  },
+  "143691": {
+    "last_forecast_at": "2026-07-16T06:14:29.198215+00:00",
+    "event_slug": "will-the-us-invade-cuba-in-2026",
+    "last_probability": 0.5
+  },
+  "81557": {
+    "last_forecast_at": "2026-07-16T06:14:55.052443+00:00",
+    "event_slug": "who-will-be-the-next-prime-minister-of-israel-after-the-next-election",
+    "last_probability": 0.5
   }
 }
