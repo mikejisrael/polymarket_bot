@@ -98,5 +98,80 @@
     "last_forecast_at": "2026-07-16T06:14:55.052443+00:00",
     "event_slug": "who-will-be-the-next-prime-minister-of-israel-after-the-next-election",
     "last_probability": 0.5
+  },
+  "287395": {
+    "last_forecast_at": "2026-07-18T02:58:40.171784+00:00",
+    "event_slug": "fed-decision-in-july-181",
+    "last_probability": 0.94
+  },
+  "413862": {
+    "last_forecast_at": "2026-07-18T02:58:59.577630+00:00",
+    "event_slug": "world-cup-golden-boot-winner",
+    "last_probability": 0.58
+  },
+  "32225": {
+    "last_forecast_at": "2026-07-18T02:59:19.011113+00:00",
+    "event_slug": "which-party-will-win-the-house-in-2026",
+    "last_probability": 0.8
+  },
+  "153719": {
+    "last_forecast_at": "2026-07-18T02:59:41.920269+00:00",
+    "event_slug": "will-satoshi-move-any-bitcoin-in-2026",
+    "last_probability": 0.04
+  },
+  "101936": {
+    "last_forecast_at": "2026-07-18T03:00:03.842278+00:00",
+    "event_slug": "fed-rate-hike-in-2026",
+    "last_probability": 0.52
+  },
+  "64731": {
+    "last_forecast_at": "2026-07-18T03:00:28.664870+00:00",
+    "event_slug": "billionaire-one-time-wealth-tax-passes-in-california-election-2026",
+    "last_probability": 0.28
+  },
+  "34052": {
+    "last_forecast_at": "2026-07-18T03:00:46.293592+00:00",
+    "event_slug": "zelenskyy-out-as-ukraine-president-before-2027",
+    "last_probability": 0.12
+  },
+  "362004": {
+    "last_forecast_at": "2026-07-18T03:01:09.077185+00:00",
+    "event_slug": "nba-lebron-james-next-team",
+    "last_probability": 0.27
+  },
+  "556270": {
+    "last_forecast_at": "2026-07-18T03:01:32.148092+00:00",
+    "event_slug": "world-cup-golden-ball-winner-20260603194031758",
+    "last_probability": 0.08
+  },
+  "57096": {
+    "last_forecast_at": "2026-07-18T03:01:51.878764+00:00",
+    "event_slug": "california-governor-election-2026",
+    "last_probability": 0.06
+  },
+  "73056": {
+    "last_forecast_at": "2026-07-18T03:02:12.487602+00:00",
+    "event_slug": "ukraine-signs-peace-deal-with-russia-before-2027",
+    "last_probability": 0.28
+  },
+  "95248": {
+    "last_forecast_at": "2026-07-18T03:02:35.071313+00:00",
+    "event_slug": "berlin-state-election-winner",
+    "last_probability": 0.14
+  },
+  "48978": {
+    "last_forecast_at": "2026-07-18T03:02:57.174100+00:00",
+    "event_slug": "will-ukraine-recapture-crimean-territory-by-june-30-2026",
+    "last_probability": 0.12
+  },
+  "52130": {
+    "last_forecast_at": "2026-07-18T03:03:17.887547+00:00",
+    "event_slug": "opensea-fdv-above-one-day-after-launch",
+    "last_probability": 0.55
+  },
+  "32228": {
+    "last_forecast_at": "2026-07-18T03:03:36.963447+00:00",
+    "event_slug": "balance-of-power-2026-midterms",
+    "last_probability": 0.42
   }
 }
