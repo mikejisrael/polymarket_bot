@@ -218,20 +218,35 @@ def anthropic_cost(usage: dict) -> float:
             + usage.get("output_tokens", 0) / 1_000_000 * ANTHROPIC_HAIKU_OUTPUT_PER_MTOK)
 
 
-def extract_probability(text: str) -> float | None:
-    """Best-effort pull of a 0-1 probability from the reasoning output.
-    v1 uses free-text prompting rather than structured output — good enough
-    to prove the loop out; worth tightening to forced JSON output later."""
+def extract_probability(text: str) -> tuple[float | None, str]:
+    """Pull the probability from the reasoning output.
+
+    v1 (loose regex over the whole text) had a confirmed bug: with no
+    explicit probability statement present, it fell back to grabbing ANY
+    0/1/0.XX-looking token — including markdown numbered-list markers like
+    "1. **The succession...**", which is not a probability at all. Real
+    example (2026-07-16): a truncated response with no stated probability
+    got misread as 1.0 purely from a list marker.
+
+    Fix: only trust an EXPLICIT "Probability: X" statement (which the
+    reasoning prompt now asks for on the first line, specifically so
+    truncation at max_tokens can't lose it). No loose fallback — an
+    honestly missing estimate is safer than a confidently wrong one.
+
+    Returns (probability_or_None, method) where method is "explicit" or
+    "not_found" — callers should treat "not_found" as missing data, not
+    silently default it to something.
+    """
     import re
-    matches = re.findall(r"\b0?\.\d{1,3}\b|\b1\.0+\b|\b[01]\b", text)
-    for m in matches:
+    m = re.search(r"probability\s*:?\s*(\d?\.\d+|\d)\b", text, re.IGNORECASE)
+    if m:
         try:
-            val = float(m)
+            val = float(m.group(1))
             if 0.0 <= val <= 1.0:
-                return val
+                return val, "explicit"
         except ValueError:
-            continue
-    return None
+            pass
+    return None, "not_found"
 
 
 def run_forecast_loop(live: bool) -> None:
@@ -285,10 +300,12 @@ def run_forecast_loop(live: bool) -> None:
                 f"Prediction market question: {c.question}\n"
                 f"Current market-implied prices: {c.outcome_prices}\n"
                 f"Research:\n{research['text']}\n\n"
-                f"Give a calibrated probability estimate (0-1) with 2-3 sentences of reasoning. "
-                f"State the probability clearly as a decimal, e.g. 'Probability: 0.35'."
+                f"Start your response with your calibrated probability estimate on its own "
+                f"first line, exactly as: 'Probability: 0.35' (a decimal between 0 and 1). "
+                f"Then give 2-3 sentences of reasoning. Leading with the number matters — "
+                f"if your response gets cut off, the probability must already be captured."
             )
-            reasoning = call_anthropic(reasoning_prompt, max_tokens=400)
+            reasoning = call_anthropic(reasoning_prompt, max_tokens=500)
             reasoning_cost = anthropic_cost(reasoning["usage"])
             print(f"  Anthropic reasoning: ${reasoning_cost:.4f}")
 
@@ -300,7 +317,10 @@ def run_forecast_loop(live: bool) -> None:
             verify_cost = anthropic_cost(verify["usage"])
             print(f"  Anthropic verification: ${verify_cost:.4f}")
 
-            probability = extract_probability(reasoning["text"])
+            probability, extraction_method = extract_probability(reasoning["text"])
+            if extraction_method == "not_found":
+                print(f"  [warning] no explicit probability statement found — leaving unset "
+                      f"rather than guessing (see extract_probability docstring)")
 
             or_spend += or_cost
             anthropic_spend += reasoning_cost + verify_cost
@@ -315,6 +335,9 @@ def run_forecast_loop(live: bool) -> None:
                 "category": "priority" if c.priority else "floor",
                 "market_price_at_forecast": c.outcome_prices,
                 "estimated_probability": probability,
+                "probability_extraction_method": extraction_method,
+                "end_date": c.end_date,
+                "days_to_end_at_forecast": c.days_to_end,
                 "reasoning_text": reasoning["text"],
                 "verification_text": verify["text"],
                 "openrouter_cost": or_cost,
