@@ -296,12 +296,22 @@ def run_forecast_loop(live: bool) -> None:
             else:
                 print(f"  OpenRouter research: ${or_cost:.4f}")
 
+            # Deliberately NOT showing the market price here. Same principle as
+            # FutureEval time-gating community-prediction reveal until close:
+            # showing the market's own number before asking for an estimate
+            # anchors the model toward "market price plus a small adjustment"
+            # rather than a genuinely independent view. Confirmed happening in
+            # practice (2026-07-18) — reasoning text explicitly said "the market
+            # prices this at 20.5%... slightly conservative," which is anchoring,
+            # not independent forecasting. market_price_at_forecast is still
+            # recorded separately for the edge calculation — nothing is lost,
+            # the model just doesn't get to see it before committing to a number.
             reasoning_prompt = (
                 f"Prediction market question: {c.question}\n"
-                f"Current market-implied prices: {c.outcome_prices}\n"
                 f"Research:\n{research['text']}\n\n"
                 f"Start your response with your calibrated probability estimate on its own "
                 f"first line, exactly as: 'Probability: 0.35' (a decimal between 0 and 1). "
+                f"Base this ONLY on the research above — form your own independent view. "
                 f"Then give 2-3 sentences of reasoning. Leading with the number matters — "
                 f"if your response gets cut off, the probability must already be captured."
             )
