@@ -3,19 +3,36 @@ poly_open_positions.py
 
 Simulated paper-trading position opener for the Polymarket bot.
 
-For each forecast in poly_state/forecasts_log.jsonl that doesn't already
-have a position record, this either:
+For each event's MOST RECENT forecast in poly_state/forecasts_log.jsonl:
 
-  (a) records a zero-stake placeholder, if the forecast's event_id is in
-      poly_state/backfill_skip_ids.json (the 35 forecasts logged before
-      this feature existed — deliberately not backfilled with real
-      stakes; they still get closed out at resolution time as $0 P&L
-      so they don't linger forever), or
+  (a) if the event has no position record yet AND is in
+      poly_state/backfill_skip_ids.json (the original 35 forecasts logged
+      before this feature existed), record a zero-stake placeholder — not
+      backfilled with real stakes; closed out at resolution time as $0 P&L
+      so it doesn't linger forever.
 
-  (b) opens a real paper position, sized as a % of current balance,
-      if the forecast has a reliable probability (probability_extraction_
-      method == "explicit") and the edge vs. the market price clears
-      EDGE_THRESHOLD.
+  (b) if the event already has a REAL (non-placeholder) position — open,
+      resolved_win, resolved_loss — leave it alone entirely. Never touched,
+      never duplicated.
+
+  (c) if the event has a $0 PLACEHOLDER position AND has since been
+      refreshed (a forecast exists with a timestamp newer than the
+      placeholder's opened_at), UPGRADE it to a real position in place —
+      this is what lets the legacy-20 refresh plan actually work. Bug fixed
+      2026-07-20: the original version deduped on "does this event have ANY
+      position at all," which silently froze every backfilled event at its
+      $0 placeholder forever, even after a genuine refresh — confirmed in
+      production when the Iran market's 2026-07-20 refresh produced a new
+      probability (0.18) but the position record stayed untouched at the
+      2026-07-16 placeholder. This also explains an earlier discrepancy
+      report (11 forecasts in a run, only 10 accounted for across
+      opened+skipped counters) — the silently-skipped event was never
+      counted anywhere, same root cause.
+
+  (d) otherwise (brand-new event, or a placeholder not yet refreshed):
+      opens a real paper position, sized as a % of current balance, if the
+      forecast has a reliable probability (probability_extraction_method
+      == "explicit") and the edge vs. the market price clears EDGE_THRESHOLD.
 
 Direction: BUY_YES if bot probability > market YES price (positive edge),
 BUY_NO if bot probability < market YES price (negative edge). Entry price
@@ -27,9 +44,9 @@ mirrors bybit_sim.py's compounding position sizing). Balance itself is
 NOT touched here; it only changes when poly_resolve_positions.py settles
 a position. Running this script never moves money, only opens exposure.
 
-Idempotent / safe to re-run: skips any event_id that already has a
-position record, so re-running after a new batch only opens positions
-for the newly-added forecasts.
+Idempotent / safe to re-run: an event's position is only created or
+upgraded once per distinct forecast timestamp — re-running without new
+forecasts changes nothing.
 
 Run: python poly_open_positions.py
 """
@@ -93,30 +110,56 @@ def main():
     })
     skip_ids = set(_load_json(SKIP_IDS_FILE, []))
 
-    existing_event_ids = {p["event_id"] for p in positions}
+    # Collapse to the most recent forecast per event_id — a refresh
+    # supersedes the original for position-opening purposes.
+    latest_by_event: dict[str, dict] = {}
+    for r in forecasts:
+        eid = r.get("event_id")
+        if eid is None:
+            continue
+        existing = latest_by_event.get(eid)
+        if existing is None or r.get("timestamp", "") > existing.get("timestamp", ""):
+            latest_by_event[eid] = r
+
+    positions_by_event = {p["event_id"]: p for p in positions}
     balance = balance_data["balance"]
 
     opened = 0
+    upgraded = 0
     placeholders = 0
     skipped_low_edge = 0
     skipped_unreliable = 0
+    skipped_already_real = 0
 
-    for r in forecasts:
-        event_id = r.get("event_id")
-        if event_id is None or event_id in existing_event_ids:
+    for event_id, r in latest_by_event.items():
+        existing_position = positions_by_event.get(event_id)
+
+        # Real position already exists (open or resolved) — never touch it.
+        if existing_position is not None and existing_position["status"] != "backfill_no_position":
+            skipped_already_real += 1
             continue
 
-        market_price = _market_price(r)
-        probability = r.get("estimated_probability")
+        is_stale_placeholder = (
+            existing_position is not None
+            and existing_position["status"] == "backfill_no_position"
+            and r.get("timestamp", "") > existing_position.get("opened_at", "")
+        )
 
-        if event_id in skip_ids:
+        # First time seeing this event, it's a pre-existing (skip-list)
+        # forecast, and no position exists yet at all — record the $0
+        # placeholder. (If a placeholder already exists and this forecast
+        # ISN'T newer than it, there's genuinely nothing new to do — falls
+        # through to the market_price/probability checks below, which for
+        # an unchanged forecast will just re-derive the same answer as
+        # last time and get correctly skipped or re-opened identically.)
+        if existing_position is None and event_id in skip_ids:
             positions.append({
                 "event_id": event_id,
                 "event_slug": r.get("event_slug", "?"),
                 "question": r.get("question", ""),
                 "condition_id": r.get("condition_id", ""),
                 "direction": None,
-                "entry_price": market_price,
+                "entry_price": _market_price(r),
                 "size_usd": 0.0,
                 "edge_at_entry": None,
                 "opened_at": r.get("timestamp", ""),
@@ -128,6 +171,16 @@ def main():
             })
             placeholders += 1
             continue
+
+        # A placeholder exists and hasn't been refreshed since it was
+        # recorded — nothing to do yet.
+        if existing_position is not None and not is_stale_placeholder:
+            continue
+
+        # From here: either a brand-new (never-forecast, not skip-listed)
+        # event, or a placeholder eligible for upgrade via a genuine refresh.
+        market_price = _market_price(r)
+        probability = r.get("estimated_probability")
 
         if r.get("probability_extraction_method") != "explicit":
             skipped_unreliable += 1
@@ -145,7 +198,7 @@ def main():
         entry_price = market_price if direction == "YES" else round(1 - market_price, 4)
         size_usd = round(balance * SIZE_PCT, 2)
 
-        positions.append({
+        new_record = {
             "event_id": event_id,
             "event_slug": r.get("event_slug", "?"),
             "question": r.get("question", ""),
@@ -160,14 +213,23 @@ def main():
             "resolved_at": None,
             "outcome": None,
             "pnl_usd": None,
-        })
-        opened += 1
+        }
+
+        if is_stale_placeholder:
+            idx = positions.index(existing_position)
+            positions[idx] = new_record
+            upgraded += 1
+        else:
+            positions.append(new_record)
+            opened += 1
 
     _save_json(POSITIONS_FILE, positions)
     _save_json(BALANCE_FILE, balance_data)  # unchanged here — balance only moves on resolution
 
     print(f"Opened {opened} new position(s).")
-    print(f"Recorded {placeholders} backfill placeholder(s) (pre-existing forecasts, $0 stake).")
+    print(f"Upgraded {upgraded} placeholder(s) to real position(s) via refresh.")
+    print(f"Recorded {placeholders} new backfill placeholder(s) (pre-existing forecasts, $0 stake).")
+    print(f"Left {skipped_already_real} event(s) untouched (already have a real position).")
     print(f"Skipped {skipped_unreliable} forecast(s) with unreliable probability extraction.")
     print(f"Skipped {skipped_low_edge} forecast(s) below the {EDGE_THRESHOLD} edge threshold.")
     print(f"Paper balance: ${balance:.2f} (unchanged — only resolution moves the balance)")

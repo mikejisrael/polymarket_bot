@@ -86,6 +86,7 @@ def load_dashboard_data() -> dict:
     forecasts = []
     total_or_cost = 0.0
     total_anthropic_cost = 0.0
+    total_tavily_credits = 0
     priority_count = 0
 
     for idx, r in enumerate(sorted(log, key=lambda x: x.get("timestamp", ""), reverse=True)):
@@ -97,8 +98,10 @@ def load_dashboard_data() -> dict:
 
         or_cost = r.get("openrouter_cost", 0) or 0
         anthropic_cost = r.get("anthropic_cost", 0) or 0
+        tavily_credits = r.get("tavily_credits_used", 0) or 0
         total_or_cost += or_cost
         total_anthropic_cost += anthropic_cost
+        total_tavily_credits += tavily_credits
         if r.get("category") == "priority":
             priority_count += 1
 
@@ -121,13 +124,19 @@ def load_dashboard_data() -> dict:
             position_status, position_label = "none", "no position"
         else:
             position_status = position["status"]
-            position_label = {
-                "open": f"open · {position['direction']} @ {position['entry_price']:.2f} · ${position['size_usd']:.2f}",
-                "backfill_no_position": "no position (pre-dates tracking)",
-                "resolved_no_position": "closed · $0 (pre-dates tracking)",
-                "resolved_win": f"WIN · {position['direction']} · ${position['pnl_usd']:+.2f}",
-                "resolved_loss": f"LOSS · {position['direction']} · ${position['pnl_usd']:+.2f}",
-            }.get(position_status, position_status)
+            if position_status == "open":
+                position_label = (f"open · {position['direction']} @ "
+                                   f"{position['entry_price']:.2f} · ${position['size_usd']:.2f}")
+            elif position_status == "backfill_no_position":
+                position_label = "no position (pre-dates tracking)"
+            elif position_status == "resolved_no_position":
+                position_label = "closed · $0 (pre-dates tracking)"
+            elif position_status == "resolved_win":
+                position_label = f"WIN · {position['direction']} · ${position['pnl_usd']:+.2f}"
+            elif position_status == "resolved_loss":
+                position_label = f"LOSS · {position['direction']} · ${position['pnl_usd']:+.2f}"
+            else:
+                position_label = position_status
 
         forecasts.append({
             "idx": idx,
@@ -171,6 +180,7 @@ def load_dashboard_data() -> dict:
         "floor_count": len(forecasts) - priority_count,
         "total_or_cost": round(total_or_cost, 4),
         "total_anthropic_cost": round(total_anthropic_cost, 4),
+        "total_tavily_credits": total_tavily_credits,
         "total_cost": round(total_or_cost + total_anthropic_cost, 4),
         "eligible_for_refresh": eligible_for_refresh,
         "history_count": len(history),
@@ -394,9 +404,9 @@ TEMPLATE = """
       <div class="detail">{{ data.priority_count }} priority / {{ data.floor_count }} floor</div>
     </div>
     <div class="card">
-      <div class="eyebrow">Total spend</div>
+      <div class="eyebrow">Total spend ($)</div>
       <div class="value">${{ "%.4f"|format(data.total_cost) }}</div>
-      <div class="detail">OR ${{ "%.4f"|format(data.total_or_cost) }} · Anthropic ${{ "%.4f"|format(data.total_anthropic_cost) }}</div>
+      <div class="detail">OR ${{ "%.4f"|format(data.total_or_cost) }} (legacy, pre-07-20) · Anthropic ${{ "%.4f"|format(data.total_anthropic_cost) }} · Tavily {{ data.total_tavily_credits }} credits (not $ — separate free allotment)</div>
     </div>
     <div class="card">
       <div class="eyebrow">Eligible for refresh</div>
