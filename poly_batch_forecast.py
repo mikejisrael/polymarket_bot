@@ -100,6 +100,20 @@ UNCERTAINTY_PRICE_MIN = 0.05
 UNCERTAINTY_PRICE_MAX = 0.95
 
 
+def _ttl_sort_value(r) -> float:
+    """days_to_end for sorting — None (missing/malformed end_date upstream)
+    sorts LAST (treated as least urgent), never crashes the sort. Confirmed
+    in production (2026-07-19): some covered markets have days_to_end=None,
+    which a bare `r.days_to_end` sort key raises TypeError on (None has no
+    ordering vs. float in Python 3) — this wasn't caught in testing because
+    the old ranking never sorted on days_to_end at all."""
+    return r.days_to_end if r.days_to_end is not None else float("inf")
+
+
+def _ttl_display(r) -> str:
+    return f"{r.days_to_end:.1f}d" if r.days_to_end is not None else "?d (no end_date)"
+
+
 def _yes_price(rec) -> float | None:
     """Best-effort parse of the market's implied Yes probability from
     outcome_prices[0] — same convention used elsewhere in poly_discovery.py's
@@ -180,7 +194,7 @@ def select_candidates(history: dict, refresh_count: int = 0) -> tuple[list, set]
     chosen_refresh_ids: set = set()
     chosen_refresh = []
     if refresh_count > 0 and refresh_eligible:
-        by_ttl = sorted(refresh_eligible, key=lambda x: x[0].days_to_end)
+        by_ttl = sorted(refresh_eligible, key=lambda x: _ttl_sort_value(x[0]))
         ttl_rank = {r.event_id: i for i, (r, _) in enumerate(by_ttl)}
         by_staleness = sorted(refresh_eligible, key=lambda x: -x[1])  # oldest forecast first
         staleness_rank = {r.event_id: i for i, (r, _) in enumerate(by_staleness)}
@@ -194,7 +208,7 @@ def select_candidates(history: dict, refresh_count: int = 0) -> tuple[list, set]
 
     # --- New-discovery pool: priority tag, then days-to-close, then volume --
     remaining_slots = max(DAILY_EVENT_CAP - len(chosen_refresh), 0)
-    never_forecast.sort(key=lambda r: (not r.priority, r.days_to_end, -r.volume))
+    never_forecast.sort(key=lambda r: (not r.priority, _ttl_sort_value(r), -r.volume))
     chosen_new = never_forecast[:remaining_slots]
 
     final_candidates = chosen_refresh + chosen_new
@@ -207,7 +221,7 @@ def select_candidates(history: dict, refresh_count: int = 0) -> tuple[list, set]
     if refresh_count > 0:
         print(f"Refresh quota requested: {refresh_count} -> selected {len(chosen_refresh)}")
         for r in chosen_refresh:
-            print(f"  [refresh] {r.event_slug}  closes in {r.days_to_end:.1f}d")
+            print(f"  [refresh] {r.event_slug}  closes in {_ttl_display(r)}")
     print(f"New-discovery slots filled: {len(chosen_new)} (of {remaining_slots} available)")
 
     return final_candidates, chosen_refresh_ids
@@ -327,7 +341,7 @@ def run_forecast_loop(live: bool, refresh_count: int = 0) -> None:
         price_str = f"{price:.2f}" if price is not None else "?"
         label = "refresh" if c.event_id in refresh_ids else ("priority" if c.priority else "floor")
         print(f"  [{label}] {c.event_slug}: {c.question} "
-              f"(vol=${c.volume:,.0f}, price={price_str}, closes in {c.days_to_end:.1f}d)")
+              f"(vol=${c.volume:,.0f}, price={price_str}, closes in {_ttl_display(c)})")
 
     if not live:
         print(f"\n[dry-run] Not spending anything. Would process up to {len(candidates)} events, "
