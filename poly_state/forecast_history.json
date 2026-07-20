@@ -1,8 +1,8 @@
 {
   "73130": {
-    "last_forecast_at": "2026-07-16T05:22:46.453282+00:00",
+    "last_forecast_at": "2026-07-20T10:04:25.364314+00:00",
     "event_slug": "will-the-us-invade-iran-before-2027",
-    "last_probability": 0.5
+    "last_probability": 0.18
   },
   "90177": {
     "last_forecast_at": "2026-07-16T05:23:07.835340+00:00",
@@ -173,5 +173,55 @@
     "last_forecast_at": "2026-07-18T03:03:36.963447+00:00",
     "event_slug": "balance-of-power-2026-midterms",
     "last_probability": 0.42
+  },
+  "710517": {
+    "last_forecast_at": "2026-07-20T10:04:40.186540+00:00",
+    "event_slug": "elon-musk-of-tweets-july-18-july-20",
+    "last_probability": 0.51
+  },
+  "656321": {
+    "last_forecast_at": "2026-07-20T10:04:51.886869+00:00",
+    "event_slug": "az-04-democratic-primary-winner-20260630171843790",
+    "last_probability": 0.98
+  },
+  "656322": {
+    "last_forecast_at": "2026-07-20T10:05:01.510080+00:00",
+    "event_slug": "az-05-democratic-primary-winner-20260630172138599",
+    "last_probability": 0.88
+  },
+  "648860": {
+    "last_forecast_at": "2026-07-20T10:05:11.935685+00:00",
+    "event_slug": "az-01-democratic-primary-winner-20260629182915544",
+    "last_probability": 0.68
+  },
+  "656320": {
+    "last_forecast_at": "2026-07-20T10:05:23.796993+00:00",
+    "event_slug": "az-02-democratic-primary-winner-20260630194822311",
+    "last_probability": 0.85
+  },
+  "674540": {
+    "last_forecast_at": "2026-07-20T10:05:33.115054+00:00",
+    "event_slug": "arizona-superintendent-of-public-instruction-democratic-primary-winner-20260706145902302",
+    "last_probability": 0.52
+  },
+  "697587": {
+    "last_forecast_at": "2026-07-20T10:05:42.882626+00:00",
+    "event_slug": "will-microstrategy-announce-a-bitcoin-purchase-july-14-20",
+    "last_probability": 0.02
+  },
+  "697616": {
+    "last_forecast_at": "2026-07-20T10:05:57.076375+00:00",
+    "event_slug": "microstrategy-announces-1000-btc-purchase-july-14-20",
+    "last_probability": 0.92
+  },
+  "690177": {
+    "last_forecast_at": "2026-07-20T10:06:05.252544+00:00",
+    "event_slug": "elon-musk-of-tweets-july-14-july-21",
+    "last_probability": 0.14
+  },
+  "690175": {
+    "last_forecast_at": "2026-07-20T10:06:16.648324+00:00",
+    "event_slug": "white-house-of-tweets-july-14-july-21-2026",
+    "last_probability": 0.72
   }
 }
