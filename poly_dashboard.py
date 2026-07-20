@@ -1,37 +1,43 @@
 """
 poly_dashboard.py
 
-Local Flask dashboard for the polymarket_bot project — mirrors the
-meta_dashboard.py pattern (local server, not deployed anywhere). Reads
-poly_state/*.json(l) fresh on every request; no caching, no database —
-data volume is tiny (tens to low hundreds of forecasts) so this is fine.
+Static HTML dashboard generator for the polymarket_bot project. Reads
+poly_state/*.json(l) and writes out poly_dashboard.html (plus one detail
+page per forecast under poly_dashboard_details/) — no server, nothing to
+keep running. Since positions/resolution are run manually in batches
+anyway, regenerate this after each run: open positions -> resolve
+positions -> generate dashboard -> open the html file.
 
 Run: python poly_dashboard.py
-Then open http://localhost:5003
+Then open poly_dashboard.html in a browser.
 
 v1 scope: no calibration view. Calibration (predicted vs. actual) needs
 resolved outcomes, and the current forecast set skews long-horizon
 (futures-like markets, by design — see the sports/crypto prioritization
 work) so there's nothing to show yet. This is a "forecasts made + spend
-to date" view for now; calibration is a natural v2 once markets resolve.
+to date, plus paper P&L" view for now; calibration is a natural v2 once
+more markets resolve.
 
 Accessibility note: Mike is red-green colorblind (same constraint already
-applied in the ByBit dashboard). Edge direction here uses blue/amber, not
-red/green.
+applied in the ByBit dashboard). Edge direction and P&L both use
+blue/amber, not red/green.
 """
 
 import json
 import datetime as dt
 from pathlib import Path
 
-from flask import Flask, render_template_string
+from jinja2 import Template
 
 STATE_DIR = Path("poly_state")
 FORECASTS_LOG_FILE = STATE_DIR / "forecasts_log.jsonl"
 HISTORY_FILE = STATE_DIR / "forecast_history.json"
 COVERAGE_REPORT_FILE = STATE_DIR / "coverage_report.json"
+POSITIONS_FILE = STATE_DIR / "paper_positions.json"
+BALANCE_FILE = STATE_DIR / "paper_balance.json"
 
-app = Flask(__name__)
+OUTPUT_FILE = Path("poly_dashboard.html")
+DETAILS_DIR = Path("poly_dashboard_details")
 
 
 def _load_json(path: Path):
@@ -71,6 +77,11 @@ def load_dashboard_data() -> dict:
     log = _load_jsonl(FORECASTS_LOG_FILE)
     history = _load_json(HISTORY_FILE) or {}
     coverage = _load_json(COVERAGE_REPORT_FILE)
+    positions = _load_json(POSITIONS_FILE) or []
+    balance_data = _load_json(BALANCE_FILE) or {
+        "balance": 1000.0, "starting_balance": 1000.0, "realized_pnl": 0.0,
+    }
+    positions_by_event = {p["event_id"]: p for p in positions}
 
     forecasts = []
     total_or_cost = 0.0
@@ -105,6 +116,19 @@ def load_dashboard_data() -> dict:
             except (ValueError, TypeError):
                 close_display = "unknown"
 
+        position = positions_by_event.get(r.get("event_id"))
+        if position is None:
+            position_status, position_label = "none", "no position"
+        else:
+            position_status = position["status"]
+            position_label = {
+                "open": f"open · {position['direction']} @ {position['entry_price']:.2f} · ${position['size_usd']:.2f}",
+                "backfill_no_position": "no position (pre-dates tracking)",
+                "resolved_no_position": "closed · $0 (pre-dates tracking)",
+                "resolved_win": f"WIN · {position['direction']} · ${position['pnl_usd']:+.2f}",
+                "resolved_loss": f"LOSS · {position['direction']} · ${position['pnl_usd']:+.2f}",
+            }.get(position_status, position_status)
+
         forecasts.append({
             "idx": idx,
             "event_slug": r.get("event_slug", "?"),
@@ -121,6 +145,8 @@ def load_dashboard_data() -> dict:
             "condition_id": r.get("condition_id", ""),
             "reasoning_text": r.get("reasoning_text", ""),
             "verification_text": r.get("verification_text", ""),
+            "position_status": position_status,
+            "position_label": position_label,
         })
 
     now = dt.datetime.now(dt.timezone.utc)
@@ -132,6 +158,10 @@ def load_dashboard_data() -> dict:
             hours_since = (now - dt.datetime.fromisoformat(last)).total_seconds() / 3600
             if hours_since >= refresh_gate_hours:
                 eligible_for_refresh += 1
+
+    open_positions = [p for p in positions if p["status"] == "open"]
+    resolved_real = [p for p in positions if p["status"] in ("resolved_win", "resolved_loss")]
+    wins = [p for p in resolved_real if p["status"] == "resolved_win"]
 
     return {
         "generated_at": now.strftime("%Y-%m-%d %H:%M UTC"),
@@ -145,6 +175,13 @@ def load_dashboard_data() -> dict:
         "eligible_for_refresh": eligible_for_refresh,
         "history_count": len(history),
         "coverage": coverage,
+        "balance": balance_data.get("balance", 1000.0),
+        "starting_balance": balance_data.get("starting_balance", 1000.0),
+        "realized_pnl": balance_data.get("realized_pnl", 0.0),
+        "open_position_count": len(open_positions),
+        "resolved_count": len(resolved_real),
+        "win_count": len(wins),
+        "win_rate": round(100 * len(wins) / len(resolved_real), 0) if resolved_real else None,
     }
 
 
@@ -276,6 +313,10 @@ TEMPLATE = """
   .badge.priority { background: rgba(53, 200, 179, 0.15); color: var(--teal); }
   .badge.floor { background: rgba(124, 135, 152, 0.15); color: var(--muted); }
   .badge.pending { background: rgba(224, 163, 57, 0.15); color: var(--amber); border: 1px solid rgba(224, 163, 57, 0.3); }
+  .badge.pos-open { background: rgba(76, 141, 255, 0.15); color: var(--blue); border: 1px solid rgba(76, 141, 255, 0.3); }
+  .badge.pos-win { background: rgba(53, 200, 179, 0.15); color: var(--teal); border: 1px solid rgba(53, 200, 179, 0.3); }
+  .badge.pos-loss { background: rgba(224, 163, 57, 0.15); color: var(--amber); border: 1px solid rgba(224, 163, 57, 0.3); }
+  .badge.pos-none { background: rgba(124, 135, 152, 0.1); color: var(--muted); }
   .bars {
     display: grid;
     grid-template-columns: 100px 1fr 60px;
@@ -369,6 +410,15 @@ TEMPLATE = """
       <div class="detail">of {{ "{:,}".format(data.coverage.total_markets_seen) }} seen</div>
     </div>
     {% endif %}
+    <div class="card">
+      <div class="eyebrow">Paper balance</div>
+      <div class="value" style="color: {% if data.realized_pnl > 0 %}var(--blue){% elif data.realized_pnl < 0 %}var(--amber){% else %}var(--text){% endif %};">${{ "%.2f"|format(data.balance) }}</div>
+      <div class="detail">
+        {{ "%+.2f"|format(data.realized_pnl) }} realized from ${{ "%.0f"|format(data.starting_balance) }} start
+        · {{ data.open_position_count }} open
+        {% if data.win_rate is not none %} · {{ data.win_count }}/{{ data.resolved_count }} won ({{ "%.0f"|format(data.win_rate) }}%){% endif %}
+      </div>
+    </div>
   </div>
 
   <section>
@@ -382,10 +432,10 @@ TEMPLATE = """
       {% for f in data.forecasts %}
       <div class="forecast-row">
         <div class="forecast-top">
-          <a class="forecast-question" href="/forecast/{{ f.idx }}">{{ f.question }}</a>
+          <a class="forecast-question" href="poly_dashboard_details/{{ f.idx }}.html">{{ f.question }}</a>
           <div style="display:flex; gap:6px; align-items:center;">
             <span class="badge {{ f.category }}">{{ f.category }}</span>
-            <span class="badge pending">pending</span>
+            <span class="badge {% if f.position_status == 'open' %}pos-open{% elif f.position_status == 'resolved_win' %}pos-win{% elif f.position_status == 'resolved_loss' %}pos-loss{% else %}pos-none{% endif %}">{{ f.position_label }}</span>
           </div>
         </div>
         {% if f.market_price is not none and f.probability is not none %}
@@ -485,7 +535,7 @@ DETAIL_TEMPLATE = """
 </style>
 </head>
 <body>
-  <a class="back" href="/">&larr; back to dashboard</a>
+  <a class="back" href="../poly_dashboard.html">&larr; back to dashboard</a>
   <h1>{{ f.question }}</h1>
   <div class="meta-grid">
     <div class="k">Event</div><div class="v">{{ f.event_slug }}</div>
@@ -521,20 +571,21 @@ DETAIL_TEMPLATE = """
 """
 
 
-@app.route("/")
-def dashboard():
+def main():
     data = load_dashboard_data()
-    return render_template_string(TEMPLATE, data=data)
 
+    main_template = Template(TEMPLATE)
+    OUTPUT_FILE.write_text(main_template.render(data=data), encoding="utf-8", newline="\n")
 
-@app.route("/forecast/<int:idx>")
-def forecast_detail(idx):
-    data = load_dashboard_data()
-    if idx < 0 or idx >= len(data["forecasts"]):
-        return "Forecast not found — the underlying log may have changed since this link was generated.", 404
-    return render_template_string(DETAIL_TEMPLATE, f=data["forecasts"][idx])
+    detail_template = Template(DETAIL_TEMPLATE)
+    DETAILS_DIR.mkdir(exist_ok=True)
+    for f in data["forecasts"]:
+        detail_path = DETAILS_DIR / f"{f['idx']}.html"
+        detail_path.write_text(detail_template.render(f=f), encoding="utf-8", newline="\n")
+
+    print(f"Wrote {OUTPUT_FILE} and {len(data['forecasts'])} detail page(s) to {DETAILS_DIR}/")
+    print(f"Open {OUTPUT_FILE.resolve()} in a browser.")
 
 
 if __name__ == "__main__":
-    print("Polymarket dashboard starting at http://localhost:5003")
-    app.run(port=5003, debug=True)
+    main()

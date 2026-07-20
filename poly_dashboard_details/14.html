@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>fed-decision-in-july-181 — Polymarket Bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0E14; --panel: #131822; --panel-border: #1F2733;
+    --text: #E7ECF3; --muted: #7C8798; --blue: #4C8DFF; --amber: #E0A339; --teal: #35C8B3;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Mono', monospace;
+         margin: 0; padding: 40px 32px 80px; max-width: 900px; }
+  a.back { color: var(--muted); font-size: 12px; text-decoration: none; }
+  a.back:hover { color: var(--blue); }
+  h1 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 22px;
+       margin: 14px 0 4px; letter-spacing: -0.01em; }
+  .meta-grid { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px;
+               font-size: 12px; color: var(--muted); margin: 16px 0 28px; }
+  .meta-grid .k { text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-grid .v { color: var(--text); }
+  section { margin-bottom: 28px; }
+  section h2 { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700;
+               text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+               border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; margin-bottom: 12px; }
+  .text-block { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 6px;
+                padding: 16px 18px; font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
+  .warn-block { background: rgba(224, 163, 57, 0.08); border: 1px solid rgba(224, 163, 57, 0.3);
+                border-radius: 6px; padding: 14px 16px; font-size: 12px; color: var(--amber); margin-bottom: 16px; }
+</style>
+</head>
+<body>
+  <a class="back" href="../poly_dashboard.html">&larr; back to dashboard</a>
+  <h1>Will there be no change in Fed interest rates after the July 2026 meeting?</h1>
+  <div class="meta-grid">
+    <div class="k">Event</div><div class="v">fed-decision-in-july-181</div>
+    <div class="k">Condition ID</div><div class="v">0x8bf1c1536ecb1c08fe13c6b71e8ab1f58bf3461c4cb79f5f1679f869a06aef86</div>
+    <div class="k">Category</div><div class="v">priority</div>
+    <div class="k">Forecast at</div><div class="v">2026-07-18T02:58:40.171578+00:00</div>
+    <div class="k">Closes</div><div class="v">2026-07-29</div>
+    <div class="k">Market price</div><div class="v">94.2%</div>
+    <div class="k">Bot estimate</div><div class="v">94.0%</div>
+    <div class="k">Extraction</div><div class="v">explicit</div>
+    <div class="k">Cost</div><div class="v">$0.0072 (est.)</div>
+  </div>
+
+  
+
+  <section>
+    <h2>Reasoning</h2>
+    <div class="text-block">Probability: 0.94
+
+The market-implied prices of 0.9425 for "no change" align closely with the extensive research showing a 96% probability on Polymarket as of mid-July 2026. The confluence of factors supporting no change is compelling: the June FOMC unanimously held rates, Fed officials have not signaled a July hike despite their typical practice, the dot plot suggests distributing roughly one hike across four remaining 2026 meetings rather than concentrating in July, and the blackout period beginning around July 18 constrains further signaling. The primary disconfirming risk is a "hot" June inflation print in mid-July, which could force Fed action, but this represents a modest tail risk relative to the overwhelming base case for a hold.</div>
+  </section>
+
+  <section>
+    <h2>Verification pass</h2>
+    <div class="text-block">**Internal Contradictions:**
+
+1. **Circular reasoning on market prices**: You cite market-implied prices of 0.9425 as evidence, then claim this aligns with "96% probability on Polymarket" — but these are the same thing, not independent confirmation.
+
+2. **Weak risk assessment**: You acknowledge a "hot" inflation print as a "primary disconfirming risk" but then dismiss it as "modest tail risk." This is underspecified—if inflation data arrives before the decision, it could easily shift the 94% probability substantially. No quantification of how likely this outcome is or how much it would move probabilities.
+
+**Unsupported Claims:**
+
+- "Fed officials have not signaled a July hike **despite their typical practice**" — unclear what "typical practice" means here or why non-signaling is predictive.
+- The dot plot argument (distributing hikes across four</div>
+  </section>
+</body>
+</html>

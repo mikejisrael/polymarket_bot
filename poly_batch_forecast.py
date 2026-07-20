@@ -26,6 +26,36 @@ market in the group, not the full outcome distribution. That's a deliberate
 simplification to get the end-to-end loop proven out first — extending to
 full group-aware distributional forecasting (mirroring the Metaculus
 MultipleChoice handling) is a follow-up, not done here.
+
+CANDIDATE SELECTION (2026-07-19 update): new-discovery and refresh-eligible
+events are two separate pools competing for the DAILY_EVENT_CAP slots, not
+one merged ranking. Two reasons this changed:
+
+  1. With ~40,000 covered markets and single digits forecast so far, a
+     merged priority/volume ranking meant already-forecast events almost
+     never resurfaced — new high-volume events kept winning the ranking
+     every run. --refresh-count reserves N of the cap's slots specifically
+     for refresh-eligible events, so old forecasts get revisited on a
+     predictable cadence instead of hoping they rank well.
+  2. New-discovery ranking now sorts by days-to-close BEFORE volume (was
+     volume-only, priority tag aside). A one-shot forecast on a market
+     closing in 3 years is stale well before it resolves — nothing updates
+     it in between. Preferring near-term closes means the (mostly one-shot)
+     forecast stays representative up to resolution, and mirrors a known
+     Metaculus pain point: too few near-term-closing questions means a long
+     wait before a forecaster's calibration score means anything.
+
+Refresh-eligible events are ranked by a blended score: rank by days-to-close
+(soonest = best) and separately by hours-since-last-forecast (oldest = best),
+then sum the two ranks and take the lowest (best-of-both) first. This is a
+deliberately simple rank-sum blend, not a weighted formula — the two
+quantities are different units (days vs. hours) with no principled exchange
+rate between them, so combining ranks avoids inventing one.
+
+Run with --refresh-count N to reserve N slots for refresh-eligible events
+(default 0 — no dedicated quota, same as pre-2026-07-19 behavior). No
+interactive per-event approval — this only ever runs unattended via the
+GitHub Actions workflow_dispatch path, by design.
 """
 
 from __future__ import annotations
@@ -101,10 +131,12 @@ def save_history(history: dict) -> None:
     HISTORY_FILE.write_text(json.dumps(history, indent=2))
 
 
-def select_candidates(history: dict) -> list[dict]:
-    """Discover covered markets, group by event, exclude recently-forecast
-    events, rank priority-first then by volume, return one representative
-    market per candidate event (see v1 scope note in the module docstring)."""
+def select_candidates(history: dict, refresh_count: int = 0) -> tuple[list, set]:
+    """Discover covered markets, group by event, split into never-forecast
+    and refresh-eligible pools (see module docstring), and return the final
+    candidate list plus the set of event_ids that were chosen via the
+    refresh quota (so callers can label them in logs/output).
+    """
     print("Discovering covered markets...")
     records, _events, _pagination_meta, _skipped = disco.discover_all_markets(verbose=False)
     covered = [r for r in records if r.covered]
@@ -116,15 +148,10 @@ def select_candidates(history: dict) -> list[dict]:
 
     now = dt.datetime.now(dt.timezone.utc)
     candidates_skipped_no_contested_market = 0
-    candidates = []
-    for event_id, recs in by_event.items():
-        last = history.get(event_id, {}).get("last_forecast_at")
-        if last:
-            last_dt = dt.datetime.fromisoformat(last)
-            hours_since = (now - last_dt).total_seconds() / 3600
-            if hours_since < REFRESH_GATE_HOURS:
-                continue
+    never_forecast = []
+    refresh_eligible = []  # list of (record, hours_since_last_forecast)
 
+    for event_id, recs in by_event.items():
         # Within a categorical event, the highest-VOLUME market is often a
         # novelty/meme longshot (e.g. a celebrity candidate), not the one
         # that's actually contested — those draw disproportionate volume
@@ -139,14 +166,51 @@ def select_candidates(history: dict) -> list[dict]:
             candidates_skipped_no_contested_market += 1
             continue
         top_market = max(contested, key=lambda r: r.volume)
-        candidates.append(top_market)
 
-    candidates.sort(key=lambda r: (not r.priority, -r.volume))
-    print(f"Candidate events after refresh-gate filter: {len(candidates)} "
+        last = history.get(event_id, {}).get("last_forecast_at")
+        if last is None:
+            never_forecast.append(top_market)
+        else:
+            hours_since = (now - dt.datetime.fromisoformat(last)).total_seconds() / 3600
+            if hours_since >= REFRESH_GATE_HOURS:
+                refresh_eligible.append((top_market, hours_since))
+            # else: inside the gate, excluded entirely — not ready yet
+
+    # --- Refresh pool: blended rank (days-to-close rank + staleness rank) --
+    chosen_refresh_ids: set = set()
+    chosen_refresh = []
+    if refresh_count > 0 and refresh_eligible:
+        by_ttl = sorted(refresh_eligible, key=lambda x: x[0].days_to_end)
+        ttl_rank = {r.event_id: i for i, (r, _) in enumerate(by_ttl)}
+        by_staleness = sorted(refresh_eligible, key=lambda x: -x[1])  # oldest forecast first
+        staleness_rank = {r.event_id: i for i, (r, _) in enumerate(by_staleness)}
+
+        blended = sorted(
+            refresh_eligible,
+            key=lambda x: ttl_rank[x[0].event_id] + staleness_rank[x[0].event_id],
+        )
+        chosen_refresh = [r for r, _hours in blended[:refresh_count]]
+        chosen_refresh_ids = {r.event_id for r in chosen_refresh}
+
+    # --- New-discovery pool: priority tag, then days-to-close, then volume --
+    remaining_slots = max(DAILY_EVENT_CAP - len(chosen_refresh), 0)
+    never_forecast.sort(key=lambda r: (not r.priority, r.days_to_end, -r.volume))
+    chosen_new = never_forecast[:remaining_slots]
+
+    final_candidates = chosen_refresh + chosen_new
+
+    print(f"Never-forecast candidates available: {len(never_forecast)}")
+    print(f"Refresh-eligible candidates available: {len(refresh_eligible)} "
           f"(gate: {REFRESH_GATE_HOURS}h since last forecast)")
     print(f"Events skipped — no market priced in the contested "
           f"[{UNCERTAINTY_PRICE_MIN}, {UNCERTAINTY_PRICE_MAX}] band: {candidates_skipped_no_contested_market}")
-    return candidates[:DAILY_EVENT_CAP]
+    if refresh_count > 0:
+        print(f"Refresh quota requested: {refresh_count} -> selected {len(chosen_refresh)}")
+        for r in chosen_refresh:
+            print(f"  [refresh] {r.event_slug}  closes in {r.days_to_end:.1f}d")
+    print(f"New-discovery slots filled: {len(chosen_new)} (of {remaining_slots} available)")
+
+    return final_candidates, chosen_refresh_ids
 
 
 def call_openrouter_research(question: str) -> dict:
@@ -249,20 +313,21 @@ def extract_probability(text: str) -> tuple[float | None, str]:
     return None, "not_found"
 
 
-def run_forecast_loop(live: bool) -> None:
+def run_forecast_loop(live: bool, refresh_count: int = 0) -> None:
     if not ANTHROPIC_API_KEY or not OPENROUTER_API_KEY:
         print("ERROR: ANTHROPIC_API_KEY and/or OPENROUTER_API_KEY not found in environment/.env")
         sys.exit(1)
 
     history = load_history()
-    candidates = select_candidates(history)
+    candidates, refresh_ids = select_candidates(history, refresh_count=refresh_count)
 
     print(f"\nSelected {len(candidates)} events for this run (cap={DAILY_EVENT_CAP}):")
     for c in candidates:
         price = _yes_price(c)
         price_str = f"{price:.2f}" if price is not None else "?"
-        print(f"  [{'priority' if c.priority else 'floor'}] {c.event_slug}: {c.question} "
-              f"(vol=${c.volume:,.0f}, price={price_str})")
+        label = "refresh" if c.event_id in refresh_ids else ("priority" if c.priority else "floor")
+        print(f"  [{label}] {c.event_slug}: {c.question} "
+              f"(vol=${c.volume:,.0f}, price={price_str}, closes in {c.days_to_end:.1f}d)")
 
     if not live:
         print(f"\n[dry-run] Not spending anything. Would process up to {len(candidates)} events, "
@@ -382,5 +447,9 @@ def run_forecast_loop(live: bool) -> None:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Throttled batch forecasting loop")
     parser.add_argument("--live", action="store_true", help="Actually spend money (default: dry preview only)")
+    parser.add_argument("--refresh-count", type=int, default=0,
+                         help="Reserve this many of the DAILY_EVENT_CAP slots for refresh-eligible "
+                              "events (blended rank: soonest-to-close + oldest-forecast first). "
+                              "Default 0 — no dedicated quota, new-discovery only.")
     args = parser.parse_args()
-    run_forecast_loop(live=args.live)
+    run_forecast_loop(live=args.live, refresh_count=args.refresh_count)

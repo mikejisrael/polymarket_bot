@@ -1,0 +1,99 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>2026-f1-drivers-champion — Polymarket Bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0E14; --panel: #131822; --panel-border: #1F2733;
+    --text: #E7ECF3; --muted: #7C8798; --blue: #4C8DFF; --amber: #E0A339; --teal: #35C8B3;
+  }
+  * { box-sizing: border-box; }
+  body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Mono', monospace;
+         margin: 0; padding: 40px 32px 80px; max-width: 900px; }
+  a.back { color: var(--muted); font-size: 12px; text-decoration: none; }
+  a.back:hover { color: var(--blue); }
+  h1 { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 22px;
+       margin: 14px 0 4px; letter-spacing: -0.01em; }
+  .meta-grid { display: grid; grid-template-columns: auto 1fr; gap: 6px 16px;
+               font-size: 12px; color: var(--muted); margin: 16px 0 28px; }
+  .meta-grid .k { text-transform: uppercase; letter-spacing: 0.05em; }
+  .meta-grid .v { color: var(--text); }
+  section { margin-bottom: 28px; }
+  section h2 { font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700;
+               text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted);
+               border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; margin-bottom: 12px; }
+  .text-block { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 6px;
+                padding: 16px 18px; font-size: 13px; line-height: 1.6; white-space: pre-wrap; }
+  .warn-block { background: rgba(224, 163, 57, 0.08); border: 1px solid rgba(224, 163, 57, 0.3);
+                border-radius: 6px; padding: 14px 16px; font-size: 12px; color: var(--amber); margin-bottom: 16px; }
+</style>
+</head>
+<body>
+  <a class="back" href="../poly_dashboard.html">&larr; back to dashboard</a>
+  <h1>Will Lewis Hamilton be the 2026 F1 Drivers' Champion?</h1>
+  <div class="meta-grid">
+    <div class="k">Event</div><div class="v">2026-f1-drivers-champion</div>
+    <div class="k">Condition ID</div><div class="v">0x2cefe6009ea518f77b8a82714e54c0af1d0f25e99b37d4861f4a5d3ebbf142d3</div>
+    <div class="k">Category</div><div class="v">priority</div>
+    <div class="k">Forecast at</div><div class="v">2026-07-16T05:28:10.388375+00:00</div>
+    <div class="k">Closes</div><div class="v">unknown</div>
+    <div class="k">Market price</div><div class="v">14.7%</div>
+    <div class="k">Bot estimate</div><div class="v">70.0%</div>
+    <div class="k">Extraction</div><div class="v">legacy</div>
+    <div class="k">Cost</div><div class="v">$0.0094</div>
+  </div>
+
+  
+  <div class="warn-block">
+    ⚠ This probability was not captured from an explicit "Probability: X" statement
+    (legacy). Treat it as unverified — read the reasoning below directly
+    rather than trusting the number alone.
+  </div>
+  
+
+  <section>
+    <h2>Reasoning</h2>
+    <div class="text-block"># Analysis
+
+The research presents a mixed picture for Hamilton's 2026 championship chances:
+
+**Factors supporting higher probability:**
+- Hamilton has momentum, closing a 59-point gap to 32 points over five races with a win and consistent podiums
+- Antonelli's recent reliability issues (2 DNFs in 3 races) artificially inflated Hamilton's closing rate
+- The season is early enough that significant changes in performance hierarchy remain possible
+- Ferrari's power unit deficit and front-loaded upgrade strategy suggest diminishing advantages ahead
+
+**Factors supporting lower probability:**
+- Antonelli still leads by 32 points with a faster, more reliable car (Mercedes)
+- Hamilton's gap-closing was aided by Antonelli's misfortune, not pure performance advantage
+- Charles Leclerc is reportedly finding his feet and may outpace Hamilton within the team
+- When Antonelli finishes, he has demonstrated competitive pace (e.g., Silverstone before DNF)
+- Historical precedent: trailing by 32 points mid-season with a slower car is extremely difficult to overcome
+
+**Key uncertainty:**
+The current market price of 14.7% already reflects significant skepticism. However, given the early season stage and Antonelli's recent reliability concerns, there's meaningful tail risk that Mercedes fixes their issues while Ferrari stalls. Yet the baseline scenario remains Antonelli's advantage holding.
+
+The market price of 14.7% appears roughly reasonable, perhaps slightly pessimistic given early-season volatility and remaining development time, but Hamilton faces genuine structural disadvantages.
+
+**Probability: 0.17**</div>
+  </section>
+
+  <section>
+    <h2>Verification pass</h2>
+    <div class="text-block"># Internal Contradictions & Issues
+
+1. **Contradictory reliability framing**: You claim Antonelli's DNFs "artificially inflated" Hamilton's closing rate, then later treat reliability as a legitimate ongoing factor. These can't both be true—either reliability is a real performance variable or it's noise. If real, it shouldn't discount Hamilton's gap-closing.
+
+2. **Unsupported claim about Leclerc**: "Reportedly finding his feet and may outpace Hamilton" lacks evidence and timing. How does this affect the Hamilton-Antonelli championship race? This seems tangential without specifics.
+
+3. **Vague development asymmetry**: You assert Ferrari's upgrade strategy is "front-loaded" while Mercedes will improve, but provide no evidence. This contradicts the "slower car" assessment and should be either supported or removed.
+
+4. **Probability inconsistency**: You conclude the market price</div>
+  </section>
+</body>
+</html>

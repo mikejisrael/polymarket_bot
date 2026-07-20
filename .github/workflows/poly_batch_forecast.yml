@@ -9,6 +9,10 @@ on:
         description: "Actually spend money (unchecked = dry preview only)"
         type: boolean
         default: false
+      refresh_count:
+        description: "Reserve this many slots for refresh-eligible events (0 = new discovery only)"
+        type: string
+        default: "0"
 
 permissions:
   contents: write   # needed to commit forecast_history.json / forecasts_log.jsonl back
@@ -36,9 +40,9 @@ jobs:
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
         run: |
           if [ "${{ inputs.live }}" = "true" ]; then
-            python poly_batch_forecast.py --live
+            python poly_batch_forecast.py --live --refresh-count ${{ inputs.refresh_count }}
           else
-            python poly_batch_forecast.py
+            python poly_batch_forecast.py --refresh-count ${{ inputs.refresh_count }}
           fi
 
       - name: Commit updated state

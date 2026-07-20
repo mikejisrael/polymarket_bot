@@ -25,6 +25,8 @@ from pathlib import Path
 
 import poly_discovery as disco
 import poly_batch_forecast as bf
+import poly_open_positions as op
+import poly_resolve_positions as rp
 
 
 def _load_json(path: Path):
@@ -80,6 +82,14 @@ def show_config() -> None:
     print(f"  Anthropic Haiku 4.5: ${bf.ANTHROPIC_HAIKU_INPUT_PER_MTOK}/${bf.ANTHROPIC_HAIKU_OUTPUT_PER_MTOK} per MTok in/out")
     print(f"  OpenRouter Gemini 2.5 Flash :online: measured ~$0.005/event actual "
           f"(NOT the $0.035 published Google grounding rate — confirmed 7x cheaper via real pilot run)")
+
+    print("\n-- Paper trading (poly_open_positions.py / poly_resolve_positions.py) --")
+    print(f"  Position sizing: {op.SIZE_PCT:.0%} of current paper balance per position")
+    print(f"  Minimum edge to open a position: {op.EDGE_THRESHOLD}")
+    print(f"  Only trades forecasts with probability_extraction_method == 'explicit' "
+          f"(skips 'legacy' — unreliable probability capture)")
+    print(f"  poly_resolve_positions.py resolution check: {rp.GAMMA_MARKETS_URL} "
+          f"— UNTESTED against live API as of this writing, verify before trusting")
 
 
 def show_coverage() -> None:
@@ -150,6 +160,57 @@ def show_forecast_activity() -> None:
         print(f"  Most recent forecast: {most_recent.get('event_slug')} at {most_recent.get('timestamp')}")
 
 
+def show_paper_trading() -> None:
+    print_section("PAPER TRADING STATUS (from poly_state/paper_balance.json + paper_positions.json)")
+    balance_data = _load_json(op.BALANCE_FILE)
+    positions = _load_json(op.POSITIONS_FILE)
+
+    if balance_data is None:
+        print("  No paper_balance.json found locally — paper trading hasn't been initialized "
+              "here yet, or you haven't pulled the latest committed state.")
+        return
+    if isinstance(balance_data, str):
+        print(f"  {balance_data}")
+        return
+
+    print(f"  Balance: ${balance_data.get('balance', 0):.2f} "
+          f"(started at ${balance_data.get('starting_balance', 0):.2f})")
+    print(f"  Realized P&L: ${balance_data.get('realized_pnl', 0):+.2f}")
+    print(f"  Last updated: {balance_data.get('last_updated') or '(never — no resolution run yet)'}")
+
+    if not positions:
+        print("  No paper_positions.json found, or it's empty.")
+        return
+    if isinstance(positions, str):
+        print(f"  {positions}")
+        return
+
+    by_status: dict[str, int] = {}
+    for p in positions:
+        by_status[p["status"]] = by_status.get(p["status"], 0) + 1
+    print(f"  Total position records: {len(positions)}")
+    for status, count in sorted(by_status.items()):
+        print(f"    {status}: {count}")
+
+
+def show_workflow() -> None:
+    print_section("PAPER TRADING WORKFLOW (run in this order after each forecast batch)")
+    steps = [
+        "python poly_batch_forecast.py --live   (or your usual forecast run)",
+        "python poly_open_positions.py          (opens real paper positions on new forecasts; "
+        "pre-existing forecasts that predate paper trading get a $0 placeholder instead — see "
+        "backfill_skip_ids.json)",
+        "python poly_resolve_positions.py       (checks Gamma API for resolution on anything "
+        "past its end_date, settles P&L, updates the balance — UNTESTED against live API, "
+        "verify before trusting)",
+        "python poly_dashboard.py               (regenerates poly_dashboard.html + "
+        "poly_dashboard_details/ — static files, no server; open poly_dashboard.html directly)",
+    ]
+    for i, s in enumerate(steps, 1):
+        print(f"  {i}. {s}")
+    print("\n  All four are manual (workflow_dispatch only) — nothing here is on a cron yet.")
+
+
 def show_known_quirks() -> None:
     print_section("KNOWN QUIRKS / GOTCHAS (institutional memory — read before debugging from scratch)")
     quirks = [
@@ -180,6 +241,12 @@ def show_known_quirks() -> None:
         "proving the loop works; not yet reliable enough to trust for real analysis.",
         "All workflows are currently workflow_dispatch (manual) only — not yet wired to "
         "cron-job.org for scheduled runs.",
+        "Windows write_text() defaults to the cp1252 locale encoding, not UTF-8 — any file "
+        "with non-ASCII characters (e.g. the ⚠ warning glyph in poly_dashboard.py's template) "
+        "will crash with UnicodeEncodeError unless encoding='utf-8' is passed explicitly. Fixed "
+        "in poly_dashboard.py, poly_open_positions.py, poly_resolve_positions.py — apply the "
+        "same fix to any new file-writing code in this repo (same spirit as the existing "
+        "newline='\\n' line-ending rule).",
     ]
     for i, q in enumerate(quirks, 1):
         print(f"  {i}. {q}")
@@ -190,5 +257,7 @@ if __name__ == "__main__":
     show_config()
     show_coverage()
     show_forecast_activity()
+    show_paper_trading()
+    show_workflow()
     show_known_quirks()
     print()
