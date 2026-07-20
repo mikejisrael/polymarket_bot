@@ -70,18 +70,17 @@ def show_config() -> None:
 
     print("\n-- Batch forecast throttle (poly_batch_forecast.py) --")
     print(f"  Daily event cap: {bf.DAILY_EVENT_CAP}")
-    print(f"  OpenRouter spend ceiling/run: ${bf.OPENROUTER_SPEND_CEILING:.2f} "
-          f"(stated worst-case budget was $1.00/day — this is intentionally far below it)")
+    print(f"  Tavily credit ceiling/run: {bf.TAVILY_CREDIT_CEILING} "
+          f"(of 1,000/month free — research source as of 2026-07-20, was OpenRouter/Gemini before)")
     print(f"  Anthropic spend ceiling/run: ${bf.ANTHROPIC_SPEND_CEILING:.2f} "
           f"(stated worst-case budget was $0.50/day — same reasoning)")
     print(f"  Refresh gate: {bf.REFRESH_GATE_HOURS}h (won't re-forecast same event within this window)")
-    print(f"  Models: {bf.ANTHROPIC_MODEL} (reasoning+verification), {bf.OPENROUTER_MODEL} (research)")
+    print(f"  Models: {bf.ANTHROPIC_MODEL} (reasoning+verification), Tavily search depth={bf.TAVILY_SEARCH_DEPTH!r} (research)")
 
-    print("\n-- Pricing basis (verified 2026-07-08, Anthropic side from published rates, "
-          "OpenRouter side from MEASURED pilot data, not published rates) --")
+    print("\n-- Pricing basis (Anthropic side from published rates, verified 2026-07-08) --")
     print(f"  Anthropic Haiku 4.5: ${bf.ANTHROPIC_HAIKU_INPUT_PER_MTOK}/${bf.ANTHROPIC_HAIKU_OUTPUT_PER_MTOK} per MTok in/out")
-    print(f"  OpenRouter Gemini 2.5 Flash :online: measured ~$0.005/event actual "
-          f"(NOT the $0.035 published Google grounding rate — confirmed 7x cheaper via real pilot run)")
+    print(f"  Tavily: {bf.TAVILY_CREDITS_PER_REQUEST} credit(s)/search at depth={bf.TAVILY_SEARCH_DEPTH!r} "
+          f"— free tier is 1,000 credits/month, recurring (confirmed from Tavily's own docs, 2026-07-20)")
 
     print("\n-- Paper trading (poly_open_positions.py / poly_resolve_positions.py) --")
     print(f"  Position sizing: {op.SIZE_PCT:.0%} of current paper balance per position")
@@ -146,16 +145,24 @@ def show_forecast_activity() -> None:
         print(f"  Currently eligible for refresh (past the {bf.REFRESH_GATE_HOURS}h gate): {eligible_for_refresh}")
 
     if log:
-        total_or_cost = sum(r.get("openrouter_cost", 0) for r in log)
+        legacy_or_records = [r for r in log if "openrouter_cost" in r]
+        tavily_records = [r for r in log if "tavily_credits_used" in r]
+        total_or_cost = sum(r.get("openrouter_cost", 0) for r in legacy_or_records)
+        total_tavily_credits = sum(r.get("tavily_credits_used", 0) for r in tavily_records)
         total_anthropic_cost = sum(r.get("anthropic_cost", 0) for r in log)
-        measured_count = sum(1 for r in log if r.get("openrouter_cost_measured"))
+        measured_count = sum(1 for r in legacy_or_records if r.get("openrouter_cost_measured"))
         priority_count = sum(1 for r in log if r.get("category") == "priority")
         print(f"  Total forecast events logged: {len(log)}")
         print(f"  Priority vs floor: {priority_count} / {len(log) - priority_count}")
-        print(f"  Cumulative spend to date — OpenRouter: ${total_or_cost:.4f} "
-              f"({measured_count}/{len(log)} measured, rest floor-estimated)")
-        print(f"  Cumulative spend to date — Anthropic: ${total_anthropic_cost:.4f}")
-        print(f"  Cumulative spend to date — TOTAL: ${total_or_cost + total_anthropic_cost:.4f}")
+        if legacy_or_records:
+            print(f"  Legacy OpenRouter spend ({len(legacy_or_records)} events, pre-2026-07-20): "
+                  f"${total_or_cost:.4f} ({measured_count}/{len(legacy_or_records)} measured, rest floor-estimated)")
+        if tavily_records:
+            print(f"  Tavily credits used ({len(tavily_records)} events, 2026-07-20 onward): "
+                  f"{total_tavily_credits} of 1,000/month free")
+        print(f"  Cumulative Anthropic spend: ${total_anthropic_cost:.4f} "
+              f"(NOTE: not combined with OpenRouter/Tavily above — different units, "
+              f"and OpenRouter is a dead research source now, not an ongoing cost)")
         most_recent = max(log, key=lambda r: r.get("timestamp", ""))
         print(f"  Most recent forecast: {most_recent.get('event_slug')} at {most_recent.get('timestamp')}")
 
@@ -231,7 +238,8 @@ def show_known_quirks() -> None:
         "negRisk sum-to-~1 check is only meaningful for genuine categorical partitions (election "
         "winner, inflation bucket) — sports prop/exact-score groups are independent bets bundled "
         "for capital efficiency, NOT a probability partition, and are excluded from this check.",
-        "OpenRouter Gemini :online grounding cost is measured at ~$0.005/request in practice — "
+        "[HISTORICAL — no longer the research source as of 2026-07-20] OpenRouter Gemini "
+        ":online grounding cost was measured at ~$0.005/request in practice — "
         "do NOT plan budgets off the $0.035/request published Google rate, it's ~7x too high "
         "for whatever OpenRouter's actual implementation here is.",
         "poly_batch_forecast.py v1 forecasts only the single highest-volume market per grouped "

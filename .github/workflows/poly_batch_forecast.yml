@@ -37,7 +37,7 @@ jobs:
       - name: Run batch forecast
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
         run: |
           if [ "${{ inputs.live }}" = "true" ]; then
             python poly_batch_forecast.py --live --refresh-count ${{ inputs.refresh_count }}

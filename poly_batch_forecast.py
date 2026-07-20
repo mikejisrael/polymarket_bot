@@ -9,11 +9,32 @@ whichever comes first.
 Deliberately conservative by design, per Mike (2026-07-08): the $0.50/$1.00
 daily figures from the cost-analysis conversation were WORST-CASE ceilings,
 not targets. This is paper trading only right now — no reason to run near
-those ceilings. The OpenRouter balance in particular is earmarked for the
-Metaculus bot (Ben's allocation), not this project, so this script's actual
-spend ceilings are set well below the stated budget on purpose. Start small,
-watch a few real runs, raise DAILY_EVENT_CAP later once it's proven out —
-don't raise it preemptively.
+those ceilings. Start small, watch a few real runs, raise DAILY_EVENT_CAP
+later once it's proven out — don't raise it preemptively.
+
+RESEARCH SOURCE SWAP (2026-07-20, per Mike): research now runs through
+Tavily instead of OpenRouter/Gemini :online grounding. Reason: the
+OPENROUTER_API_KEY here is the SAME key/balance as Ben's Metaculus-bot
+allocation — every dollar spent here was coming out of money earmarked for
+a different, higher-priority project. Tavily's free tier is a genuinely
+recurring 1,000 API credits/month (not a one-time grant), which comfortably
+covers this bot's usage at its current (lowest-priority) scale. Output
+shape changed accordingly: Tavily returns search result snippets plus an
+optional synthesized "answer" field, not the fuller narrative summary
+Gemini's grounding produced — a reasonable trade for a free, low-priority
+research source, but worth knowing if forecast quality is ever compared
+against the earlier OpenRouter-era batches.
+
+Cost accounting changed from dollars to CREDITS for the research step —
+TAVILY_CREDIT_CEILING is a per-run credit budget, not a dollar figure.
+The Anthropic reasoning/verification steps are unchanged (still dollars,
+still ANTHROPIC_SPEND_CEILING) — only the research source moved.
+
+REFRESH OVERRIDE (2026-07-20, per Mike): an explicit --refresh-count is a
+deliberate request that must not get silently dropped by a ceiling — those
+events bypass TAVILY_CREDIT_CEILING / ANTHROPIC_SPEND_CEILING entirely.
+New-discovery candidates still respect both ceilings normally; the override
+only applies to events actually selected via the refresh quota.
 
 State persistence: poly_state/forecast_history.json tracks last-forecast
 time per event so re-runs don't burn budget re-forecasting the same handful
@@ -63,7 +84,6 @@ from __future__ import annotations
 import os
 import sys
 import json
-import time
 import argparse
 import datetime as dt
 from pathlib import Path
@@ -76,19 +96,23 @@ import poly_discovery as disco
 load_dotenv()
 
 ANTHROPIC_API_KEY = os.environ.get("ANTHROPIC_API_KEY")
-OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
+TAVILY_API_KEY = os.environ.get("TAVILY_API_KEY")
 
 ANTHROPIC_MODEL = "claude-haiku-4-5-20251001"
-OPENROUTER_MODEL = "google/gemini-2.5-flash:online"
+TAVILY_SEARCH_DEPTH = "advanced"  # 2 credits/request vs. 1 for "basic" — worth it for
+                                   # forecasting research quality, still trivial against
+                                   # the 1,000/month free allotment at this bot's scale
 
 ANTHROPIC_HAIKU_INPUT_PER_MTOK = 1.00
 ANTHROPIC_HAIKU_OUTPUT_PER_MTOK = 5.00
 
 # --- Conservative-by-design throttle settings -------------------------------
-# Deliberately far below the stated $0.50 (Anthropic) / $1.00 (OpenRouter)
-# worst-case daily budgets. Raise these only after watching real runs.
+# Deliberately far below the stated $0.50 (Anthropic) worst-case daily budget,
+# and well below the 1,000/month free Tavily allotment. Raise these only
+# after watching real runs.
 DAILY_EVENT_CAP = 15
-OPENROUTER_SPEND_CEILING = 0.10   # vs. $1.00 stated worst case
+TAVILY_CREDIT_CEILING = 40        # ~20 advanced-search events/run at 2 credits each —
+                                   # leaves room for many runs/month inside the free 1,000
 ANTHROPIC_SPEND_CEILING = 0.05    # vs. $0.50 stated worst case
 REFRESH_GATE_HOURS = 72           # don't re-forecast the same event within 3 days — prioritize breadth first
 
@@ -130,8 +154,6 @@ HISTORY_FILE = STATE_DIR / "forecast_history.json"
 FORECASTS_LOG_FILE = STATE_DIR / "forecasts_log.jsonl"
 
 REQUEST_TIMEOUT = 60
-GENERATION_STATS_RETRIES = 5
-GENERATION_STATS_RETRY_DELAY = 2
 
 
 def load_history() -> dict:
@@ -227,51 +249,45 @@ def select_candidates(history: dict, refresh_count: int = 0) -> tuple[list, set]
     return final_candidates, chosen_refresh_ids
 
 
-def call_openrouter_research(question: str) -> dict:
+TAVILY_CREDITS_PER_REQUEST = {"basic": 1, "advanced": 2}[TAVILY_SEARCH_DEPTH]
+
+
+def call_tavily_research(question: str) -> dict:
+    """Tavily returns search result snippets plus an optional synthesized
+    "answer" field — combine both into one research text block for the
+    reasoning prompt. Credit cost is deterministic per Tavily's own billing
+    (not returned in the response body), so it's tracked from the request
+    parameters, not parsed out of the response."""
     resp = requests.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}", "Content-Type": "application/json"},
+        "https://api.tavily.com/search",
+        headers={"Authorization": f"Bearer {TAVILY_API_KEY}", "Content-Type": "application/json"},
         json={
-            "model": OPENROUTER_MODEL,
-            "messages": [{
-                "role": "user",
-                "content": (
-                    f"Research the following prediction market question and summarize the "
-                    f"most relevant, current facts that would inform a probability estimate. "
-                    f"Be concise — bullet points, cite what you find.\n\nQuestion: {question}"
-                ),
-            }],
+            "query": question,
+            "search_depth": TAVILY_SEARCH_DEPTH,
+            "max_results": 5,
+            "include_answer": True,
+            "include_raw_content": False,
         },
         timeout=REQUEST_TIMEOUT,
     )
     resp.raise_for_status()
     data = resp.json()
+
+    parts = []
+    if data.get("answer"):
+        parts.append(f"Summary: {data['answer']}")
+    for r in data.get("results", []):
+        title = r.get("title", "?")
+        content = r.get("content", "")
+        url = r.get("url", "?")
+        parts.append(f"- {title}: {content} (source: {url})")
+    text = "\n".join(parts) if parts else "(no research results returned)"
+
     return {
-        "text": data["choices"][0]["message"]["content"],
-        "generation_id": data.get("id"),
-        "usage": data.get("usage", {}),
+        "text": text,
+        "credits_used": TAVILY_CREDITS_PER_REQUEST,
+        "result_count": len(data.get("results", [])),
     }
-
-
-def get_openrouter_actual_cost(generation_id: str) -> float | None:
-    if not generation_id:
-        return None
-    for _ in range(GENERATION_STATS_RETRIES):
-        try:
-            resp = requests.get(
-                "https://openrouter.ai/api/v1/generation",
-                params={"id": generation_id},
-                headers={"Authorization": f"Bearer {OPENROUTER_API_KEY}"},
-                timeout=REQUEST_TIMEOUT,
-            )
-            if resp.status_code == 200:
-                cost = resp.json().get("data", {}).get("total_cost")
-                if cost is not None:
-                    return float(cost)
-        except requests.RequestException:
-            pass
-        time.sleep(GENERATION_STATS_RETRY_DELAY)
-    return None
 
 
 def call_anthropic(prompt: str, max_tokens: int = 500) -> dict:
@@ -328,14 +344,18 @@ def extract_probability(text: str) -> tuple[float | None, str]:
 
 
 def run_forecast_loop(live: bool, refresh_count: int = 0) -> None:
-    if not ANTHROPIC_API_KEY or not OPENROUTER_API_KEY:
-        print("ERROR: ANTHROPIC_API_KEY and/or OPENROUTER_API_KEY not found in environment/.env")
+    if not ANTHROPIC_API_KEY or not TAVILY_API_KEY:
+        print("ERROR: ANTHROPIC_API_KEY and/or TAVILY_API_KEY not found in environment/.env")
         sys.exit(1)
 
     history = load_history()
     candidates, refresh_ids = select_candidates(history, refresh_count=refresh_count)
 
-    print(f"\nSelected {len(candidates)} events for this run (cap={DAILY_EVENT_CAP}):")
+    refresh_n = len(refresh_ids)
+    new_n = len(candidates) - refresh_n
+    print(f"\nSelected {len(candidates)} events for this run "
+          f"({refresh_n} refresh + {new_n} new, new-discovery capped at {DAILY_EVENT_CAP} "
+          f"but refresh_count is NOT capped — an explicit --refresh-count always runs in full):")
     for c in candidates:
         price = _yes_price(c)
         price_str = f"{price:.2f}" if price is not None else "?"
@@ -344,36 +364,34 @@ def run_forecast_loop(live: bool, refresh_count: int = 0) -> None:
               f"(vol=${c.volume:,.0f}, price={price_str}, closes in {_ttl_display(c)})")
 
     if not live:
-        print(f"\n[dry-run] Not spending anything. Would process up to {len(candidates)} events, "
-              f"stopping early if OpenRouter spend > ${OPENROUTER_SPEND_CEILING:.2f} or "
-              f"Anthropic spend > ${ANTHROPIC_SPEND_CEILING:.2f}. Re-run with --live to execute.")
+        print(f"\n[dry-run] Not spending anything. New-discovery events stop early if Tavily "
+              f"credits > {TAVILY_CREDIT_CEILING} or Anthropic spend > ${ANTHROPIC_SPEND_CEILING:.2f} "
+              f"— refresh events ({refresh_n} selected) bypass that ceiling entirely and always run. "
+              f"Re-run with --live to execute.")
         return
 
-    or_spend = 0.0
+    tavily_credits_spent = 0
     anthropic_spend = 0.0
     processed = 0
     stop_reason = "completed_all_candidates"
 
     for c in candidates:
-        if or_spend >= OPENROUTER_SPEND_CEILING:
-            stop_reason = f"openrouter_spend_ceiling_hit (${or_spend:.4f} >= ${OPENROUTER_SPEND_CEILING:.2f})"
-            break
-        if anthropic_spend >= ANTHROPIC_SPEND_CEILING:
-            stop_reason = f"anthropic_spend_ceiling_hit (${anthropic_spend:.4f} >= ${ANTHROPIC_SPEND_CEILING:.2f})"
-            break
+        is_refresh = c.event_id in refresh_ids
+        if not is_refresh:
+            if tavily_credits_spent >= TAVILY_CREDIT_CEILING:
+                stop_reason = f"tavily_credit_ceiling_hit ({tavily_credits_spent} >= {TAVILY_CREDIT_CEILING})"
+                break
+            if anthropic_spend >= ANTHROPIC_SPEND_CEILING:
+                stop_reason = f"anthropic_spend_ceiling_hit (${anthropic_spend:.4f} >= ${ANTHROPIC_SPEND_CEILING:.2f})"
+                break
+        elif tavily_credits_spent >= TAVILY_CREDIT_CEILING or anthropic_spend >= ANTHROPIC_SPEND_CEILING:
+            print(f"  [refresh override] proceeding past normal ceiling for {c.event_slug} "
+                  f"(explicit --refresh-count request, Tavily credits={tavily_credits_spent}, Anthropic=${anthropic_spend:.4f})")
 
         print(f"\n--- {c.event_slug} ---")
         try:
-            research = call_openrouter_research(c.question)
-            or_cost = get_openrouter_actual_cost(research["generation_id"])
-            or_cost_measured = or_cost is not None
-            if or_cost is None:
-                u = research["usage"]
-                or_cost = (u.get("prompt_tokens", 0) / 1_000_000 * 0.30
-                           + u.get("completion_tokens", 0) / 1_000_000 * 2.50)
-                print(f"  [warning] OpenRouter generation stats unavailable — token-only floor estimate: ${or_cost:.4f}")
-            else:
-                print(f"  OpenRouter research: ${or_cost:.4f}")
+            research = call_tavily_research(c.question)
+            print(f"  Tavily research: {research['credits_used']} credit(s), {research['result_count']} result(s)")
 
             # Deliberately NOT showing the market price here. Same principle as
             # FutureEval time-gating community-prediction reveal until close:
@@ -411,7 +429,7 @@ def run_forecast_loop(live: bool, refresh_count: int = 0) -> None:
                 print(f"  [warning] no explicit probability statement found — leaving unset "
                       f"rather than guessing (see extract_probability docstring)")
 
-            or_spend += or_cost
+            tavily_credits_spent += research["credits_used"]
             anthropic_spend += reasoning_cost + verify_cost
             processed += 1
 
@@ -429,8 +447,8 @@ def run_forecast_loop(live: bool, refresh_count: int = 0) -> None:
                 "days_to_end_at_forecast": c.days_to_end,
                 "reasoning_text": reasoning["text"],
                 "verification_text": verify["text"],
-                "openrouter_cost": or_cost,
-                "openrouter_cost_measured": or_cost_measured,
+                "research_source": "tavily",
+                "tavily_credits_used": research["credits_used"],
                 "anthropic_cost": reasoning_cost + verify_cost,
             }
             STATE_DIR.mkdir(exist_ok=True)
@@ -452,9 +470,9 @@ def run_forecast_loop(live: bool, refresh_count: int = 0) -> None:
     print(f"\n=== Run summary ===")
     print(f"Events processed: {processed}")
     print(f"Stop reason: {stop_reason}")
-    print(f"OpenRouter spend: ${or_spend:.4f} (ceiling ${OPENROUTER_SPEND_CEILING:.2f})")
+    print(f"Tavily credits used: {tavily_credits_spent} (ceiling {TAVILY_CREDIT_CEILING}, "
+          f"of 1,000/month free)")
     print(f"Anthropic spend: ${anthropic_spend:.4f} (ceiling ${ANTHROPIC_SPEND_CEILING:.2f})")
-    print(f"Total spend: ${or_spend + anthropic_spend:.4f}")
     print(f"Wrote {FORECASTS_LOG_FILE} and {HISTORY_FILE}")
 
 
