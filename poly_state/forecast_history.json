@@ -223,5 +223,30 @@
     "last_forecast_at": "2026-07-20T10:06:16.648324+00:00",
     "event_slug": "white-house-of-tweets-july-14-july-21-2026",
     "last_probability": 0.72
+  },
+  "690169": {
+    "last_forecast_at": "2026-07-21T12:29:32.113384+00:00",
+    "event_slug": "donald-trump-of-truth-social-posts-july-14-july-21",
+    "last_probability": 0.28
+  },
+  "690174": {
+    "last_forecast_at": "2026-07-21T12:29:43.225134+00:00",
+    "event_slug": "zelenskyy-of-tweets-july-14-july-21-2026",
+    "last_probability": 0.72
+  },
+  "690168": {
+    "last_forecast_at": "2026-07-21T12:29:54.105529+00:00",
+    "event_slug": "ted-cruz-of-tweets-july-14-july-21-2026",
+    "last_probability": 0.09
+  },
+  "690171": {
+    "last_forecast_at": "2026-07-21T12:30:06.977837+00:00",
+    "event_slug": "khamenei-of-tweets-july-14-july-21-2026",
+    "last_probability": 0.115
+  },
+  "659974": {
+    "last_forecast_at": "2026-07-21T12:30:16.912811+00:00",
+    "event_slug": "arizona-attorney-general-republican-primary-winner-20260702185523323",
+    "last_probability": 0.45
   }
 }
