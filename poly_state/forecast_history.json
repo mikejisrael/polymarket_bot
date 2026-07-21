@@ -248,5 +248,30 @@
     "last_forecast_at": "2026-07-21T12:30:16.912811+00:00",
     "event_slug": "arizona-attorney-general-republican-primary-winner-20260702185523323",
     "last_probability": 0.45
+  },
+  "674528": {
+    "last_forecast_at": "2026-07-21T17:02:04.749895+00:00",
+    "event_slug": "arizona-superintendent-of-public-instruction-republican-primary-winner-20260702211117571",
+    "last_probability": 0.45
+  },
+  "715344": {
+    "last_forecast_at": "2026-07-21T17:02:17.204714+00:00",
+    "event_slug": "titled-tuesday-winner-july-21-20260716211508103",
+    "last_probability": 0.72
+  },
+  "659889": {
+    "last_forecast_at": "2026-07-21T17:02:25.389582+00:00",
+    "event_slug": "the-pas-kameesak-manitoba-legislative-assembly-by-election-winner-20260702160935687",
+    "last_probability": 0.98
+  },
+  "659975": {
+    "last_forecast_at": "2026-07-21T17:02:35.465636+00:00",
+    "event_slug": "arizona-secretary-of-state-republican-primary-winner-20260702190600142",
+    "last_probability": 0.5
+  },
+  "674483": {
+    "last_forecast_at": "2026-07-21T17:02:45.219937+00:00",
+    "event_slug": "arizona-state-treasurer-republican-primary-winner-20260702191958255",
+    "last_probability": 0.95
   }
 }
