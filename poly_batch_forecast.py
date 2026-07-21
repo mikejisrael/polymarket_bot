@@ -9,7 +9,7 @@ whichever comes first.
 Deliberately conservative by design, per Mike (2026-07-08): the $0.50/$1.00
 daily figures from the cost-analysis conversation were WORST-CASE ceilings,
 not targets. This is paper trading only right now — no reason to run near
-those ceilings. Start small, watch a few real runs, raise DAILY_EVENT_CAP
+those ceilings. Start small, watch a few real runs, raise NEW_COUNT_DEFAULT
 later once it's proven out — don't raise it preemptively.
 
 RESEARCH SOURCE SWAP (2026-07-20, per Mike): research now runs through
@@ -77,6 +77,24 @@ Run with --refresh-count N to reserve N slots for refresh-eligible events
 (default 0 — no dedicated quota, same as pre-2026-07-19 behavior). No
 interactive per-event approval — this only ever runs unattended via the
 GitHub Actions workflow_dispatch path, by design.
+
+TOTAL FORECAST CAP + --new-count (2026-07-21, per Mike): two related but
+separate controls added:
+
+  1. TOTAL_FORECAST_CAP (100) — once forecast_history.json has this many
+     DISTINCT events tracked, new-discovery stops growing that set,
+     regardless of --new-count. This bounds the SIZE of the tracked pool,
+     not any single run's spend. --refresh-count is completely unaffected
+     — refreshing an already-tracked event never grows the pool, so it
+     keeps working past the cap forever.
+  2. --new-count N — how many brand-new (never-forecast) events to select
+     this run (default 15, same as the old implicit DAILY_EVENT_CAP
+     behavior when --refresh-count wasn't used). Independent of
+     --refresh-count now — previously new-discovery only got whatever was
+     left of DAILY_EVENT_CAP after refresh took its share; now each is its
+     own explicit request. If --new-count asks for more than the total cap
+     has room for, it's silently clamped (logged, not an error) rather than
+     refused outright.
 """
 
 from __future__ import annotations
@@ -110,7 +128,13 @@ ANTHROPIC_HAIKU_OUTPUT_PER_MTOK = 5.00
 # Deliberately far below the stated $0.50 (Anthropic) worst-case daily budget,
 # and well below the 1,000/month free Tavily allotment. Raise these only
 # after watching real runs.
-DAILY_EVENT_CAP = 15
+NEW_COUNT_DEFAULT = 15            # default for --new-count when not passed explicitly
+                                   # (was DAILY_EVENT_CAP -- renamed 2026-07-21 since it's
+                                   # no longer a shared cap, just new-discovery's own default)
+TOTAL_FORECAST_CAP = 100          # once forecast_history.json tracks this many distinct
+                                   # events, new-discovery stops growing the pool -- does
+                                   # NOT affect --refresh-count, which keeps working on
+                                   # already-tracked events forever
 TAVILY_CREDIT_CEILING = 40        # ~20 advanced-search events/run at 2 credits each —
                                    # leaves room for many runs/month inside the free 1,000
 ANTHROPIC_SPEND_CEILING = 0.05    # vs. $0.50 stated worst case
@@ -167,11 +191,17 @@ def save_history(history: dict) -> None:
     HISTORY_FILE.write_text(json.dumps(history, indent=2))
 
 
-def select_candidates(history: dict, refresh_count: int = 0) -> tuple[list, set]:
+def select_candidates(history: dict, refresh_count: int = 0,
+                       new_count: int = NEW_COUNT_DEFAULT) -> tuple[list, set]:
     """Discover covered markets, group by event, split into never-forecast
     and refresh-eligible pools (see module docstring), and return the final
     candidate list plus the set of event_ids that were chosen via the
     refresh quota (so callers can label them in logs/output).
+
+    new_count is clamped by TOTAL_FORECAST_CAP: once len(history) distinct
+    events are already tracked, new-discovery has that much less room
+    (down to zero) regardless of what new_count asks for. refresh_count is
+    NOT affected by this cap at all.
     """
     print("Discovering covered markets...")
     records, _events, _pagination_meta, _skipped = disco.discover_all_markets(verbose=False)
@@ -229,9 +259,11 @@ def select_candidates(history: dict, refresh_count: int = 0) -> tuple[list, set]
         chosen_refresh_ids = {r.event_id for r in chosen_refresh}
 
     # --- New-discovery pool: priority tag, then days-to-close, then volume --
-    remaining_slots = max(DAILY_EVENT_CAP - len(chosen_refresh), 0)
+    tracked_count = len(history)
+    room_under_total_cap = max(TOTAL_FORECAST_CAP - tracked_count, 0)
+    new_planned = min(new_count, room_under_total_cap)
     never_forecast.sort(key=lambda r: (not r.priority, _ttl_sort_value(r), -r.volume))
-    chosen_new = never_forecast[:remaining_slots]
+    chosen_new = never_forecast[:new_planned]
 
     final_candidates = chosen_refresh + chosen_new
 
@@ -244,7 +276,13 @@ def select_candidates(history: dict, refresh_count: int = 0) -> tuple[list, set]
         print(f"Refresh quota requested: {refresh_count} -> selected {len(chosen_refresh)}")
         for r in chosen_refresh:
             print(f"  [refresh] {r.event_slug}  closes in {_ttl_display(r)}")
-    print(f"New-discovery slots filled: {len(chosen_new)} (of {remaining_slots} available)")
+    print(f"Total distinct events tracked: {tracked_count} "
+          f"(cap {TOTAL_FORECAST_CAP}, {room_under_total_cap} room remaining)")
+    clamp_note = ""
+    if new_count > room_under_total_cap:
+        clamp_note = f" — clamped from requested {new_count} by the {TOTAL_FORECAST_CAP}-event total cap"
+    print(f"New-discovery requested: {new_count} -> planned {new_planned}{clamp_note} "
+          f"-> filled {len(chosen_new)} (of {len(never_forecast)} never-forecast candidates available)")
 
     return final_candidates, chosen_refresh_ids
 
@@ -343,19 +381,20 @@ def extract_probability(text: str) -> tuple[float | None, str]:
     return None, "not_found"
 
 
-def run_forecast_loop(live: bool, refresh_count: int = 0) -> None:
+def run_forecast_loop(live: bool, refresh_count: int = 0, new_count: int = NEW_COUNT_DEFAULT) -> None:
     if not ANTHROPIC_API_KEY or not TAVILY_API_KEY:
         print("ERROR: ANTHROPIC_API_KEY and/or TAVILY_API_KEY not found in environment/.env")
         sys.exit(1)
 
     history = load_history()
-    candidates, refresh_ids = select_candidates(history, refresh_count=refresh_count)
+    candidates, refresh_ids = select_candidates(history, refresh_count=refresh_count, new_count=new_count)
 
     refresh_n = len(refresh_ids)
     new_n = len(candidates) - refresh_n
     print(f"\nSelected {len(candidates)} events for this run "
-          f"({refresh_n} refresh + {new_n} new, new-discovery capped at {DAILY_EVENT_CAP} "
-          f"but refresh_count is NOT capped — an explicit --refresh-count always runs in full):")
+          f"({refresh_n} refresh + {new_n} new — refresh_count and new_count are independent, "
+          f"neither caps the other; new-discovery is separately capped by the "
+          f"{TOTAL_FORECAST_CAP}-event total tracked-event limit):")
     for c in candidates:
         price = _yes_price(c)
         price_str = f"{price:.2f}" if price is not None else "?"
@@ -480,8 +519,13 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Throttled batch forecasting loop")
     parser.add_argument("--live", action="store_true", help="Actually spend money (default: dry preview only)")
     parser.add_argument("--refresh-count", type=int, default=0,
-                         help="Reserve this many of the DAILY_EVENT_CAP slots for refresh-eligible "
-                              "events (blended rank: soonest-to-close + oldest-forecast first). "
-                              "Default 0 — no dedicated quota, new-discovery only.")
+                         help="Reserve this many slots for refresh-eligible events (blended rank: "
+                              "soonest-to-close + oldest-forecast first). Default 0 — no dedicated "
+                              "quota. Always runs in full regardless of any ceiling or cap.")
+    parser.add_argument("--new-count", type=int, default=NEW_COUNT_DEFAULT,
+                         help=f"How many brand-new (never-forecast) events to select this run "
+                              f"(default {NEW_COUNT_DEFAULT}). Silently clamped (logged, not an "
+                              f"error) once forecast_history.json has {TOTAL_FORECAST_CAP} distinct "
+                              f"events tracked — does not affect --refresh-count.")
     args = parser.parse_args()
-    run_forecast_loop(live=args.live, refresh_count=args.refresh_count)
+    run_forecast_loop(live=args.live, refresh_count=args.refresh_count, new_count=args.new_count)

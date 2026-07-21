@@ -10,9 +10,13 @@ on:
         type: boolean
         default: false
       refresh_count:
-        description: "Reserve this many slots for refresh-eligible events (0 = new discovery only)"
+        description: "Reserve this many slots for refresh-eligible events (always runs in full, unaffected by the 100-event total cap)"
         type: string
-        default: "0"
+        default: "5"
+      new_count:
+        description: "How many brand-new events to select (clamped by the 100-event total tracked-event cap, never exceeds it)"
+        type: string
+        default: "5"
 
 permissions:
   contents: write   # needed to commit forecast_history.json / forecasts_log.jsonl back
@@ -40,9 +44,9 @@ jobs:
           TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
         run: |
           if [ "${{ inputs.live }}" = "true" ]; then
-            python poly_batch_forecast.py --live --refresh-count ${{ inputs.refresh_count }}
+            python poly_batch_forecast.py --live --refresh-count ${{ inputs.refresh_count }} --new-count ${{ inputs.new_count }}
           else
-            python poly_batch_forecast.py --refresh-count ${{ inputs.refresh_count }}
+            python poly_batch_forecast.py --refresh-count ${{ inputs.refresh_count }} --new-count ${{ inputs.new_count }}
           fi
 
       - name: Open/upgrade paper positions
