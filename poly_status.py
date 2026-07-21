@@ -73,9 +73,10 @@ def show_config() -> None:
     print("\n-- Batch forecast throttle (poly_batch_forecast.py) --")
     print(f"  New-discovery default (--new-count if not passed): {bf.NEW_COUNT_DEFAULT} "
           f"(was DAILY_EVENT_CAP -- renamed 2026-07-21, no longer a shared cap)")
-    print(f"  Total tracked-event cap: {bf.TOTAL_FORECAST_CAP} — once forecast_history.json has "
-          f"this many distinct events, --new-count gets silently clamped (logged, not an error); "
-          f"--refresh-count is completely unaffected and always runs in full")
+    print(f"  Total tracked-event cap: {bf.TOTAL_FORECAST_CAP} — ROLLING as of 2026-07-22, "
+          f"counts only ACTIVE (not-yet-closed) tracked events; once a tracked event's end_date "
+          f"passes it stops counting and frees a slot automatically. --new-count gets silently "
+          f"clamped (logged, not an error) once active count hits the cap; --refresh-count is unaffected")
     print(f"  Refresh ranking: blended rank-sum of soonest-to-close + oldest-last-forecast "
           f"(neither dominates alone — see select_candidates() docstring)")
     print(f"  New-discovery ranking: priority tag first, then soonest-to-close, THEN volume "

@@ -81,20 +81,42 @@ GitHub Actions workflow_dispatch path, by design.
 TOTAL FORECAST CAP + --new-count (2026-07-21, per Mike): two related but
 separate controls added:
 
-  1. TOTAL_FORECAST_CAP (100) — once forecast_history.json has this many
-     DISTINCT events tracked, new-discovery stops growing that set,
-     regardless of --new-count. This bounds the SIZE of the tracked pool,
-     not any single run's spend. --refresh-count is completely unaffected
-     — refreshing an already-tracked event never grows the pool, so it
+  1. TOTAL_FORECAST_CAP (100) — ROLLING as of 2026-07-22 (was all-time-total
+     before, which meant it only ever grew and never actually freed up —
+     directly contradicted the goal of a rolling ~100-event pool). Counts
+     only ACTIVE (not-yet-closed) tracked events — see _is_active(). Once a
+     tracked event's end_date passes, it stops counting against the cap
+     automatically, freeing a slot for new-discovery with no manual
+     bookkeeping needed. --refresh-count is completely unaffected either
+     way — refreshing an already-tracked event never grows the pool, so it
      keeps working past the cap forever.
   2. --new-count N — how many brand-new (never-forecast) events to select
      this run (default 15, same as the old implicit DAILY_EVENT_CAP
      behavior when --refresh-count wasn't used). Independent of
      --refresh-count now — previously new-discovery only got whatever was
      left of DAILY_EVENT_CAP after refresh took its share; now each is its
-     own explicit request. If --new-count asks for more than the total cap
-     has room for, it's silently clamped (logged, not an error) rather than
-     refused outright.
+     own explicit request. If --new-count asks for more than the rolling
+     cap has room for, it's silently clamped (logged, not an error) rather
+     than refused outright.
+
+New-discovery deliberately favors soonest-to-close markets over volume (see
+the TTL-priority rule above) — combined with the rolling cap, the intent is
+a pool that self-sustains on roughly a <60-day cycle: short-TTL markets get
+picked, close relatively fast, stop counting against the cap, and free room
+for the next batch. This is a SOFT bias, not a hard guarantee — worth
+watching actual rollover behavior over time rather than assuming it holds.
+
+CONTESTED-BAND FILTER SCOPE FIX (2026-07-22, per Mike): the "only forecast
+markets priced between 0.05 and 0.95" filter now applies ONLY to brand-new
+event selection, never to refresh. Previously it gated both, which meant an
+already-tracked event whose price drifted to near-certainty over time
+silently fell out of the refresh-eligible pool forever — even while sitting
+well past the 72h gate — with the dashboard still showing it as "eligible"
+(the dashboard only checks the calendar gate, with no visibility into
+coverage/price-band dropout). Confirmed in production: two World Cup
+markets got stuck exactly this way. A market becoming near-certain is the
+market doing its job, not a reason to stop tracking it — the bot should
+just forecast 0.02 or 0.98 and let the usual resolve step close it out.
 """
 
 from __future__ import annotations
@@ -189,7 +211,23 @@ def load_history() -> dict:
 
 def save_history(history: dict) -> None:
     STATE_DIR.mkdir(exist_ok=True)
-    HISTORY_FILE.write_text(json.dumps(history, indent=2))
+    HISTORY_FILE.write_text(json.dumps(history, indent=2), encoding="utf-8", newline="\n")
+
+
+def _is_active(history_entry: dict, now: dt.datetime) -> bool:
+    """For the rolling TOTAL_FORECAST_CAP (2026-07-22): an event stops
+    counting against the cap once its market has closed, freeing a slot
+    for new-discovery automatically. Missing/unparseable end_date is
+    treated as still-active (conservative — err toward not exceeding the
+    cap rather than silently over-counting room)."""
+    end_date_raw = history_entry.get("end_date")
+    if not end_date_raw:
+        return True
+    try:
+        end_dt = dt.datetime.fromisoformat(end_date_raw.replace("Z", "+00:00"))
+    except (ValueError, TypeError):
+        return True
+    return now < end_dt
 
 
 def select_candidates(history: dict, refresh_count: int = 0,
@@ -199,10 +237,24 @@ def select_candidates(history: dict, refresh_count: int = 0,
     candidate list plus the set of event_ids that were chosen via the
     refresh quota (so callers can label them in logs/output).
 
-    new_count is clamped by TOTAL_FORECAST_CAP: once len(history) distinct
-    events are already tracked, new-discovery has that much less room
-    (down to zero) regardless of what new_count asks for. refresh_count is
-    NOT affected by this cap at all.
+    new_count is clamped by TOTAL_FORECAST_CAP, counting only ACTIVE
+    (not-yet-closed) tracked events (2026-07-22 — was all-time total
+    before, which meant the cap only ever grew and never actually rolled;
+    see module docstring). refresh_count is NOT affected by this cap at all.
+
+    Contested-band filtering (2026-07-22 fix): only applied to BRAND-NEW
+    events, never to already-tracked ones. Previously it gated refresh too,
+    which meant an event whose price drifted to near-certainty over time
+    silently dropped out of the refresh-eligible pool forever — even
+    though it was still well past the 72h gate — with no way to ever
+    re-enter it short of manually removing it from history. Confirmed in
+    production: two World Cup markets sat "eligible" on the dashboard
+    (which only checks the calendar gate) while the batch script found
+    zero refresh candidates, because both had genuinely moved outside the
+    contested band. A market becoming near-certain is the market doing
+    its job, not a reason to stop refreshing it — the bot should just
+    forecast 0.02 or 0.98 and let it close out normally through the usual
+    resolve step.
     """
     print("Discovering covered markets...")
     records, _events, _pagination_meta, _skipped = disco.discover_all_markets(verbose=False)
@@ -219,29 +271,38 @@ def select_candidates(history: dict, refresh_count: int = 0,
     refresh_eligible = []  # list of (record, hours_since_last_forecast)
 
     for event_id, recs in by_event.items():
-        # Within a categorical event, the highest-VOLUME market is often a
-        # novelty/meme longshot (e.g. a celebrity candidate), not the one
-        # that's actually contested — those draw disproportionate volume
-        # precisely because they're a fun bet, not because the outcome is
-        # uncertain. Research spend is wasted on a market that's already
-        # priced near-certain. Filter to genuinely contested markets first
-        # (price inside the uncertainty band), THEN pick by volume among
-        # those — keeps liquidity as a tiebreaker without picking obvious "no"s.
-        contested = [r for r in recs if (p := _yes_price(r)) is not None
-                     and UNCERTAINTY_PRICE_MIN <= p <= UNCERTAINTY_PRICE_MAX]
-        if not contested:
-            candidates_skipped_no_contested_market += 1
-            continue
-        top_market = max(contested, key=lambda r: r.volume)
-
         last = history.get(event_id, {}).get("last_forecast_at")
-        if last is None:
-            never_forecast.append(top_market)
-        else:
+
+        if last is not None:
+            # Already tracked -- refresh candidate. Contested-band filter
+            # deliberately NOT applied here (see docstring, 2026-07-22 fix)
+            # -- pick highest-volume market in the group regardless of price.
+            top_market = max(recs, key=lambda r: r.volume)
             hours_since = (now - dt.datetime.fromisoformat(last)).total_seconds() / 3600
             if hours_since >= REFRESH_GATE_HOURS:
                 refresh_eligible.append((top_market, hours_since))
             # else: inside the gate, excluded entirely — not ready yet
+        else:
+            # Brand-new event -- contested-band filter still applies here,
+            # so research spend isn't wasted on an obvious longshot within
+            # a grouped event (e.g. "World Cup winner" with 30 country
+            # markets, most of which are near-zero novelty bets).
+            #
+            # Within a categorical event, the highest-VOLUME market is often
+            # a novelty/meme longshot (e.g. a celebrity candidate), not the
+            # one that's actually contested — those draw disproportionate
+            # volume precisely because they're a fun bet, not because the
+            # outcome is uncertain. Filter to genuinely contested markets
+            # first (price inside the uncertainty band), THEN pick by volume
+            # among those — keeps liquidity as a tiebreaker without picking
+            # obvious "no"s.
+            contested = [r for r in recs if (p := _yes_price(r)) is not None
+                         and UNCERTAINTY_PRICE_MIN <= p <= UNCERTAINTY_PRICE_MAX]
+            if not contested:
+                candidates_skipped_no_contested_market += 1
+                continue
+            top_market = max(contested, key=lambda r: r.volume)
+            never_forecast.append(top_market)
 
     # --- Refresh pool: blended rank (days-to-close rank + staleness rank) --
     chosen_refresh_ids: set = set()
@@ -260,8 +321,8 @@ def select_candidates(history: dict, refresh_count: int = 0,
         chosen_refresh_ids = {r.event_id for r in chosen_refresh}
 
     # --- New-discovery pool: priority tag, then days-to-close, then volume --
-    tracked_count = len(history)
-    room_under_total_cap = max(TOTAL_FORECAST_CAP - tracked_count, 0)
+    tracked_active_count = sum(1 for h in history.values() if _is_active(h, now))
+    room_under_total_cap = max(TOTAL_FORECAST_CAP - tracked_active_count, 0)
     new_planned = min(new_count, room_under_total_cap)
     never_forecast.sort(key=lambda r: (not r.priority, _ttl_sort_value(r), -r.volume))
     chosen_new = never_forecast[:new_planned]
@@ -277,11 +338,12 @@ def select_candidates(history: dict, refresh_count: int = 0,
         print(f"Refresh quota requested: {refresh_count} -> selected {len(chosen_refresh)}")
         for r in chosen_refresh:
             print(f"  [refresh] {r.event_slug}  closes in {_ttl_display(r)}")
-    print(f"Total distinct events tracked: {tracked_count} "
-          f"(cap {TOTAL_FORECAST_CAP}, {room_under_total_cap} room remaining)")
+    print(f"Active tracked events (rolling cap): {tracked_active_count} of {TOTAL_FORECAST_CAP} cap, "
+          f"{room_under_total_cap} room remaining ({len(history)} total-ever-tracked, "
+          f"{len(history) - tracked_active_count} closed and no longer counted)")
     clamp_note = ""
     if new_count > room_under_total_cap:
-        clamp_note = f" — clamped from requested {new_count} by the {TOTAL_FORECAST_CAP}-event total cap"
+        clamp_note = f" — clamped from requested {new_count} by the {TOTAL_FORECAST_CAP}-event rolling cap"
     print(f"New-discovery requested: {new_count} -> planned {new_planned}{clamp_note} "
           f"-> filled {len(chosen_new)} (of {len(never_forecast)} never-forecast candidates available)")
 
@@ -498,13 +560,16 @@ def run_forecast_loop(live: bool, refresh_count: int = 0, new_count: int = NEW_C
                 "anthropic_cost": reasoning_cost + verify_cost,
             }
             STATE_DIR.mkdir(exist_ok=True)
-            with open(FORECASTS_LOG_FILE, "a") as f:
+            with open(FORECASTS_LOG_FILE, "a", encoding="utf-8", newline="\n") as f:
                 f.write(json.dumps(forecast_record) + "\n")
 
             history[c.event_id] = {
                 "last_forecast_at": dt.datetime.now(dt.timezone.utc).isoformat(),
                 "event_slug": c.event_slug,
                 "last_probability": probability,
+                "end_date": c.end_date,  # needed so the rolling 100-cap (2026-07-22) can
+                                          # tell active events from closed ones without a
+                                          # live API call
             }
 
         except requests.RequestException as exc:
