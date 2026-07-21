@@ -16,7 +16,10 @@ market is treated as resolved once outcomePrices contains a value that
 rounds to 0 or 1 (i.e. no longer trading near 0.5-ish uncertainty).
 
 Settlement math (simplified prediction-market payout model):
-  - backfill_no_position: always settles to $0 P&L, balance untouched.
+  - backfill_no_position / backfill_no_edge: always settles to $0 P&L,
+    balance untouched (the latter is a placeholder that WAS re-evaluated
+    on a refresh but still didn't clear the edge threshold — same $0
+    settlement either way).
   - real position, direction correct (YES resolved & direction=="YES",
     or NO resolved & direction=="NO"): payout = size_usd / entry_price,
     pnl = payout - size_usd.
@@ -115,12 +118,12 @@ def main():
     total_pnl_this_run = 0.0
 
     for p in positions:
-        if p["status"] not in ("open", "backfill_no_position"):
+        if p["status"] not in ("open", "backfill_no_position", "backfill_no_edge"):
             continue
         if not _is_past_end_date(p.get("end_date"), now):
             continue
 
-        if p["status"] == "backfill_no_position":
+        if p["status"] in ("backfill_no_position", "backfill_no_edge"):
             # Don't even need an API call — always $0, just close it out.
             p["status"] = "resolved_no_position"
             p["resolved_at"] = now.isoformat()

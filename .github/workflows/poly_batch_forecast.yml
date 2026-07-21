@@ -45,12 +45,20 @@ jobs:
             python poly_batch_forecast.py --refresh-count ${{ inputs.refresh_count }}
           fi
 
+      - name: Open/upgrade paper positions
+        if: ${{ inputs.live }}
+        run: python poly_open_positions.py
+
+      - name: Check for resolved positions
+        if: ${{ inputs.live }}
+        run: python poly_resolve_positions.py
+
       - name: Commit updated state
         if: ${{ inputs.live }}
         run: |
           git config user.name "mikejisrael"
           git config user.email "mikejisrael@gmail.com"
-          git add poly_state/forecast_history.json poly_state/forecasts_log.jsonl
+          git add poly_state/forecast_history.json poly_state/forecasts_log.jsonl poly_state/paper_positions.json poly_state/paper_balance.json
           git diff --staged --quiet && echo "No state changes to commit" || git commit -m "Batch forecast run $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           git push
 

@@ -17,17 +17,31 @@ For each event's MOST RECENT forecast in poly_state/forecasts_log.jsonl:
 
   (c) if the event has a $0 PLACEHOLDER position AND has since been
       refreshed (a forecast exists with a timestamp newer than the
-      placeholder's opened_at), UPGRADE it to a real position in place —
-      this is what lets the legacy-20 refresh plan actually work. Bug fixed
-      2026-07-20: the original version deduped on "does this event have ANY
-      position at all," which silently froze every backfilled event at its
-      $0 placeholder forever, even after a genuine refresh — confirmed in
-      production when the Iran market's 2026-07-20 refresh produced a new
-      probability (0.18) but the position record stayed untouched at the
-      2026-07-16 placeholder. This also explains an earlier discrepancy
-      report (11 forecasts in a run, only 10 accounted for across
-      opened+skipped counters) — the silently-skipped event was never
-      counted anywhere, same root cause.
+      placeholder's opened_at):
+        - if the refresh clears EDGE_THRESHOLD, UPGRADE it to a real
+          position in place — this is what lets the legacy-20 refresh
+          plan actually work.
+        - if it DOESN'T clear the threshold (or extraction was
+          unreliable), still UPDATE the placeholder's opened_at/
+          entry_price/edge_at_entry to reflect the fresh check, with
+          status "backfill_no_edge" — distinct from "backfill_no_position"
+          because this one WAS re-evaluated under current tracking and
+          genuinely didn't warrant a trade, vs. one that's simply never
+          been looked at since backfill. Fixed 2026-07-20 (same day as the
+          upgrade fix): without this, a refreshed-but-low-edge event stayed
+          frozen at its original 2026-07-16 placeholder data forever, with
+          a dashboard label ("pre-dates tracking") that became actively
+          misleading the moment a real refresh happened.
+
+  Bug fixed 2026-07-20: the original version deduped on "does this event
+  have ANY position at all," which silently froze every backfilled event
+  at its $0 placeholder forever, even after a genuine refresh — confirmed
+  in production when the Iran market's 2026-07-20 refresh produced a new
+  probability (0.18) but the position record stayed untouched at the
+  2026-07-16 placeholder. This also explains an earlier discrepancy
+  report (11 forecasts in a run, only 10 accounted for across
+  opened+skipped counters) — the silently-skipped event was never
+  counted anywhere, same root cause.
 
   (d) otherwise (brand-new event, or a placeholder not yet refreshed):
       opens a real paper position, sized as a % of current balance, if the
@@ -126,22 +140,32 @@ def main():
 
     opened = 0
     upgraded = 0
+    refreshed_no_edge = 0
     placeholders = 0
     skipped_low_edge = 0
     skipped_unreliable = 0
     skipped_already_real = 0
 
+    PLACEHOLDER_STATUSES = ("backfill_no_position", "backfill_no_edge")
+
     for event_id, r in latest_by_event.items():
         existing_position = positions_by_event.get(event_id)
 
-        # Real position already exists (open or resolved) — never touch it.
-        if existing_position is not None and existing_position["status"] != "backfill_no_position":
+        # Real or final position already exists (open, or resolved any way) —
+        # never touch it. Placeholder statuses (backfill_no_position AND
+        # backfill_no_edge) are NOT final -- both stay eligible for future
+        # re-evaluation. Bug fixed 2026-07-21: this check used to be
+        # `!= "backfill_no_position"`, which accidentally also caught
+        # "backfill_no_edge" and froze it forever after just ONE no-edge
+        # refresh -- the same class of bug as the original Iran issue,
+        # just shifted onto the new status that was added to fix that one.
+        if existing_position is not None and existing_position["status"] not in PLACEHOLDER_STATUSES:
             skipped_already_real += 1
             continue
 
         is_stale_placeholder = (
             existing_position is not None
-            and existing_position["status"] == "backfill_no_position"
+            and existing_position["status"] in PLACEHOLDER_STATUSES
             and r.get("timestamp", "") > existing_position.get("opened_at", "")
         )
 
@@ -178,20 +202,51 @@ def main():
             continue
 
         # From here: either a brand-new (never-forecast, not skip-listed)
-        # event, or a placeholder eligible for upgrade via a genuine refresh.
+        # event, or a placeholder eligible for (re-)evaluation via a
+        # genuine refresh.
         market_price = _market_price(r)
         probability = r.get("estimated_probability")
+        reliable = r.get("probability_extraction_method") == "explicit"
 
-        if r.get("probability_extraction_method") != "explicit":
-            skipped_unreliable += 1
-            continue
+        edge = None
+        if reliable and market_price is not None and probability is not None:
+            edge = round(probability - market_price, 4)
 
-        if market_price is None or probability is None:
-            continue
+        tradeable = edge is not None and abs(edge) >= EDGE_THRESHOLD
 
-        edge = round(probability - market_price, 4)
-        if abs(edge) < EDGE_THRESHOLD:
-            skipped_low_edge += 1
+        if not tradeable:
+            if not reliable:
+                skipped_unreliable += 1
+            elif edge is not None:
+                skipped_low_edge += 1
+            # else: edge is None because price/probability data was missing
+            # entirely — nothing meaningful to record either way, counted
+            # in neither bucket, same as before.
+
+            if is_stale_placeholder:
+                # Re-evaluated on refresh, still no trade-worthy edge --
+                # update the placeholder so it reflects the CURRENT check,
+                # not the original 2026-07-16 one. Distinct status so the
+                # dashboard can tell "never refreshed" apart from "refreshed,
+                # still no edge."
+                idx = positions.index(existing_position)
+                positions[idx] = {
+                    "event_id": event_id,
+                    "event_slug": r.get("event_slug", "?"),
+                    "question": r.get("question", ""),
+                    "condition_id": r.get("condition_id", ""),
+                    "direction": None,
+                    "entry_price": market_price,
+                    "size_usd": 0.0,
+                    "edge_at_entry": edge,
+                    "opened_at": r.get("timestamp", ""),
+                    "end_date": r.get("end_date"),
+                    "status": "backfill_no_edge",
+                    "resolved_at": None,
+                    "outcome": None,
+                    "pnl_usd": 0.0,
+                }
+                refreshed_no_edge += 1
             continue
 
         direction = "YES" if edge > 0 else "NO"
@@ -228,6 +283,7 @@ def main():
 
     print(f"Opened {opened} new position(s).")
     print(f"Upgraded {upgraded} placeholder(s) to real position(s) via refresh.")
+    print(f"Re-evaluated {refreshed_no_edge} placeholder(s) on refresh — still no trade-worthy edge.")
     print(f"Recorded {placeholders} new backfill placeholder(s) (pre-existing forecasts, $0 stake).")
     print(f"Left {skipped_already_real} event(s) untouched (already have a real position).")
     print(f"Skipped {skipped_unreliable} forecast(s) with unreliable probability extraction.")

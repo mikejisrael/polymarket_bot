@@ -88,6 +88,7 @@ def load_dashboard_data() -> dict:
     total_anthropic_cost = 0.0
     total_tavily_credits = 0
     priority_count = 0
+    now = dt.datetime.now(dt.timezone.utc)
 
     for idx, r in enumerate(sorted(log, key=lambda x: x.get("timestamp", ""), reverse=True)):
         market_price = _market_price(r)
@@ -128,15 +129,33 @@ def load_dashboard_data() -> dict:
                 position_label = (f"open · {position['direction']} @ "
                                    f"{position['entry_price']:.2f} · ${position['size_usd']:.2f}")
             elif position_status == "backfill_no_position":
-                position_label = "no position (pre-dates tracking)"
+                position_label = "no position (pre-dates tracking, never refreshed)"
+            elif position_status == "backfill_no_edge":
+                edge_str = f"{position['edge_at_entry']:+.2f}" if position['edge_at_entry'] is not None else "unreliable"
+                position_label = f"no position (re-evaluated, edge {edge_str})"
             elif position_status == "resolved_no_position":
-                position_label = "closed · $0 (pre-dates tracking)"
+                position_label = "closed · $0 (no real stake)"
             elif position_status == "resolved_win":
                 position_label = f"WIN · {position['direction']} · ${position['pnl_usd']:+.2f}"
             elif position_status == "resolved_loss":
                 position_label = f"LOSS · {position['direction']} · ${position['pnl_usd']:+.2f}"
             else:
                 position_label = position_status
+
+        days_to_close = None
+        if end_date_raw:
+            try:
+                end_dt = dt.datetime.fromisoformat(end_date_raw.replace("Z", "+00:00"))
+                days_to_close = round((end_dt - now).total_seconds() / 86400, 2)
+            except (ValueError, TypeError):
+                pass
+
+        if position_status == "open":
+            position_bucket = "open"
+        elif position_status in ("resolved_win", "resolved_loss", "resolved_no_position"):
+            position_bucket = "resolved"
+        else:
+            position_bucket = "none"  # backfill_no_position, backfill_no_edge, or no record at all
 
         forecasts.append({
             "idx": idx,
@@ -147,18 +166,20 @@ def load_dashboard_data() -> dict:
             "probability": probability,
             "extraction_method": extraction_method,
             "edge": edge,
+            "edge_abs": abs(edge) if edge is not None else -1,  # -1 sorts last (no edge data)
             "cost": round(or_cost + anthropic_cost, 4),
             "cost_measured": r.get("openrouter_cost_measured", False),
             "timestamp": r.get("timestamp", ""),
             "close_display": close_display,
+            "days_to_close": days_to_close if days_to_close is not None else 999999,  # unknown sorts last
             "condition_id": r.get("condition_id", ""),
             "reasoning_text": r.get("reasoning_text", ""),
             "verification_text": r.get("verification_text", ""),
             "position_status": position_status,
+            "position_bucket": position_bucket,
             "position_label": position_label,
         })
 
-    now = dt.datetime.now(dt.timezone.utc)
     refresh_gate_hours = 72
     eligible_for_refresh = 0
     for h in history.values():
@@ -327,47 +348,96 @@ TEMPLATE = """
   .badge.pos-win { background: rgba(53, 200, 179, 0.15); color: var(--teal); border: 1px solid rgba(53, 200, 179, 0.3); }
   .badge.pos-loss { background: rgba(224, 163, 57, 0.15); color: var(--amber); border: 1px solid rgba(224, 163, 57, 0.3); }
   .badge.pos-none { background: rgba(124, 135, 152, 0.1); color: var(--muted); }
-  .bars {
-    display: grid;
-    grid-template-columns: 100px 1fr 60px;
-    align-items: center;
-    gap: 10px;
-    font-size: 11px;
-    color: var(--muted);
-    margin-bottom: 4px;
-  }
-  .bar-track {
+  .mini-bar-track {
     position: relative;
-    height: 6px;
-    background: #1B222E;
-    border-radius: 3px;
-    overflow: visible;
+    width: 80px;
+    height: 8px;
+    background: #1B2330;
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    flex-shrink: 0;
   }
-  .bar-fill {
+  .mini-bar-tick {
     position: absolute;
-    top: 0; left: 0; bottom: 0;
-    border-radius: 3px;
-  }
-  .bar-fill.market { background: var(--muted); opacity: 0.5; }
-  .bar-fill.estimate { background: var(--blue); }
-  .bar-fill.estimate.bearish { background: var(--amber); }
-  .bar-fill.estimate.neutral { background: var(--muted); }
-  .bar-marker {
-    position: absolute;
-    top: -3px;
+    top: -2px;
     width: 2px;
     height: 12px;
-    background: var(--muted);
+    border-radius: 1px;
   }
-  .meta-row {
-    display: flex;
-    gap: 18px;
+  .mini-bar-tick.market { background: var(--muted); }
+  .mini-bar-tick.estimate { background: var(--blue); }
+  .mini-bar-tick.estimate.bearish { background: var(--amber); }
+  .forecast-meta {
+    display: grid;
+    grid-template-columns: 80px 100px 80px 90px 70px 110px;
+    align-items: center;
+    gap: 6px 10px;
     font-size: 11px;
     color: var(--muted);
+    margin-top: 8px;
+  }
+  .forecast-meta .edge-positive { color: var(--blue); }
+  .forecast-meta .edge-negative { color: var(--amber); }
+  .forecast-badges {
+    display: flex;
+    gap: 6px;
+    align-items: center;
     margin-top: 10px;
   }
-  .meta-row .edge-positive { color: var(--blue); }
-  .meta-row .edge-negative { color: var(--amber); }
+  .forecast-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  .forecast-column {
+    min-width: 0;
+  }
+  .column-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+  .column-label.bullish { color: var(--blue); }
+  .column-label.bearish { color: var(--amber); }
+  #forecastList { display: none; }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--panel-border);
+  }
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .control-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-right: 2px;
+  }
+  .pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    background: transparent;
+    border: 1px solid var(--panel-border);
+    color: var(--muted);
+    padding: 4px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  .pill:hover { border-color: var(--blue); color: var(--text); }
+  .pill.active { background: rgba(76, 141, 255, 0.15); border-color: var(--blue); color: var(--blue); }
+  .result-count { font-size: 11px; color: var(--muted); margin-left: auto; }
   .empty-state {
     background: var(--panel);
     border: 1px dashed var(--panel-border);
@@ -439,58 +509,177 @@ TEMPLATE = """
       "Poly Batch Forecast" workflow) to generate the first batch.
     </div>
     {% else %}
+      <div class="controls">
+        <div class="control-group">
+          <span class="control-label">Category</span>
+          <button class="pill active" data-filter="category" data-value="all">All</button>
+          <button class="pill" data-filter="category" data-value="priority">Priority</button>
+          <button class="pill" data-filter="category" data-value="floor">Floor</button>
+        </div>
+        <div class="control-group">
+          <span class="control-label">Position</span>
+          <button class="pill active" data-filter="position" data-value="all">All</button>
+          <button class="pill" data-filter="position" data-value="open">Open</button>
+          <button class="pill" data-filter="position" data-value="none">No position</button>
+          <button class="pill" data-filter="position" data-value="resolved">Resolved</button>
+        </div>
+        <div class="control-group">
+          <span class="control-label">Sort</span>
+          <button class="pill active" data-sort="recent">Most recent</button>
+          <button class="pill" data-sort="edge">Edge (largest)</button>
+          <button class="pill" data-sort="closes">Closes soonest</button>
+          <button class="pill" data-sort="cost">Cost (highest)</button>
+        </div>
+        <span class="result-count" id="resultCount"></span>
+      </div>
+
+      <div id="forecastList">
       {% for f in data.forecasts %}
-      <div class="forecast-row">
+      <div class="forecast-row"
+           data-category="{{ f.category }}"
+           data-position="{{ f.position_bucket }}"
+           data-edge="{{ f.edge if f.edge is not none else '' }}"
+           data-edge-abs="{{ f.edge_abs }}"
+           data-days-close="{{ f.days_to_close }}"
+           data-timestamp="{{ f.timestamp }}"
+           data-cost="{{ f.cost }}">
         <div class="forecast-top">
           <a class="forecast-question" href="poly_dashboard_details/{{ f.idx }}.html">{{ f.question }}</a>
-          <div style="display:flex; gap:6px; align-items:center;">
-            <span class="badge {{ f.category }}">{{ f.category }}</span>
-            <span class="badge {% if f.position_status == 'open' %}pos-open{% elif f.position_status == 'resolved_win' %}pos-win{% elif f.position_status == 'resolved_loss' %}pos-loss{% else %}pos-none{% endif %}">{{ f.position_label }}</span>
-          </div>
         </div>
-        {% if f.market_price is not none and f.probability is not none %}
-        <div class="bars">
-          <span>MARKET</span>
-          <div class="bar-track">
-            <div class="bar-fill market" style="width: {{ (f.market_price * 100)|round(1) }}%"></div>
-            <div class="bar-marker" style="left: {{ (f.probability * 100)|round(1) }}%"></div>
+        <div class="forecast-meta">
+          {% if f.market_price is not none and f.probability is not none %}
+          <div class="mini-bar-track">
+            <div class="mini-bar-tick market" style="left: {{ (f.market_price * 100)|round(1) }}%"></div>
+            <div class="mini-bar-tick estimate {% if f.edge is not none and f.edge < 0 %}bearish{% endif %}" style="left: {{ (f.probability * 100)|round(1) }}%"></div>
           </div>
-          <span>{{ "%.0f"|format(f.market_price * 100) }}%</span>
+          <span>M {{ "%.0f"|format(f.market_price * 100) }}% &middot; B {{ "%.0f"|format(f.probability * 100) }}%{% if f.extraction_method != "explicit" %} ⚠{% endif %}</span>
+          {% if f.edge is not none %}
+            {% if f.edge > 0 %}
+              <span class="edge-positive">edge +{{ "%.2f"|format(f.edge) }}</span>
+            {% elif f.edge < 0 %}
+              <span class="edge-negative">edge {{ "%.2f"|format(f.edge) }}</span>
+            {% else %}
+              <span>edge 0.00</span>
+            {% endif %}
+          {% else %}
+            <span>&mdash;</span>
+          {% endif %}
+          {% else %}
+          <span></span><span>no price data</span><span>&mdash;</span>
+          {% endif %}
+          <span>closes {{ f.close_display }}</span>
+          <span>${{ "%.4f"|format(f.cost) }}{% if not f.cost_measured %} (est.){% endif %}</span>
+          <span>{{ f.timestamp[:16] }}</span>
         </div>
-        <div class="bars">
-          <span>BOT EST.{% if f.extraction_method != "explicit" %} ⚠{% endif %}</span>
-          <div class="bar-track">
-            <div class="bar-fill estimate {% if f.edge is not none and f.edge < 0 %}bearish{% elif f.edge is none %}neutral{% endif %}"
-                 style="width: {{ (f.probability * 100)|round(1) }}%"></div>
-          </div>
-          <span>{{ "%.0f"|format(f.probability * 100) }}%</span>
+        <div class="forecast-badges">
+          <span class="badge {{ f.category }}">{{ f.category }}</span>
+          <span class="badge {% if f.position_status == 'open' %}pos-open{% elif f.position_status == 'resolved_win' %}pos-win{% elif f.position_status == 'resolved_loss' %}pos-loss{% else %}pos-none{% endif %}">{{ f.position_label }}</span>
         </div>
         {% if f.extraction_method != "explicit" %}
-        <div class="quirk-note" style="margin-top:0; margin-bottom:6px;">
+        <div class="quirk-note" style="margin-top:6px; margin-bottom:0;">
           ⚠ probability extraction: {{ f.extraction_method }}
           {% if f.extraction_method == "legacy" %}(recorded before the extraction fix — may be unreliable, check detail page){% endif %}
         </div>
         {% endif %}
-        {% endif %}
-        <div class="meta-row">
-          <span>{{ f.event_slug }}</span>
-          <span>closes {{ f.close_display }}</span>
-          <span>{{ f.timestamp[:16] }}</span>
-          <span>${{ "%.4f"|format(f.cost) }}{% if not f.cost_measured %} (est.){% endif %}</span>
-          {% if f.edge is not none %}
-            {% if f.edge > 0 %}
-              <span class="edge-positive">edge +{{ "%.2f"|format(f.edge) }} (bot more bullish)</span>
-            {% elif f.edge < 0 %}
-              <span class="edge-negative">edge {{ "%.2f"|format(f.edge) }} (bot more bearish)</span>
-            {% else %}
-              <span>edge 0.00</span>
-            {% endif %}
-          {% endif %}
-        </div>
       </div>
       {% endfor %}
+      </div>
+
+      <div class="forecast-columns">
+        <div class="forecast-column">
+          <div class="column-label bullish">Bullish &mdash; bot &gt; market</div>
+          <div id="bullishColumn"></div>
+        </div>
+        <div class="forecast-column">
+          <div class="column-label bearish">Bearish &mdash; bot &lt; market</div>
+          <div id="bearishColumn"></div>
+        </div>
+      </div>
     {% endif %}
   </section>
+
+  <script>
+  (function() {
+    var rows = Array.prototype.slice.call(document.querySelectorAll('.forecast-row'));
+    var list = document.getElementById('forecastList');
+    var countEl = document.getElementById('resultCount');
+    var bullishCol = document.getElementById('bullishColumn');
+    var bearishCol = document.getElementById('bearishColumn');
+    if (!rows.length || !list || !bullishCol || !bearishCol) { return; }
+
+    var state = { category: 'all', position: 'all', sort: 'recent' };
+
+    function update() {
+      var visible = rows.filter(function(row) {
+        var catOk = state.category === 'all' || row.dataset.category === state.category;
+        var posOk = state.position === 'all' || row.dataset.position === state.position;
+        return catOk && posOk;
+      });
+
+      rows.forEach(function(row) { row.style.display = 'none'; });
+
+      visible.sort(function(a, b) {
+        if (state.sort === 'recent') {
+          return b.dataset.timestamp.localeCompare(a.dataset.timestamp);
+        } else if (state.sort === 'edge') {
+          return parseFloat(b.dataset.edgeAbs) - parseFloat(a.dataset.edgeAbs);
+        } else if (state.sort === 'closes') {
+          return parseFloat(a.dataset.daysClose) - parseFloat(b.dataset.daysClose);
+        } else if (state.sort === 'cost') {
+          return parseFloat(b.dataset.cost) - parseFloat(a.dataset.cost);
+        }
+        return 0;
+      });
+
+      // Split into bullish (bot > market) / bearish (bot < market) columns.
+      // Zero-edge or missing-edge rows go wherever keeps the two columns
+      // more balanced, rather than piling arbitrarily into one side.
+      var bullish = [];
+      var bearish = [];
+      visible.forEach(function(row) {
+        var edge = parseFloat(row.dataset.edge);
+        if (!isNaN(edge) && edge > 0) {
+          bullish.push(row);
+        } else if (!isNaN(edge) && edge < 0) {
+          bearish.push(row);
+        } else if (bullish.length <= bearish.length) {
+          bullish.push(row);
+        } else {
+          bearish.push(row);
+        }
+      });
+
+      visible.forEach(function(row) { row.style.display = ''; });
+      bullish.forEach(function(row) { bullishCol.appendChild(row); });
+      bearish.forEach(function(row) { bearishCol.appendChild(row); });
+
+      countEl.textContent = visible.length + ' of ' + rows.length + ' shown';
+    }
+
+    document.querySelectorAll('.pill[data-filter]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var kind = btn.dataset.filter;
+        document.querySelectorAll('.pill[data-filter="' + kind + '"]').forEach(function(b) {
+          b.classList.remove('active');
+        });
+        btn.classList.add('active');
+        state[kind] = btn.dataset.value;
+        update();
+      });
+    });
+
+    document.querySelectorAll('.pill[data-sort]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.pill[data-sort]').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        state.sort = btn.dataset.sort;
+        update();
+      });
+    });
+
+    update();
+  })();
+  </script>
 
   {% if data.coverage %}
   <section>

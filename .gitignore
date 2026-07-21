@@ -4,3 +4,4 @@ __pycache__/
 .env
 poly_dashboard.html
 poly_dashboard_details/
+poly_update.bat
