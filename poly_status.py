@@ -20,6 +20,7 @@ everything yet.
 from __future__ import annotations
 
 import json
+import os
 import datetime as dt
 from pathlib import Path
 
@@ -27,6 +28,7 @@ import poly_discovery as disco
 import poly_batch_forecast as bf
 import poly_open_positions as op
 import poly_resolve_positions as rp
+import poly_alerts as alerts
 
 
 def _load_json(path: Path):
@@ -69,11 +71,22 @@ def show_config() -> None:
     print(f"  NegRisk sum-check tolerance: {disco.NEG_RISK_SUM_TOLERANCE}")
 
     print("\n-- Batch forecast throttle (poly_batch_forecast.py) --")
-    print(f"  Daily event cap: {bf.DAILY_EVENT_CAP}")
+    print(f"  New-discovery default (--new-count if not passed): {bf.NEW_COUNT_DEFAULT} "
+          f"(was DAILY_EVENT_CAP -- renamed 2026-07-21, no longer a shared cap)")
+    print(f"  Total tracked-event cap: {bf.TOTAL_FORECAST_CAP} — once forecast_history.json has "
+          f"this many distinct events, --new-count gets silently clamped (logged, not an error); "
+          f"--refresh-count is completely unaffected and always runs in full")
+    print(f"  Refresh ranking: blended rank-sum of soonest-to-close + oldest-last-forecast "
+          f"(neither dominates alone — see select_candidates() docstring)")
+    print(f"  New-discovery ranking: priority tag first, then soonest-to-close, THEN volume "
+          f"(TTL beats volume — deliberate, so a one-shot forecast doesn't go stale long before "
+          f"its market resolves)")
     print(f"  Tavily credit ceiling/run: {bf.TAVILY_CREDIT_CEILING} "
           f"(of 1,000/month free — research source as of 2026-07-20, was OpenRouter/Gemini before)")
     print(f"  Anthropic spend ceiling/run: ${bf.ANTHROPIC_SPEND_CEILING:.2f} "
           f"(stated worst-case budget was $0.50/day — same reasoning)")
+    print(f"  --refresh-count events BYPASS both ceilings entirely (explicit request, honored in "
+          f"full) — --new-count events respect both ceilings normally")
     print(f"  Refresh gate: {bf.REFRESH_GATE_HOURS}h (won't re-forecast same event within this window)")
     print(f"  Models: {bf.ANTHROPIC_MODEL} (reasoning+verification), Tavily search depth={bf.TAVILY_SEARCH_DEPTH!r} (research)")
 
@@ -87,8 +100,24 @@ def show_config() -> None:
     print(f"  Minimum edge to open a position: {op.EDGE_THRESHOLD}")
     print(f"  Only trades forecasts with probability_extraction_method == 'explicit' "
           f"(skips 'legacy' — unreliable probability capture)")
+    print(f"  Placeholder statuses: backfill_no_position (never refreshed since backfill) vs. "
+          f"backfill_no_edge (refreshed at least once, still no trade-worthy edge) — BOTH stay "
+          f"eligible for future re-evaluation on later refreshes, neither is a dead end")
     print(f"  poly_resolve_positions.py resolution check: {rp.GAMMA_MARKETS_URL} "
-          f"— UNTESTED against live API as of this writing, verify before trusting")
+          f"— CONFIRMED working against the live API as of 2026-07-21 (ran inside the GitHub "
+          f"Actions workflow, no connection errors; still hasn't hit an actually-resolved market "
+          f"yet, so the WIN/LOSS settlement path itself remains unexercised in production)")
+
+    print("\n-- Alerts (poly_alerts.py) --")
+    topic_set = bool(os.environ.get("ALERT_NTFY_TOPIC"))
+    print(f"  ALERT_NTFY_TOPIC set in this environment: {topic_set} "
+          f"(never print the actual value — treat it like a password)")
+    print(f"  Sends one tally alert per LIVE run only (dry-runs stay silent): "
+          f"refreshed/new/total counts, Tavily credits, Anthropic spend, and the stop reason "
+          f"if the run was cut short")
+    print(f"  ASCII-only HTTP header requirement for the Title field — ntfy/requests will crash "
+          f"on emoji or smart-quotes in an un-sanitized title (see _ascii_safe_title, and the "
+          f"known quirk below about verifying replace() pairs are genuinely distinct characters)")
 
 
 def show_coverage() -> None:
@@ -201,21 +230,48 @@ def show_paper_trading() -> None:
 
 
 def show_workflow() -> None:
-    print_section("PAPER TRADING WORKFLOW (run in this order after each forecast batch)")
-    steps = [
-        "python poly_batch_forecast.py --live   (or your usual forecast run)",
-        "python poly_open_positions.py          (opens real paper positions on new forecasts; "
-        "pre-existing forecasts that predate paper trading get a $0 placeholder instead — see "
-        "backfill_skip_ids.json)",
-        "python poly_resolve_positions.py       (checks Gamma API for resolution on anything "
-        "past its end_date, settles P&L, updates the balance — UNTESTED against live API, "
-        "verify before trusting)",
-        "python poly_dashboard.py               (regenerates poly_dashboard.html + "
-        "poly_dashboard_details/ — static files, no server; open poly_dashboard.html directly)",
-    ]
-    for i, s in enumerate(steps, 1):
-        print(f"  {i}. {s}")
-    print("\n  All four are manual (workflow_dispatch only) — nothing here is on a cron yet.")
+    print_section("WORKFLOW (as of 2026-07-21 — mostly server-side now, not a local step-by-step)")
+    print("""
+  GitHub Actions ("Poly Batch Forecast" workflow) does ALL of:
+    1. python poly_batch_forecast.py --live --refresh-count N --new-count N
+    2. python poly_open_positions.py     (only runs if live=true)
+    3. python poly_resolve_positions.py  (only runs if live=true)
+    4. commits forecast_history.json, forecasts_log.jsonl, paper_positions.json,
+       paper_balance.json back to the repo
+
+  This moved server-side specifically because gamma-api.polymarket.com is
+  unreachable from Mike's AU connection (confirmed via repeated local
+  connection timeouts, 2026-07-21) — same root cause as the earlier
+  poly_discovery.py geo-block finding, just discovered again independently
+  when poly_resolve_positions.py was first pointed at a real open position.
+  GitHub's US-hosted runners are unaffected.
+
+  LOCAL, via poly_update.bat:
+    1. git pull
+    2. python poly_dashboard.py
+
+  That's it now — poly_update.bat no longer touches positions or calls any
+  Polymarket API; it's purely pull-then-render.
+
+  workflow_dispatch inputs and their YAML defaults:
+    live: false (safety default for manual UI clicks — must be explicitly
+          set true, whether by hand or in a cron payload)
+    refresh_count: "5"
+    new_count: "5"
+  (Chosen for the daily cron plan below — override per-run via the GitHub
+  UI form, or via the cron payload's "inputs" object, for anything
+  different, e.g. the one-off 19-event legacy catch-up used --refresh-count 19.)
+
+  CRON-JOB.ORG (to be set up within 24h of 2026-07-21, once/day):
+    POST https://api.github.com/repos/mikejisrael/polymarket_bot/actions/workflows/poly_batch_forecast.yml/dispatches
+    Headers: Authorization: Bearer <PAT>, Accept: application/vnd.github+json,
+             Content-Type: application/json
+    Body: {"ref": "main", "inputs": {"live": "true"}}
+  refresh_count/new_count deliberately omitted from that body — GitHub falls
+  back to the YAML defaults (5/5) for any input not explicitly included in a
+  workflow_dispatch API request. Confirmed directly from GitHub's own docs,
+  not assumed.
+""")
 
 
 def show_known_quirks() -> None:
@@ -247,14 +303,59 @@ def show_known_quirks() -> None:
         "Probability extraction from reasoning text is free-text regex, not structured output — "
         "can misparse (e.g. grabs a dismissed number mentioned earlier in the text). Fine for "
         "proving the loop works; not yet reliable enough to trust for real analysis.",
-        "All workflows are currently workflow_dispatch (manual) only — not yet wired to "
-        "cron-job.org for scheduled runs.",
+        "All workflows are currently workflow_dispatch (manual) only — a daily cron-job.org "
+        "trigger for poly_batch_forecast.yml is PLANNED (as of 2026-07-21, within 24h) but not "
+        "yet confirmed live. See the exact payload in show_workflow() above once it's set up — "
+        "check back here for whether it's actually running before assuming it is.",
         "Windows write_text() defaults to the cp1252 locale encoding, not UTF-8 — any file "
         "with non-ASCII characters (e.g. the ⚠ warning glyph in poly_dashboard.py's template) "
         "will crash with UnicodeEncodeError unless encoding='utf-8' is passed explicitly. Fixed "
         "in poly_dashboard.py, poly_open_positions.py, poly_resolve_positions.py — apply the "
         "same fix to any new file-writing code in this repo (same spirit as the existing "
         "newline='\\n' line-ending rule).",
+        "gamma-api.polymarket.com is ALSO geo-blocked from Mike's AU connection, not just the "
+        "main Polymarket site used by poly_discovery.py — poly_resolve_positions.py timed out "
+        "on every local attempt (2026-07-21) until moved into the GitHub Actions workflow, "
+        "where it worked immediately with zero connection errors. If any FUTURE script needs "
+        "to hit gamma-api.polymarket.com (or any polymarket.com subdomain), assume it needs to "
+        "run server-side too — don't rediscover this the hard way a third time.",
+        "cmd.exe's batch-file parser breaks on parentheses inside echo text located anywhere "
+        "near a multi-line if-block — even inside a REM comment, and even when the parens "
+        "aren't literally inside the if block's own body — producing a cryptic "
+        "\"X was unexpected at this time\" error at the point the block actually executes, not "
+        "at parse time. Bit poly_update.bat twice (once inside an if-block's echo, once in a "
+        "top-level REM comment). Fix: avoid parentheses in .bat file comments/echo text "
+        "entirely, use plain punctuation instead (e.g. \"--\" instead of parenthetical asides).",
+        "Python dict LITERALS used as a lookup table (e.g. "
+        "`{\"a\": f\"...\", \"b\": f\"...\"}.get(key)`) evaluate ALL their f-string values "
+        "immediately at construction time, not lazily per the key that ends up selected. Crashed "
+        "poly_dashboard.py in production: an f-string for the \"resolved_win\" branch referenced "
+        "position['pnl_usd'], which is legitimately None for \"open\" positions — but since ALL "
+        "branches evaluate regardless of which one .get() picks, an \"open\" position crashed on "
+        "a branch it was never going to use. Never caught in testing because no real \"open\" "
+        "position existed yet at the time. Fixed with an if/elif chain instead (branches only "
+        "evaluate when actually taken). Watch for this pattern anywhere a dict-of-f-strings is "
+        "used as a status-to-label lookup.",
+        "A status-check written as `!= \"specific_status\"` to mean \"already handled, skip\" is "
+        "fragile the moment a NEW status value gets introduced — it silently starts treating the "
+        "new status as \"already handled\" too, even if that wasn't the intent. Bit "
+        "poly_open_positions.py: adding \"backfill_no_edge\" (to distinguish \"refreshed, still "
+        "no edge\" from \"never refreshed\") accidentally got caught by an existing "
+        "`status != \"backfill_no_position\"` check meant to mean \"real position, don't touch\" "
+        "— froze every backfill_no_edge event from ever being re-evaluated again, the same class "
+        "of bug the status was added to FIX. Fixed by switching to an explicit allowlist tuple "
+        "of placeholder statuses instead of a negative check against one literal. General lesson: "
+        "prefer `status in (explicit, allowed, set)` over `status != one_thing` whenever more "
+        "status values might get added later.",
+        "poly_alerts.py's _ascii_safe_title() replaces smart quotes/em-dashes with plain ASCII "
+        "equivalents via .replace() pairs — when first written, a copy-pasted smart-quote "
+        "character was accidentally duplicated on both sides of one replace() call, making it a "
+        "silent no-op (the apostrophe in \"It's\" vanished instead of converting, since it fell "
+        "through to the final ascii-encode-and-drop step instead). Fixed by using explicit "
+        "\\uXXXX escapes instead of pasted Unicode glyphs in the source. If this function is ever "
+        "edited again, verify with a real test string containing each character being replaced — "
+        "don't just eyeball the replace() pairs, since visually-similar smart quotes are exactly "
+        "the kind of thing that's easy to accidentally duplicate.",
     ]
     for i, q in enumerate(quirks, 1):
         print(f"  {i}. {q}")

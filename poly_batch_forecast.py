@@ -110,6 +110,7 @@ import requests
 from dotenv import load_dotenv
 
 import poly_discovery as disco
+import poly_alerts
 
 load_dotenv()
 
@@ -412,6 +413,8 @@ def run_forecast_loop(live: bool, refresh_count: int = 0, new_count: int = NEW_C
     tavily_credits_spent = 0
     anthropic_spend = 0.0
     processed = 0
+    refresh_processed = 0
+    new_processed = 0
     stop_reason = "completed_all_candidates"
 
     for c in candidates:
@@ -471,6 +474,10 @@ def run_forecast_loop(live: bool, refresh_count: int = 0, new_count: int = NEW_C
             tavily_credits_spent += research["credits_used"]
             anthropic_spend += reasoning_cost + verify_cost
             processed += 1
+            if is_refresh:
+                refresh_processed += 1
+            else:
+                new_processed += 1
 
             forecast_record = {
                 "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
@@ -513,6 +520,17 @@ def run_forecast_loop(live: bool, refresh_count: int = 0, new_count: int = NEW_C
           f"of 1,000/month free)")
     print(f"Anthropic spend: ${anthropic_spend:.4f} (ceiling ${ANTHROPIC_SPEND_CEILING:.2f})")
     print(f"Wrote {FORECASTS_LOG_FILE} and {HISTORY_FILE}")
+
+    alert_lines = [
+        f"{refresh_processed} refreshed, {new_processed} new ({processed} total)",
+        f"Tavily: {tavily_credits_spent} credits, Anthropic: ${anthropic_spend:.4f}",
+    ]
+    if stop_reason != "completed_all_candidates":
+        alert_lines.append(f"Stopped early: {stop_reason}")
+    alert_sent = poly_alerts.send_alert("\n".join(alert_lines), title="Polymarket Bot: run complete")
+    print(f"Alert sent: {alert_sent} "
+          f"(False can mean ALERT_NTFY_TOPIC isn't set, or a genuine send failure — "
+          f"see any [alert] warning above for which)")
 
 
 if __name__ == "__main__":
