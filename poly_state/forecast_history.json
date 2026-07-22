@@ -273,5 +273,35 @@
     "last_forecast_at": "2026-07-21T17:02:45.219937+00:00",
     "event_slug": "arizona-state-treasurer-republican-primary-winner-20260702191958255",
     "last_probability": 0.95
+  },
+  "410741": {
+    "last_forecast_at": "2026-07-22T17:01:48.084721+00:00",
+    "event_slug": "south-korea-gdp-growth-yoy-in-q2-2026",
+    "last_probability": 0.42,
+    "end_date": "2026-07-23T00:00:00Z"
+  },
+  "534747": {
+    "last_forecast_at": "2026-07-22T17:02:01.430194+00:00",
+    "event_slug": "south-african-reserve-bank-decision-in-july",
+    "last_probability": 0.68,
+    "end_date": "2026-07-23T00:00:00Z"
+  },
+  "727303": {
+    "last_forecast_at": "2026-07-22T17:02:12.793367+00:00",
+    "event_slug": "what-will-trump-say-during-his-remarks-in-georgia-20260720190340703",
+    "last_probability": 0.72,
+    "end_date": "2026-07-22T23:59:00Z"
+  },
+  "708407": {
+    "last_forecast_at": "2026-07-22T17:02:22.322718+00:00",
+    "event_slug": "what-will-be-said-on-the-next-lemonade-stand-podcast-july-22-20260715172625707",
+    "last_probability": 0.72,
+    "end_date": "2026-07-22T23:59:00Z"
+  },
+  "413680": {
+    "last_forecast_at": "2026-07-22T17:02:30.882011+00:00",
+    "event_slug": "bank-of-russia-decision-in-july",
+    "last_probability": 0.95,
+    "end_date": "2026-07-24T00:00:00Z"
   }
 }
