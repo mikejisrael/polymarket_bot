@@ -185,6 +185,34 @@ def _ttl_display(r) -> str:
     return f"{r.days_to_end:.1f}d" if r.days_to_end is not None else "?d (no end_date)"
 
 
+# Priority-tag preference order when multiple match (e.g. an event tagged
+# both "crypto" and "politics") -- arbitrary but deterministic, not a
+# meaningful ranking of importance.
+_CATEGORY_PREFERENCE_ORDER = ["crypto", "politics", "economy", "sports"]
+
+
+def _derive_category(record) -> str:
+    """Replaces the old priority/floor split (2026-07-23, per Mike) — that
+    split was structurally guaranteed to show ~0% floor forever, since
+    new-discovery ranks priority first and there's a permanent backlog of
+    priority-tagged candidates, so floor markets never actually won a slot.
+    Confirmed empirically: every dashboard screenshot this whole project
+    showed "0 floor". This surfaces the ACTUAL matched category instead —
+    crypto / politics / economy / sports / other — derived from
+    MarketRecord.tags, which was already being captured during discovery
+    but discarded before reaching the forecast pipeline. "other" covers
+    anything covered purely via the volume/liquidity floor with no
+    priority tag (the old "floor" reason) — genuinely useful now, since
+    it's one bucket among several instead of a structurally-dead one."""
+    tags = set(getattr(record, "tags", None) or [])
+    for cat in _CATEGORY_PREFERENCE_ORDER[:3]:  # crypto, politics, economy
+        if cat in tags:
+            return cat
+    if tags & disco.SPORTS_TAG_SLUGS:
+        return "sports"
+    return "other"
+
+
 def _yes_price(rec) -> float | None:
     """Best-effort parse of the market's implied Yes probability from
     outcome_prices[0] — same convention used elsewhere in poly_discovery.py's
@@ -199,6 +227,8 @@ def _yes_price(rec) -> float | None:
 STATE_DIR = Path("poly_state")
 HISTORY_FILE = STATE_DIR / "forecast_history.json"
 FORECASTS_LOG_FILE = STATE_DIR / "forecasts_log.jsonl"
+POSITIONS_FILE = STATE_DIR / "paper_positions.json"
+RESOLVED_POSITION_STATUSES = {"resolved_win", "resolved_loss", "resolved_no_position"}
 
 REQUEST_TIMEOUT = 60
 
@@ -212,6 +242,23 @@ def load_history() -> dict:
 def save_history(history: dict) -> None:
     STATE_DIR.mkdir(exist_ok=True)
     HISTORY_FILE.write_text(json.dumps(history, indent=2), encoding="utf-8", newline="\n")
+
+
+def load_resolved_event_ids() -> set:
+    """Safety net for refresh eligibility (2026-07-23, per Mike): if a
+    market's local position has already resolved, never refresh it again —
+    even if it somehow still appears in a fresh discovery pass (e.g. a UMA
+    dispute reopening something, or a brief inconsistency in Polymarket's
+    own active/closed flags). Position status is a more direct, definitive
+    local signal than inferring closure from discovery dropout, and this
+    check is cheap (no live API call) since it only reads local state."""
+    if not POSITIONS_FILE.exists():
+        return set()
+    try:
+        positions = json.loads(POSITIONS_FILE.read_text())
+    except json.JSONDecodeError:
+        return set()
+    return {p["event_id"] for p in positions if p.get("status") in RESOLVED_POSITION_STATUSES}
 
 
 def _is_active(history_entry: dict, now: dt.datetime) -> bool:
@@ -255,6 +302,12 @@ def select_candidates(history: dict, refresh_count: int = 0,
     its job, not a reason to stop refreshing it — the bot should just
     forecast 0.02 or 0.98 and let it close out normally through the usual
     resolve step.
+
+    Resolved-position safety net (2026-07-23, per Mike): an event whose
+    LOCAL position has already resolved is never added to refresh_eligible,
+    even if it's still showing up in a fresh discovery pass — see
+    load_resolved_event_ids(). This is separate from (and in addition to)
+    the dashboard's own resolved-position-aware eligibility count.
     """
     print("Discovering covered markets...")
     records, _events, _pagination_meta, _skipped = disco.discover_all_markets(verbose=False)
@@ -266,7 +319,9 @@ def select_candidates(history: dict, refresh_count: int = 0,
         by_event.setdefault(r.event_id, []).append(r)
 
     now = dt.datetime.now(dt.timezone.utc)
+    resolved_ids = load_resolved_event_ids()
     candidates_skipped_no_contested_market = 0
+    candidates_skipped_already_resolved = 0
     never_forecast = []
     refresh_eligible = []  # list of (record, hours_since_last_forecast)
 
@@ -274,6 +329,9 @@ def select_candidates(history: dict, refresh_count: int = 0,
         last = history.get(event_id, {}).get("last_forecast_at")
 
         if last is not None:
+            if event_id in resolved_ids:
+                candidates_skipped_already_resolved += 1
+                continue
             # Already tracked -- refresh candidate. Contested-band filter
             # deliberately NOT applied here (see docstring, 2026-07-22 fix)
             # -- pick highest-volume market in the group regardless of price.
@@ -332,6 +390,8 @@ def select_candidates(history: dict, refresh_count: int = 0,
     print(f"Never-forecast candidates available: {len(never_forecast)}")
     print(f"Refresh-eligible candidates available: {len(refresh_eligible)} "
           f"(gate: {REFRESH_GATE_HOURS}h since last forecast)")
+    print(f"Tracked events skipped — position already resolved (safety net): "
+          f"{candidates_skipped_already_resolved}")
     print(f"Events skipped — no market priced in the contested "
           f"[{UNCERTAINTY_PRICE_MIN}, {UNCERTAINTY_PRICE_MAX}] band: {candidates_skipped_no_contested_market}")
     if refresh_count > 0:
@@ -461,7 +521,7 @@ def run_forecast_loop(live: bool, refresh_count: int = 0, new_count: int = NEW_C
     for c in candidates:
         price = _yes_price(c)
         price_str = f"{price:.2f}" if price is not None else "?"
-        label = "refresh" if c.event_id in refresh_ids else ("priority" if c.priority else "floor")
+        label = "refresh" if c.event_id in refresh_ids else _derive_category(c)
         print(f"  [{label}] {c.event_slug}: {c.question} "
               f"(vol=${c.volume:,.0f}, price={price_str}, closes in {_ttl_display(c)})")
 
@@ -547,7 +607,7 @@ def run_forecast_loop(live: bool, refresh_count: int = 0, new_count: int = NEW_C
                 "event_slug": c.event_slug,
                 "condition_id": c.condition_id,
                 "question": c.question,
-                "category": "priority" if c.priority else "floor",
+                "category": _derive_category(c),
                 "market_price_at_forecast": c.outcome_prices,
                 "estimated_probability": probability,
                 "probability_extraction_method": extraction_method,

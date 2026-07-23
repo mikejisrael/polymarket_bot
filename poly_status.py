@@ -165,14 +165,31 @@ def show_forecast_activity() -> None:
     if isinstance(history, dict):
         print(f"  Distinct events with forecast history: {len(history)}")
         now = dt.datetime.now(dt.timezone.utc)
+
+        # Resolved-position-aware (2026-07-23 fix, same as poly_dashboard.py
+        # and poly_batch_forecast.py's own safety net) -- a calendar-only
+        # check calls a permanently-closed event "eligible" forever, even
+        # though it will never actually get refreshed again. Confirmed in
+        # production with two World Cup markets that sat "eligible" here
+        # while the batch script found zero refresh candidates for the
+        # same underlying reason.
+        RESOLVED_STATUSES = {"resolved_win", "resolved_loss", "resolved_no_position"}
+        positions = _load_json(op.POSITIONS_FILE)
+        if not isinstance(positions, list):
+            positions = []  # missing, corrupt (returns a string), or empty -- treat as no positions
+        resolved_event_ids = {p["event_id"] for p in positions if p.get("status") in RESOLVED_STATUSES}
+
         eligible_for_refresh = 0
         for event_id, h in history.items():
+            if event_id in resolved_event_ids:
+                continue
             last = h.get("last_forecast_at")
             if last:
                 hours_since = (now - dt.datetime.fromisoformat(last)).total_seconds() / 3600
                 if hours_since >= bf.REFRESH_GATE_HOURS:
                     eligible_for_refresh += 1
-        print(f"  Currently eligible for refresh (past the {bf.REFRESH_GATE_HOURS}h gate): {eligible_for_refresh}")
+        print(f"  Currently eligible for refresh (past the {bf.REFRESH_GATE_HOURS}h gate, "
+              f"excludes resolved): {eligible_for_refresh}")
 
     if log:
         legacy_or_records = [r for r in log if "openrouter_cost" in r]
@@ -181,9 +198,22 @@ def show_forecast_activity() -> None:
         total_tavily_credits = sum(r.get("tavily_credits_used", 0) for r in tavily_records)
         total_anthropic_cost = sum(r.get("anthropic_cost", 0) for r in log)
         measured_count = sum(1 for r in legacy_or_records if r.get("openrouter_cost_measured"))
-        priority_count = sum(1 for r in log if r.get("category") == "priority")
+
+        # Category (2026-07-23): replaces the dead priority/floor split, which
+        # was structurally guaranteed to show ~0% floor forever (new-discovery
+        # always ranks priority first against a permanent backlog). Older
+        # records still say "priority"/"floor" -- bucketed into "other" here,
+        # same as the dashboard does, since they don't carry real category info.
+        category_counts: dict[str, int] = {}
+        for r in log:
+            cat = r.get("category", "other")
+            if cat in ("priority", "floor"):
+                cat = "other"
+            category_counts[cat] = category_counts.get(cat, 0) + 1
+
         print(f"  Total forecast events logged: {len(log)}")
-        print(f"  Priority vs floor: {priority_count} / {len(log) - priority_count}")
+        print(f"  Category breakdown: " +
+              ", ".join(f"{cat} {count}" for cat, count in sorted(category_counts.items())))
         if legacy_or_records:
             print(f"  Legacy OpenRouter spend ({len(legacy_or_records)} events, pre-2026-07-20): "
                   f"${total_or_cost:.4f} ({measured_count}/{len(legacy_or_records)} measured, rest floor-estimated)")

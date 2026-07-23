@@ -37,6 +37,7 @@ POSITIONS_FILE = STATE_DIR / "paper_positions.json"
 BALANCE_FILE = STATE_DIR / "paper_balance.json"
 
 OUTPUT_FILE = Path("poly_dashboard.html")
+ARCHIVE_OUTPUT_FILE = Path("poly_dashboard_archive.html")
 DETAILS_DIR = Path("poly_dashboard_details")
 
 
@@ -83,12 +84,33 @@ def load_dashboard_data() -> dict:
     }
     positions_by_event = {p["event_id"]: p for p in positions}
 
+    RESOLVED_STATUSES = {"resolved_win", "resolved_loss", "resolved_no_position"}
+    REFRESH_GATE_HOURS = 72
+    now = dt.datetime.now(dt.timezone.utc)
+
+    # Refresh-eligible event_ids (2026-07-23 fix): resolved-position-aware,
+    # not just calendar math. A closed/resolved event stays "eligible" by
+    # the calendar forever otherwise, even though it will never actually
+    # get refreshed again — confirmed in production with two World Cup
+    # markets that sat "eligible" here while poly_batch_forecast.py found
+    # zero refresh candidates for the same reason (their positions had
+    # already resolved).
+    refresh_eligible_event_ids = set()
+    for event_id, h in history.items():
+        position = positions_by_event.get(event_id)
+        if position and position.get("status") in RESOLVED_STATUSES:
+            continue
+        last = h.get("last_forecast_at")
+        if last:
+            hours_since = (now - dt.datetime.fromisoformat(last)).total_seconds() / 3600
+            if hours_since >= REFRESH_GATE_HOURS:
+                refresh_eligible_event_ids.add(event_id)
+
     forecasts = []
+    category_counts: dict[str, int] = {}
     total_or_cost = 0.0
     total_anthropic_cost = 0.0
     total_tavily_credits = 0
-    priority_count = 0
-    now = dt.datetime.now(dt.timezone.utc)
 
     for idx, r in enumerate(sorted(log, key=lambda x: x.get("timestamp", ""), reverse=True)):
         market_price = _market_price(r)
@@ -103,8 +125,17 @@ def load_dashboard_data() -> dict:
         total_or_cost += or_cost
         total_anthropic_cost += anthropic_cost
         total_tavily_credits += tavily_credits
-        if r.get("category") == "priority":
-            priority_count += 1
+
+        # Category (2026-07-23): replaces the old priority/floor split, which
+        # was structurally guaranteed to show ~0% floor forever (new-discovery
+        # always ranks priority first against a permanent backlog). Older
+        # records predate this and still say "priority"/"floor" — bucketed
+        # into "other" here rather than treated as a real category, since
+        # they don't carry the actual matched-tag info this scheme needs.
+        category = r.get("category", "other")
+        if category in ("priority", "floor"):
+            category = "other"
+        category_counts[category] = category_counts.get(category, 0) + 1
 
         # Older records predate both fields — treat missing extraction_method
         # as "legacy" (captured before the fix, don't claim it's reliable)
@@ -120,7 +151,8 @@ def load_dashboard_data() -> dict:
             except (ValueError, TypeError):
                 close_display = "unknown"
 
-        position = positions_by_event.get(r.get("event_id"))
+        event_id = r.get("event_id")
+        position = positions_by_event.get(event_id)
         if position is None:
             position_status, position_label = "none", "no position"
         else:
@@ -152,16 +184,23 @@ def load_dashboard_data() -> dict:
 
         if position_status == "open":
             position_bucket = "open"
-        elif position_status in ("resolved_win", "resolved_loss", "resolved_no_position"):
+        elif position_status in RESOLVED_STATUSES:
             position_bucket = "resolved"
         else:
             position_bucket = "none"  # backfill_no_position, backfill_no_edge, or no record at all
+
+        is_archived = position_status in RESOLVED_STATUSES
+        # Only flag the CURRENT/latest snapshot of an event as refresh-eligible
+        # -- older, superseded log rows for the same event shouldn't all light
+        # up just because the event happens to be eligible right now.
+        is_latest_snapshot = r.get("timestamp") == history.get(event_id, {}).get("last_forecast_at")
+        is_refresh_eligible = is_latest_snapshot and event_id in refresh_eligible_event_ids
 
         forecasts.append({
             "idx": idx,
             "event_slug": r.get("event_slug", "?"),
             "question": r.get("question", ""),
-            "category": r.get("category", "floor"),
+            "category": category,
             "market_price": market_price,
             "probability": probability,
             "extraction_method": extraction_method,
@@ -178,16 +217,12 @@ def load_dashboard_data() -> dict:
             "position_status": position_status,
             "position_bucket": position_bucket,
             "position_label": position_label,
+            "is_archived": is_archived,
+            "is_refresh_eligible": is_refresh_eligible,
         })
 
-    refresh_gate_hours = 72
-    eligible_for_refresh = 0
-    for h in history.values():
-        last = h.get("last_forecast_at")
-        if last:
-            hours_since = (now - dt.datetime.fromisoformat(last)).total_seconds() / 3600
-            if hours_since >= refresh_gate_hours:
-                eligible_for_refresh += 1
+    active_forecasts = [f for f in forecasts if not f["is_archived"]]
+    archived_forecasts = [f for f in forecasts if f["is_archived"]]
 
     open_positions = [p for p in positions if p["status"] == "open"]
     resolved_real = [p for p in positions if p["status"] in ("resolved_win", "resolved_loss")]
@@ -195,15 +230,18 @@ def load_dashboard_data() -> dict:
 
     return {
         "generated_at": now.strftime("%Y-%m-%d %H:%M UTC"),
-        "forecasts": forecasts,
+        "forecasts": active_forecasts,
+        "archived_forecasts": archived_forecasts,
+        "all_forecasts": forecasts,  # detail-page generation needs both active+archived
         "total_forecasts": len(forecasts),
-        "priority_count": priority_count,
-        "floor_count": len(forecasts) - priority_count,
+        "active_count": len(active_forecasts),
+        "archived_count": len(archived_forecasts),
+        "category_counts": category_counts,
         "total_or_cost": round(total_or_cost, 4),
         "total_anthropic_cost": round(total_anthropic_cost, 4),
         "total_tavily_credits": total_tavily_credits,
         "total_cost": round(total_or_cost + total_anthropic_cost, 4),
-        "eligible_for_refresh": eligible_for_refresh,
+        "eligible_for_refresh": len(refresh_eligible_event_ids),
         "history_count": len(history),
         "coverage": coverage,
         "balance": balance_data.get("balance", 1000.0),
@@ -341,8 +379,12 @@ TEMPLATE = """
     border-radius: 3px;
     white-space: nowrap;
   }
-  .badge.priority { background: rgba(53, 200, 179, 0.15); color: var(--teal); }
-  .badge.floor { background: rgba(124, 135, 152, 0.15); color: var(--muted); }
+  .badge.crypto { background: rgba(53, 200, 179, 0.15); color: var(--teal); }
+  .badge.politics { background: rgba(76, 141, 255, 0.15); color: var(--blue); }
+  .badge.economy { background: rgba(224, 163, 57, 0.15); color: var(--amber); }
+  .badge.sports { background: rgba(76, 141, 255, 0.08); color: var(--blue); border: 1px solid rgba(76, 141, 255, 0.3); }
+  .badge.other { background: rgba(124, 135, 152, 0.15); color: var(--muted); }
+  .badge.refresh-eligible { background: rgba(53, 200, 179, 0.15); color: var(--teal); border: 1px solid rgba(53, 200, 179, 0.4); }
   .badge.pending { background: rgba(224, 163, 57, 0.15); color: var(--amber); border: 1px solid rgba(224, 163, 57, 0.3); }
   .badge.pos-open { background: rgba(76, 141, 255, 0.15); color: var(--blue); border: 1px solid rgba(76, 141, 255, 0.3); }
   .badge.pos-win { background: rgba(53, 200, 179, 0.15); color: var(--teal); border: 1px solid rgba(53, 200, 179, 0.3); }
@@ -471,7 +513,8 @@ TEMPLATE = """
     <div class="card">
       <div class="eyebrow">Forecasts made</div>
       <div class="value">{{ data.total_forecasts }}</div>
-      <div class="detail">{{ data.priority_count }} priority / {{ data.floor_count }} floor</div>
+      <div class="detail">{{ data.active_count }} active / {{ data.archived_count }} archived &middot;
+        {% for cat, count in data.category_counts.items() %}{{ cat }} {{ count }}{% if not loop.last %} &middot; {% endif %}{% endfor %}</div>
     </div>
     <div class="card">
       <div class="eyebrow">Total spend ($)</div>
@@ -481,7 +524,7 @@ TEMPLATE = """
     <div class="card">
       <div class="eyebrow">Eligible for refresh</div>
       <div class="value">{{ data.eligible_for_refresh }}</div>
-      <div class="detail">of {{ data.history_count }} tracked (72h gate)</div>
+      <div class="detail">of {{ data.history_count }} tracked (72h gate, excludes resolved)</div>
     </div>
     {% if data.coverage %}
     <div class="card">
@@ -502,27 +545,46 @@ TEMPLATE = """
   </div>
 
   <section>
-    <h2>Forecasts</h2>
+    <div style="display:flex; justify-content:space-between; align-items:baseline;">
+      <h2>{% if data.page_type == "archive" %}Archive (resolved){% else %}Forecasts{% endif %}</h2>
+      {% if data.page_type == "archive" %}
+      <a class="forecast-question" style="font-size:12px;" href="poly_dashboard.html">&larr; back to active dashboard</a>
+      {% else %}
+      <a class="forecast-question" style="font-size:12px;" href="poly_dashboard_archive.html">view archive ({{ data.archived_count }}) &rarr;</a>
+      {% endif %}
+    </div>
     {% if not data.forecasts %}
     <div class="empty-state">
+      {% if data.page_type == "archive" %}
+      Nothing archived yet — forecasts move here once their position resolves.
+      {% else %}
       No forecasts logged yet. Run <code>poly_batch_forecast.py --live</code> (or trigger the
       "Poly Batch Forecast" workflow) to generate the first batch.
+      {% endif %}
     </div>
     {% else %}
       <div class="controls">
         <div class="control-group">
           <span class="control-label">Category</span>
           <button class="pill active" data-filter="category" data-value="all">All</button>
-          <button class="pill" data-filter="category" data-value="priority">Priority</button>
-          <button class="pill" data-filter="category" data-value="floor">Floor</button>
+          <button class="pill" data-filter="category" data-value="crypto">Crypto</button>
+          <button class="pill" data-filter="category" data-value="politics">Politics</button>
+          <button class="pill" data-filter="category" data-value="economy">Economy</button>
+          <button class="pill" data-filter="category" data-value="sports">Sports</button>
+          <button class="pill" data-filter="category" data-value="other">Other</button>
         </div>
+        {% if data.page_type != "archive" %}
         <div class="control-group">
           <span class="control-label">Position</span>
           <button class="pill active" data-filter="position" data-value="all">All</button>
           <button class="pill" data-filter="position" data-value="open">Open</button>
           <button class="pill" data-filter="position" data-value="none">No position</button>
-          <button class="pill" data-filter="position" data-value="resolved">Resolved</button>
         </div>
+        <div class="control-group">
+          <span class="control-label">Refresh</span>
+          <button class="pill" id="refreshEligibleToggle" data-toggle="refresh-eligible">Eligible only</button>
+        </div>
+        {% endif %}
         <div class="control-group">
           <span class="control-label">Sort</span>
           <button class="pill active" data-sort="recent">Most recent</button>
@@ -538,6 +600,7 @@ TEMPLATE = """
       <div class="forecast-row"
            data-category="{{ f.category }}"
            data-position="{{ f.position_bucket }}"
+           data-refresh-eligible="{{ f.is_refresh_eligible|lower }}"
            data-edge="{{ f.edge if f.edge is not none else '' }}"
            data-edge-abs="{{ f.edge_abs }}"
            data-days-close="{{ f.days_to_close }}"
@@ -607,13 +670,14 @@ TEMPLATE = """
     var bearishCol = document.getElementById('bearishColumn');
     if (!rows.length || !list || !bullishCol || !bearishCol) { return; }
 
-    var state = { category: 'all', position: 'all', sort: 'recent' };
+    var state = { category: 'all', position: 'all', sort: 'recent', refreshEligible: false };
 
     function update() {
       var visible = rows.filter(function(row) {
         var catOk = state.category === 'all' || row.dataset.category === state.category;
         var posOk = state.position === 'all' || row.dataset.position === state.position;
-        return catOk && posOk;
+        var refreshOk = !state.refreshEligible || row.dataset.refreshEligible === 'true';
+        return catOk && posOk && refreshOk;
       });
 
       rows.forEach(function(row) { row.style.display = 'none'; });
@@ -676,6 +740,15 @@ TEMPLATE = """
         update();
       });
     });
+
+    var refreshToggle = document.getElementById('refreshEligibleToggle');
+    if (refreshToggle) {
+      refreshToggle.addEventListener('click', function() {
+        state.refreshEligible = !state.refreshEligible;
+        refreshToggle.classList.toggle('active', state.refreshEligible);
+        update();
+      });
+    }
 
     update();
   })();
@@ -772,17 +845,25 @@ DETAIL_TEMPLATE = """
 
 def main():
     data = load_dashboard_data()
-
     main_template = Template(TEMPLATE)
-    OUTPUT_FILE.write_text(main_template.render(data=data), encoding="utf-8", newline="\n")
+
+    active_data = dict(data)
+    active_data["page_type"] = "active"
+    OUTPUT_FILE.write_text(main_template.render(data=active_data), encoding="utf-8", newline="\n")
+
+    archive_data = dict(data)
+    archive_data["page_type"] = "archive"
+    archive_data["forecasts"] = data["archived_forecasts"]
+    ARCHIVE_OUTPUT_FILE.write_text(main_template.render(data=archive_data), encoding="utf-8", newline="\n")
 
     detail_template = Template(DETAIL_TEMPLATE)
     DETAILS_DIR.mkdir(exist_ok=True)
-    for f in data["forecasts"]:
+    for f in data["all_forecasts"]:
         detail_path = DETAILS_DIR / f"{f['idx']}.html"
         detail_path.write_text(detail_template.render(f=f), encoding="utf-8", newline="\n")
 
-    print(f"Wrote {OUTPUT_FILE} and {len(data['forecasts'])} detail page(s) to {DETAILS_DIR}/")
+    print(f"Wrote {OUTPUT_FILE} ({data['active_count']} active) and {ARCHIVE_OUTPUT_FILE} "
+          f"({data['archived_count']} archived), {len(data['all_forecasts'])} detail page(s) to {DETAILS_DIR}/")
     print(f"Open {OUTPUT_FILE.resolve()} in a browser.")
 
 
