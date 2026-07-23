@@ -1,8 +1,9 @@
 {
   "73130": {
-    "last_forecast_at": "2026-07-20T10:04:25.364314+00:00",
+    "last_forecast_at": "2026-07-23T17:02:32.138491+00:00",
     "event_slug": "will-the-us-invade-iran-before-2027",
-    "last_probability": 0.18
+    "last_probability": 0.72,
+    "end_date": "2026-12-31T00:00:00Z"
   },
   "90177": {
     "last_forecast_at": "2026-07-20T10:37:36.052022+00:00",
@@ -15,9 +16,10 @@
     "last_probability": 0.28
   },
   "72347": {
-    "last_forecast_at": "2026-07-20T10:37:26.604822+00:00",
+    "last_forecast_at": "2026-07-23T17:02:53.375699+00:00",
     "event_slug": "will-the-iranian-regime-fall-by-the-end-of-2026",
-    "last_probability": 0.12
+    "last_probability": 0.085,
+    "end_date": "2026-12-31T00:00:00Z"
   },
   "31552": {
     "last_forecast_at": "2026-07-20T10:39:11.649905+00:00",
@@ -35,9 +37,10 @@
     "last_probability": 0.62
   },
   "23784": {
-    "last_forecast_at": "2026-07-20T10:37:16.933103+00:00",
+    "last_forecast_at": "2026-07-23T17:02:03.076956+00:00",
     "event_slug": "what-will-happen-before-gta-vi",
-    "last_probability": 0.02
+    "last_probability": 0.02,
+    "end_date": "2026-07-31T12:00:00Z"
   },
   "148292": {
     "last_forecast_at": "2026-07-20T10:38:47.481840+00:00",
@@ -50,9 +53,10 @@
     "last_probability": 0.06
   },
   "45915": {
-    "last_forecast_at": "2026-07-20T10:37:44.284474+00:00",
+    "last_forecast_at": "2026-07-23T17:02:12.147010+00:00",
     "event_slug": "brazil-presidential-election",
-    "last_probability": 0.0
+    "last_probability": 0.02,
+    "end_date": "2026-10-04T00:00:00Z"
   },
   "51456": {
     "last_forecast_at": "2026-07-20T10:38:04.673376+00:00",
@@ -60,9 +64,10 @@
     "last_probability": 0.28
   },
   "149589": {
-    "last_forecast_at": "2026-07-20T10:37:55.864969+00:00",
+    "last_forecast_at": "2026-07-23T17:02:42.928442+00:00",
     "event_slug": "which-party-will-gain-most-seats-in-russian-parliamentary-election",
-    "last_probability": 0.82
+    "last_probability": 0.92,
+    "end_date": "2026-09-30T00:00:00Z"
   },
   "455875": {
     "last_forecast_at": "2026-07-20T10:39:39.092865+00:00",
@@ -303,5 +308,35 @@
     "event_slug": "bank-of-russia-decision-in-july",
     "last_probability": 0.95,
     "end_date": "2026-07-24T00:00:00Z"
+  },
+  "508138": {
+    "last_forecast_at": "2026-07-23T17:03:04.514259+00:00",
+    "event_slug": "mlp-2026-chicago-winner",
+    "last_probability": 0.02,
+    "end_date": "2026-07-24T00:00:00Z"
+  },
+  "701422": {
+    "last_forecast_at": "2026-07-23T17:03:16.368097+00:00",
+    "event_slug": "elon-musk-of-tweets-july-17-july-24",
+    "last_probability": 0.22,
+    "end_date": "2026-07-24T16:00:00Z"
+  },
+  "701419": {
+    "last_forecast_at": "2026-07-23T17:03:26.816115+00:00",
+    "event_slug": "white-house-of-tweets-july-17-july-24-2026",
+    "last_probability": 0.42,
+    "end_date": "2026-07-24T16:00:00Z"
+  },
+  "701417": {
+    "last_forecast_at": "2026-07-23T17:03:36.395502+00:00",
+    "event_slug": "nyc-mayor-of-tweets-july-17-july-24-2026",
+    "last_probability": 0.05,
+    "end_date": "2026-07-24T16:00:00Z"
+  },
+  "701414": {
+    "last_forecast_at": "2026-07-23T17:03:47.174490+00:00",
+    "event_slug": "zelenskyy-of-tweets-july-17-july-24-2026",
+    "last_probability": 0.42,
+    "end_date": "2026-07-24T16:00:00Z"
   }
 }
