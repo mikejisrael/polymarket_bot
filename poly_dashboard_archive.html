@@ -1,0 +1,515 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polymarket Bot — Status</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0B0E14;
+    --panel: #131822;
+    --panel-border: #1F2733;
+    --text: #E7ECF3;
+    --muted: #7C8798;
+    --blue: #4C8DFF;
+    --amber: #E0A339;
+    --teal: #35C8B3;
+  }
+  * { box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'IBM Plex Mono', monospace;
+    margin: 0;
+    padding: 40px 32px 80px;
+  }
+  h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 28px;
+    margin: 0 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .subtitle {
+    color: var(--muted);
+    font-size: 13px;
+    margin-bottom: 32px;
+  }
+  .subtitle .paper-badge {
+    color: var(--amber);
+    border: 1px solid var(--amber);
+    border-radius: 3px;
+    padding: 1px 6px;
+    font-size: 11px;
+    margin-left: 8px;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 12px;
+    margin-bottom: 36px;
+  }
+  .card {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 16px 18px;
+  }
+  .card .eyebrow {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .card .value {
+    font-size: 24px;
+    font-weight: 600;
+  }
+  .card .detail {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  section {
+    margin-bottom: 36px;
+  }
+  section h2 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--muted);
+    border-bottom: 1px solid var(--panel-border);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+  }
+  .forecast-row {
+    background: var(--panel);
+    border: 1px solid var(--panel-border);
+    border-radius: 6px;
+    padding: 16px 18px;
+    margin-bottom: 10px;
+  }
+  .forecast-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 10px;
+  }
+  .forecast-question {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    text-decoration: none;
+    border-bottom: 1px dotted var(--panel-border);
+  }
+  .forecast-question:hover {
+    color: var(--blue);
+    border-bottom-color: var(--blue);
+  }
+  .badge {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 7px;
+    border-radius: 3px;
+    white-space: nowrap;
+  }
+  .badge.crypto { background: rgba(53, 200, 179, 0.15); color: var(--teal); }
+  .badge.politics { background: rgba(76, 141, 255, 0.15); color: var(--blue); }
+  .badge.economy { background: rgba(224, 163, 57, 0.15); color: var(--amber); }
+  .badge.sports { background: rgba(76, 141, 255, 0.08); color: var(--blue); border: 1px solid rgba(76, 141, 255, 0.3); }
+  .badge.other { background: rgba(124, 135, 152, 0.15); color: var(--muted); }
+  .badge.refresh-eligible { background: rgba(53, 200, 179, 0.15); color: var(--teal); border: 1px solid rgba(53, 200, 179, 0.4); }
+  .badge.pending { background: rgba(224, 163, 57, 0.15); color: var(--amber); border: 1px solid rgba(224, 163, 57, 0.3); }
+  .badge.pos-open { background: rgba(76, 141, 255, 0.15); color: var(--blue); border: 1px solid rgba(76, 141, 255, 0.3); }
+  .badge.pos-win { background: rgba(53, 200, 179, 0.15); color: var(--teal); border: 1px solid rgba(53, 200, 179, 0.3); }
+  .badge.pos-loss { background: rgba(224, 163, 57, 0.15); color: var(--amber); border: 1px solid rgba(224, 163, 57, 0.3); }
+  .badge.pos-none { background: rgba(124, 135, 152, 0.1); color: var(--muted); }
+  .mini-bar-track {
+    position: relative;
+    width: 80px;
+    height: 8px;
+    background: #1B2330;
+    border: 1px solid var(--panel-border);
+    border-radius: 4px;
+    flex-shrink: 0;
+  }
+  .mini-bar-tick {
+    position: absolute;
+    top: -2px;
+    width: 2px;
+    height: 12px;
+    border-radius: 1px;
+  }
+  .mini-bar-tick.market { background: var(--muted); }
+  .mini-bar-tick.estimate { background: var(--blue); }
+  .mini-bar-tick.estimate.bearish { background: var(--amber); }
+  .forecast-meta {
+    display: grid;
+    grid-template-columns: 80px 100px 80px 90px 70px 110px;
+    align-items: center;
+    gap: 6px 10px;
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .forecast-meta .edge-positive { color: var(--blue); }
+  .forecast-meta .edge-negative { color: var(--amber); }
+  .forecast-badges {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    margin-top: 10px;
+  }
+  .forecast-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    align-items: start;
+  }
+  .forecast-column {
+    min-width: 0;
+  }
+  .column-label {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-bottom: 10px;
+  }
+  .column-label.bullish { color: var(--blue); }
+  .column-label.bearish { color: var(--amber); }
+  #forecastList { display: none; }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--panel-border);
+  }
+  .control-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .control-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--muted);
+    margin-right: 2px;
+  }
+  .pill {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    background: transparent;
+    border: 1px solid var(--panel-border);
+    color: var(--muted);
+    padding: 4px 10px;
+    border-radius: 12px;
+    cursor: pointer;
+  }
+  .pill:hover { border-color: var(--blue); color: var(--text); }
+  .pill.active { background: rgba(76, 141, 255, 0.15); border-color: var(--blue); color: var(--blue); }
+  .result-count { font-size: 11px; color: var(--muted); margin-left: auto; }
+  .empty-state {
+    background: var(--panel);
+    border: 1px dashed var(--panel-border);
+    border-radius: 6px;
+    padding: 32px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+  }
+  .empty-state code {
+    background: #1B222E;
+    padding: 2px 6px;
+    border-radius: 3px;
+    color: var(--text);
+  }
+  .quirk-note {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+  <h1>Polymarket Bot</h1>
+  <div class="subtitle">
+    Generated 2026-07-24 01:09 UTC
+    <span class="paper-badge">PAPER TRADING ONLY</span>
+  </div>
+
+  <div class="cards">
+    <div class="card">
+      <div class="eyebrow">Forecasts made</div>
+      <div class="value">103</div>
+      <div class="detail">101 active / 2 archived &middot;
+        politics 9 &middot; sports 1 &middot; other 93</div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Total spend ($)</div>
+      <div class="value">$0.6059</div>
+      <div class="detail">OR $0.1546 (legacy, pre-07-20) · Anthropic $0.4513 · Tavily 136 credits (not $ — separate free allotment)</div>
+    </div>
+    <div class="card">
+      <div class="eyebrow">Eligible for refresh</div>
+      <div class="value">25</div>
+      <div class="detail">of 65 tracked (72h gate, excludes resolved)</div>
+    </div>
+    
+    <div class="card">
+      <div class="eyebrow">Markets covered</div>
+      <div class="value">39,596</div>
+      <div class="detail">of 85,706 seen</div>
+    </div>
+    
+    <div class="card">
+      <div class="eyebrow">Paper balance</div>
+      <div class="value" style="color: var(--text);">$1000.00</div>
+      <div class="detail">
+        +0.00 realized from $1000 start
+        · 42 open
+        
+      </div>
+    </div>
+  </div>
+
+  <section>
+    <div style="display:flex; justify-content:space-between; align-items:baseline;">
+      <h2>Archive (resolved)</h2>
+      
+      <a class="forecast-question" style="font-size:12px;" href="poly_dashboard.html">&larr; back to active dashboard</a>
+      
+    </div>
+    
+      <div class="controls">
+        <div class="control-group">
+          <span class="control-label">Category</span>
+          <button class="pill active" data-filter="category" data-value="all">All</button>
+          <button class="pill" data-filter="category" data-value="crypto">Crypto</button>
+          <button class="pill" data-filter="category" data-value="politics">Politics</button>
+          <button class="pill" data-filter="category" data-value="economy">Economy</button>
+          <button class="pill" data-filter="category" data-value="sports">Sports</button>
+          <button class="pill" data-filter="category" data-value="other">Other</button>
+        </div>
+        
+        <div class="control-group">
+          <span class="control-label">Sort</span>
+          <button class="pill active" data-sort="recent">Most recent</button>
+          <button class="pill" data-sort="edge">Edge (largest)</button>
+          <button class="pill" data-sort="closes">Closes soonest</button>
+          <button class="pill" data-sort="cost">Cost (highest)</button>
+        </div>
+        <span class="result-count" id="resultCount"></span>
+      </div>
+
+      <div id="forecastList">
+      
+      <div class="forecast-row"
+           data-category="other"
+           data-position="resolved"
+           data-refresh-eligible="false"
+           data-edge="0.028"
+           data-edge-abs="0.028"
+           data-days-close="-3.88"
+           data-timestamp="2026-07-18T03:01:32.147901+00:00"
+           data-cost="0.0087">
+        <div class="forecast-top">
+          <a class="forecast-question" href="poly_dashboard_details/74.html">Will Rodri win the Golden Ball at the 2026 FIFA World Cup?</a>
+        </div>
+        <div class="forecast-meta">
+          
+          <div class="mini-bar-track">
+            <div class="mini-bar-tick market" style="left: 5.2%"></div>
+            <div class="mini-bar-tick estimate " style="left: 8.0%"></div>
+          </div>
+          <span>M 5% &middot; B 8%</span>
+          
+            
+              <span class="edge-positive">edge +0.03</span>
+            
+          
+          
+          <span>closes 2026-07-20</span>
+          <span>$0.0087</span>
+          <span>2026-07-18T03:01</span>
+        </div>
+        <div class="forecast-badges">
+          <span class="badge other">other</span>
+          <span class="badge pos-none">closed · $0 (no real stake)</span>
+        </div>
+        
+      </div>
+      
+      <div class="forecast-row"
+           data-category="other"
+           data-position="resolved"
+           data-refresh-eligible="false"
+           data-edge="0.002"
+           data-edge-abs="0.002"
+           data-days-close="-4.05"
+           data-timestamp="2026-07-18T02:58:59.577393+00:00"
+           data-cost="0.0081">
+        <div class="forecast-top">
+          <a class="forecast-question" href="poly_dashboard_details/81.html">Will Lionel Messi be the top goalscorer at the 2026 FIFA World Cup?</a>
+        </div>
+        <div class="forecast-meta">
+          
+          <div class="mini-bar-track">
+            <div class="mini-bar-tick market" style="left: 57.8%"></div>
+            <div class="mini-bar-tick estimate " style="left: 58.0%"></div>
+          </div>
+          <span>M 58% &middot; B 58%</span>
+          
+            
+              <span class="edge-positive">edge +0.00</span>
+            
+          
+          
+          <span>closes 2026-07-20</span>
+          <span>$0.0081</span>
+          <span>2026-07-18T02:58</span>
+        </div>
+        <div class="forecast-badges">
+          <span class="badge other">other</span>
+          <span class="badge pos-none">closed · $0 (no real stake)</span>
+        </div>
+        
+      </div>
+      
+      </div>
+
+      <div class="forecast-columns">
+        <div class="forecast-column">
+          <div class="column-label bullish">Bullish &mdash; bot &gt; market</div>
+          <div id="bullishColumn"></div>
+        </div>
+        <div class="forecast-column">
+          <div class="column-label bearish">Bearish &mdash; bot &lt; market</div>
+          <div id="bearishColumn"></div>
+        </div>
+      </div>
+    
+  </section>
+
+  <script>
+  (function() {
+    var rows = Array.prototype.slice.call(document.querySelectorAll('.forecast-row'));
+    var list = document.getElementById('forecastList');
+    var countEl = document.getElementById('resultCount');
+    var bullishCol = document.getElementById('bullishColumn');
+    var bearishCol = document.getElementById('bearishColumn');
+    if (!rows.length || !list || !bullishCol || !bearishCol) { return; }
+
+    var state = { category: 'all', position: 'all', sort: 'recent', refreshEligible: false };
+
+    function update() {
+      var visible = rows.filter(function(row) {
+        var catOk = state.category === 'all' || row.dataset.category === state.category;
+        var posOk = state.position === 'all' || row.dataset.position === state.position;
+        var refreshOk = !state.refreshEligible || row.dataset.refreshEligible === 'true';
+        return catOk && posOk && refreshOk;
+      });
+
+      rows.forEach(function(row) { row.style.display = 'none'; });
+
+      visible.sort(function(a, b) {
+        if (state.sort === 'recent') {
+          return b.dataset.timestamp.localeCompare(a.dataset.timestamp);
+        } else if (state.sort === 'edge') {
+          return parseFloat(b.dataset.edgeAbs) - parseFloat(a.dataset.edgeAbs);
+        } else if (state.sort === 'closes') {
+          return parseFloat(a.dataset.daysClose) - parseFloat(b.dataset.daysClose);
+        } else if (state.sort === 'cost') {
+          return parseFloat(b.dataset.cost) - parseFloat(a.dataset.cost);
+        }
+        return 0;
+      });
+
+      // Split into bullish (bot > market) / bearish (bot < market) columns.
+      // Zero-edge or missing-edge rows go wherever keeps the two columns
+      // more balanced, rather than piling arbitrarily into one side.
+      var bullish = [];
+      var bearish = [];
+      visible.forEach(function(row) {
+        var edge = parseFloat(row.dataset.edge);
+        if (!isNaN(edge) && edge > 0) {
+          bullish.push(row);
+        } else if (!isNaN(edge) && edge < 0) {
+          bearish.push(row);
+        } else if (bullish.length <= bearish.length) {
+          bullish.push(row);
+        } else {
+          bearish.push(row);
+        }
+      });
+
+      visible.forEach(function(row) { row.style.display = ''; });
+      bullish.forEach(function(row) { bullishCol.appendChild(row); });
+      bearish.forEach(function(row) { bearishCol.appendChild(row); });
+
+      countEl.textContent = visible.length + ' of ' + rows.length + ' shown';
+    }
+
+    document.querySelectorAll('.pill[data-filter]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var kind = btn.dataset.filter;
+        document.querySelectorAll('.pill[data-filter="' + kind + '"]').forEach(function(b) {
+          b.classList.remove('active');
+        });
+        btn.classList.add('active');
+        state[kind] = btn.dataset.value;
+        update();
+      });
+    });
+
+    document.querySelectorAll('.pill[data-sort]').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        document.querySelectorAll('.pill[data-sort]').forEach(function(b) { b.classList.remove('active'); });
+        btn.classList.add('active');
+        state.sort = btn.dataset.sort;
+        update();
+      });
+    });
+
+    var refreshToggle = document.getElementById('refreshEligibleToggle');
+    if (refreshToggle) {
+      refreshToggle.addEventListener('click', function() {
+        state.refreshEligible = !state.refreshEligible;
+        refreshToggle.classList.toggle('active', state.refreshEligible);
+        update();
+      });
+    }
+
+    update();
+  })();
+  </script>
+
+  
+  <section>
+    <h2>Last discovery run</h2>
+    <div class="quirk-note">
+      2026-07-16T05:45:32.010793+00:00 — 10,000 events,
+      85,706 markets seen,
+      6,127 noise-excluded,
+      17,449 stale-excluded
+    </div>
+  </section>
+  
+
+</body>
+</html>

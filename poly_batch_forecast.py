@@ -567,9 +567,42 @@ def run_forecast_loop(live: bool, refresh_count: int = 0, new_count: int = NEW_C
             # not independent forecasting. market_price_at_forecast is still
             # recorded separately for the edge calculation — nothing is lost,
             # the model just doesn't get to see it before committing to a number.
+            #
+            # INDIRECT anchoring via research content (2026-07-24, per Mike):
+            # the above fix blocks DIRECT anchoring but not this — Tavily search
+            # surfaces third-party sites (e.g. Kresmion, a data aggregator that
+            # literally mirrors Polymarket's own live odds back out) reporting a
+            # snapshot of bracket-level prediction-market prices. The model then
+            # cites that snapshot as if it were independent research and reports
+            # it back nearly verbatim as its own probability -- reintroducing the
+            # exact anchoring problem above, just through a side door. Confirmed
+            # in production across multiple tweet-count-bracket forecasts (Ted
+            # Cruz, Elon Musk x2): the bot's final probability matched a number
+            # explicitly attributed to "the market"/"Polymarket odds" in its own
+            # reasoning text, while differing wildly (30-40+ points) from the
+            # actual live market_price_at_forecast for that exact market. The
+            # verification pass actually already catches this correctly when it
+            # happens ("you're stating the market price as justification... not
+            # providing independent reasoning") but nothing currently acts on
+            # that catch -- a real fix would need to feed verification's critique
+            # back into a revised estimate, not just log it. This prompt-level
+            # fix is the cheaper first line of defense: prevent the anchoring
+            # from happening in the first place.
             reasoning_prompt = (
                 f"Prediction market question: {c.question}\n"
                 f"Research:\n{research['text']}\n\n"
+                f"IMPORTANT: if the research above mentions CURRENT prediction-market prices "
+                f"or odds for this question or similar brackets — from Polymarket, Kalshi, or "
+                f"any site aggregating or mirroring their live prices (e.g. a market-data "
+                f"dashboard quoting 'Polymarket odds' or 'implied probability') — do NOT treat "
+                f"that as evidence and do NOT let it anchor your estimate. A market price "
+                f"reflects what traders already think, not new independent information; citing "
+                f"it back as your own probability defeats the purpose of an independent "
+                f"forecast, even when it's several steps removed (a third-party site quoting "
+                f"the market counts the same as the market itself). Base your estimate ONLY on "
+                f"genuine underlying facts: actual event data, base rates, real-world news, "
+                f"historical patterns. If the research contains no such prediction-market-price "
+                f"content, ignore this note entirely.\n\n"
                 f"Start your response with your calibrated probability estimate on its own "
                 f"first line, exactly as: 'Probability: 0.35' (a decimal between 0 and 1). "
                 f"Base this ONLY on the research above — form your own independent view. "
