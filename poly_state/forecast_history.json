@@ -44,9 +44,10 @@
     "end_date": "2026-07-31T12:00:00Z"
   },
   "148292": {
-    "last_forecast_at": "2026-07-20T10:38:47.481840+00:00",
+    "last_forecast_at": "2026-07-25T17:01:48.013389+00:00",
     "event_slug": "will-the-us-acquire-any-part-of-greenland-in-2026",
-    "last_probability": 0.02
+    "last_probability": 0.02,
+    "end_date": "2026-12-31T00:00:00Z"
   },
   "73969": {
     "last_forecast_at": "2026-07-24T17:02:14.524454+00:00",
@@ -104,9 +105,10 @@
     "last_probability": 0.08
   },
   "81557": {
-    "last_forecast_at": "2026-07-20T10:39:31.927709+00:00",
+    "last_forecast_at": "2026-07-25T17:02:19.047334+00:00",
     "event_slug": "who-will-be-the-next-prime-minister-of-israel-after-the-next-election",
-    "last_probability": 0.15
+    "last_probability": 0.08,
+    "end_date": "2026-12-31T00:00:00Z"
   },
   "287395": {
     "last_forecast_at": "2026-07-24T17:02:35.698284+00:00",
@@ -120,9 +122,10 @@
     "last_probability": 0.58
   },
   "32225": {
-    "last_forecast_at": "2026-07-21T06:38:48.842851+00:00",
+    "last_forecast_at": "2026-07-25T17:01:39.230216+00:00",
     "event_slug": "which-party-will-win-the-house-in-2026",
-    "last_probability": 0.62
+    "last_probability": 0.68,
+    "end_date": "2026-11-03T00:00:00Z"
   },
   "153719": {
     "last_forecast_at": "2026-07-21T06:39:54.572724+00:00",
@@ -145,9 +148,10 @@
     "last_probability": 0.11
   },
   "362004": {
-    "last_forecast_at": "2026-07-21T06:38:56.716598+00:00",
+    "last_forecast_at": "2026-07-25T17:01:59.874240+00:00",
     "event_slug": "nba-lebron-james-next-team",
-    "last_probability": 0.08
+    "last_probability": 0.25,
+    "end_date": "2026-10-31T03:59:00Z"
   },
   "556270": {
     "last_forecast_at": "2026-07-18T03:01:32.148092+00:00",
@@ -165,9 +169,10 @@
     "last_probability": 0.28
   },
   "95248": {
-    "last_forecast_at": "2026-07-21T06:39:17.329984+00:00",
+    "last_forecast_at": "2026-07-25T17:02:10.023778+00:00",
     "event_slug": "berlin-state-election-winner",
-    "last_probability": 0.18
+    "last_probability": 0.28,
+    "end_date": "2026-09-20T00:00:00Z"
   },
   "48978": {
     "last_forecast_at": "2026-07-21T06:40:27.533596+00:00",
@@ -373,5 +378,35 @@
     "event_slug": "tfue-vs-myth-winner-20260721214635331",
     "last_probability": 0.72,
     "end_date": "2026-07-24T23:59:00Z"
+  },
+  "725781": {
+    "last_forecast_at": "2026-07-25T17:02:29.471107+00:00",
+    "event_slug": "2026-3m-open-winner",
+    "last_probability": 0.18,
+    "end_date": "2026-07-26T00:00:00Z"
+  },
+  "725864": {
+    "last_forecast_at": "2026-07-25T17:02:38.588595+00:00",
+    "event_slug": "2026-3m-open-top10",
+    "last_probability": 0.98,
+    "end_date": "2026-07-26T00:00:00Z"
+  },
+  "725843": {
+    "last_forecast_at": "2026-07-25T17:02:49.460776+00:00",
+    "event_slug": "2026-3m-open-top5",
+    "last_probability": 0.95,
+    "end_date": "2026-07-26T00:00:00Z"
+  },
+  "743878": {
+    "last_forecast_at": "2026-07-25T17:03:00.153847+00:00",
+    "event_slug": "2026-wnba-all-star-game-mvp-20260724150955506",
+    "last_probability": 0.16,
+    "end_date": "2026-07-25T23:59:00Z"
+  },
+  "741492": {
+    "last_forecast_at": "2026-07-25T17:03:08.799592+00:00",
+    "event_slug": "x-games-new-orleans-2026-mens-skateboard-street-20260722202036930",
+    "last_probability": 0.99,
+    "end_date": "2026-07-25T23:59:00Z"
   }
 }
