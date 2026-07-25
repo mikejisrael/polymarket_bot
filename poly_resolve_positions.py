@@ -4,12 +4,24 @@ poly_resolve_positions.py
 Checks Polymarket's Gamma API for resolution on any open/placeholder
 paper position and settles it.
 
-*** UNTESTED AGAINST LIVE POLYMARKET API — needs a live run on Mike's
-    machine before it's trusted. Built from Gamma API docs/field names,
-    not verified against a real response. ***
+*** BUG FOUND AND FIXED 2026-07-25 — see check_resolution(). Gamma
+    double-encodes outcomePrices as a JSON STRING, not an actual array.
+    The original parsing code iterated over that string's CHARACTERS,
+    which raised ValueError almost immediately and got silently caught
+    — meaning EVERY resolution check silently returned "not resolved
+    yet" regardless of the real outcome, for as long as this script has
+    existed. A prior claim that this had been "confirmed working live"
+    was WRONG — the 2 positions that appeared to settle successfully in
+    that run were backfill placeholders, which settle via a separate
+    $0-no-API-call path (see main()) and never actually exercised the
+    buggy code. The genuine Gamma-API-dependent resolution path had
+    never worked correctly until this fix, despite running nightly for
+    over a week. Confirmed via: 35 positions stuck open days past their
+    end_date with zero resolutions logged. ***
 
 Resolution check: GET https://gamma-api.polymarket.com/markets?condition_ids={condition_id}
-Looks at outcomePrices (e.g. ["1", "0"] once settled) rather than trusting
+Looks at outcomePrices (a JSON-encoded string like '["1", "0"]' once
+settled — NOT a real array, see check_resolution()) rather than trusting
 the `closed` flag alone — Gamma is known to lag reality on `closed` for a
 while after actual resolution (see Polymarket/rs-clob-client#199). A
 market is treated as resolved once outcomePrices contains a value that
@@ -92,6 +104,21 @@ def check_resolution(condition_id: str) -> str | None:
     outcome_prices = market.get("outcomePrices")
     if not outcome_prices:
         return None
+
+    # Gamma double-encodes outcomePrices as a JSON STRING (e.g. '["0.02", "0.98"]'),
+    # not an actual array — confirmed 2026-07-25 after this exact bug was found in
+    # production: iterating over a raw string with `for p in outcome_prices` walks
+    # its CHARACTERS ('[', '"', '0', ...), and float() on each one raises ValueError
+    # almost immediately, which the except block below silently swallows. The net
+    # effect: EVERY resolution check silently returned "not resolved yet" regardless
+    # of the real outcome — confirmed as the root cause of 35 positions stuck past
+    # their end_date with zero resolutions across nearly a week of nightly runs.
+    if isinstance(outcome_prices, str):
+        try:
+            outcome_prices = json.loads(outcome_prices)
+        except json.JSONDecodeError:
+            return None
+
     try:
         prices = [float(p) for p in outcome_prices]
     except (TypeError, ValueError):
