@@ -12,9 +12,10 @@
     "end_date": "2026-12-31T00:00:00Z"
   },
   "30829": {
-    "last_forecast_at": "2026-07-20T10:38:38.047085+00:00",
+    "last_forecast_at": "2026-07-26T17:02:08.660269+00:00",
     "event_slug": "democratic-presidential-nominee-2028",
-    "last_probability": 0.28
+    "last_probability": 0.008,
+    "end_date": "2028-11-07T00:00:00Z"
   },
   "72347": {
     "last_forecast_at": "2026-07-23T17:02:53.375699+00:00",
@@ -23,9 +24,10 @@
     "end_date": "2026-12-31T00:00:00Z"
   },
   "31552": {
-    "last_forecast_at": "2026-07-20T10:39:11.649905+00:00",
+    "last_forecast_at": "2026-07-26T17:02:16.663189+00:00",
     "event_slug": "presidential-election-winner-2028",
-    "last_probability": 0.18
+    "last_probability": 0.001,
+    "end_date": "2028-11-07T00:00:00Z"
   },
   "31195": {
     "last_forecast_at": "2026-07-26T09:42:28.800451+00:00",
@@ -75,9 +77,10 @@
     "end_date": "2026-09-30T00:00:00Z"
   },
   "455875": {
-    "last_forecast_at": "2026-07-20T10:39:39.092865+00:00",
+    "last_forecast_at": "2026-07-26T17:01:59.366926+00:00",
     "event_slug": "strait-of-hormuz-traffic-returns-to-normal-by-december-31",
-    "last_probability": 0.42
+    "last_probability": 0.62,
+    "end_date": "2026-12-31T00:00:00Z"
   },
   "100371": {
     "last_forecast_at": "2026-07-24T17:01:52.227519+00:00",
@@ -91,9 +94,10 @@
     "last_probability": 0.58
   },
   "255195": {
-    "last_forecast_at": "2026-07-20T10:40:08.560289+00:00",
+    "last_forecast_at": "2026-07-26T17:01:49.714359+00:00",
     "event_slug": "iran-leadership-change-by",
-    "last_probability": 0.21
+    "last_probability": 0.18,
+    "end_date": "2026-12-31T00:00:00Z"
   },
   "237598": {
     "last_forecast_at": "2026-07-26T10:10:47.040318+00:00",
@@ -192,9 +196,10 @@
     "last_probability": 0.75
   },
   "32228": {
-    "last_forecast_at": "2026-07-21T06:40:06.055921+00:00",
+    "last_forecast_at": "2026-07-26T17:01:39.541815+00:00",
     "event_slug": "balance-of-power-2026-midterms",
-    "last_probability": 0.41
+    "last_probability": 0.41,
+    "end_date": "2026-11-03T00:00:00Z"
   },
   "710517": {
     "last_forecast_at": "2026-07-20T10:04:40.186540+00:00",
@@ -426,6 +431,36 @@
     "last_forecast_at": "2026-07-26T10:10:55.375926+00:00",
     "event_slug": "x-games-new-orleans-2026-womens-skateboard-park-20260722204404957",
     "last_probability": 0.99,
+    "end_date": "2026-07-26T23:59:00Z"
+  },
+  "741487": {
+    "last_forecast_at": "2026-07-26T17:02:29.073104+00:00",
+    "event_slug": "x-games-new-orleans-2026-mens-skateboard-vert-20260722204120108",
+    "last_probability": 0.95,
+    "end_date": "2026-07-26T23:59:00Z"
+  },
+  "741501": {
+    "last_forecast_at": "2026-07-26T17:02:39.110006+00:00",
+    "event_slug": "x-games-new-orleans-2026-mens-bmx-park-20260722193916604",
+    "last_probability": 0.95,
+    "end_date": "2026-07-26T23:59:00Z"
+  },
+  "723717": {
+    "last_forecast_at": "2026-07-26T17:02:48.520935+00:00",
+    "event_slug": "what-will-trump-say-this-week-july-20-july-26-20260719005322431",
+    "last_probability": 0.92,
+    "end_date": "2026-07-26T23:59:00Z"
+  },
+  "741477": {
+    "last_forecast_at": "2026-07-26T17:02:58.963856+00:00",
+    "event_slug": "x-games-new-orleans-2026-bmx-dirt-best-trick-20260722204704540",
+    "last_probability": 0.98,
+    "end_date": "2026-07-26T23:59:00Z"
+  },
+  "741503": {
+    "last_forecast_at": "2026-07-26T17:03:09.050417+00:00",
+    "event_slug": "3m-open-hole-in-one-20260722184209388",
+    "last_probability": 0.85,
     "end_date": "2026-07-26T23:59:00Z"
   }
 }
