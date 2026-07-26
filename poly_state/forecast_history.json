@@ -147,9 +147,10 @@
     "end_date": "2026-11-03T00:00:00Z"
   },
   "34052": {
-    "last_forecast_at": "2026-07-21T06:39:45.770127+00:00",
+    "last_forecast_at": "2026-07-26T09:58:11.042165+00:00",
     "event_slug": "zelenskyy-out-as-ukraine-president-before-2027",
-    "last_probability": 0.11
+    "last_probability": 0.13,
+    "end_date": "2026-12-31T00:00:00Z"
   },
   "362004": {
     "last_forecast_at": "2026-07-25T17:01:59.874240+00:00",
@@ -413,5 +414,11 @@
     "event_slug": "x-games-new-orleans-2026-mens-skateboard-street-20260722202036930",
     "last_probability": 0.99,
     "end_date": "2026-07-25T23:59:00Z"
+  },
+  "741486": {
+    "last_forecast_at": "2026-07-26T09:58:19.987018+00:00",
+    "event_slug": "x-games-new-orleans-2026-womens-bmx-park-20260722203841308",
+    "last_probability": 0.82,
+    "end_date": "2026-07-26T23:59:00Z"
   }
 }
