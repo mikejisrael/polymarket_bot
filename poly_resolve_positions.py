@@ -81,44 +81,21 @@ def _is_past_end_date(end_date_raw, now) -> bool:
     return now >= end
 
 
-def check_resolution(condition_id: str, debug: bool = True) -> str | None:
-    """Returns 'YES', 'NO', or None (not resolved / lookup failed).
-
-    debug=True (2026-07-25, per Mike): after the outcomePrices double-
-    encoding fix still produced zero resolutions on the very next run —
-    including markets 5+ days past end_date that would almost certainly
-    have resolved in reality — this prints enough raw detail to tell,
-    definitively, whether the failure is (a) Gamma returning no matching
-    market for this condition_id at all, (b) a response shape this code
-    still doesn't handle, or (c) something else. No more guessing blind.
-    Safe to flip back to False once diagnosed — this is deliberately
-    temporary, verbose instrumentation, not a permanent feature.
-    """
+def check_resolution(condition_id: str) -> str | None:
+    """Returns 'YES', 'NO', or None (not resolved / lookup failed)."""
     if not condition_id:
         return None
     try:
         resp = requests.get(
             GAMMA_MARKETS_URL,
-            params={"condition_ids": condition_id},
+            params={"condition_ids": condition_id, "closed": "true"},
             timeout=15,
         )
         resp.raise_for_status()
         data = resp.json()
     except (requests.RequestException, ValueError) as e:
-        print(f"  lookup failed for {condition_id}: {e}", flush=True)
+        print(f"  lookup failed for {condition_id}: {e}")
         return None
-
-    if debug:
-        print(f"  [debug] condition_id={condition_id}", flush=True)
-        print(f"  [debug] response type={type(data).__name__}, "
-              f"length={len(data) if hasattr(data, '__len__') else 'n/a'}", flush=True)
-        if data:
-            preview = data[0] if isinstance(data, list) else data
-            print(f"  [debug] first market keys: {sorted(preview.keys()) if isinstance(preview, dict) else preview}", flush=True)
-            raw_op = preview.get("outcomePrices") if isinstance(preview, dict) else None
-            print(f"  [debug] outcomePrices raw value={raw_op!r}, type={type(raw_op).__name__}", flush=True)
-            print(f"  [debug] closed={preview.get('closed')}, active={preview.get('active')}, "
-                  f"umaResolutionStatus={preview.get('umaResolutionStatus')}", flush=True)
 
     if not data:
         return None
@@ -181,10 +158,10 @@ def main():
             settled_count += 1
             continue
 
-        print(f"Checking resolution: {p['event_slug']}", flush=True)
+        print(f"Checking resolution: {p['event_slug']}")
         outcome = check_resolution(p.get("condition_id"))
         if outcome is None:
-            print("  not resolved yet, skipping", flush=True)
+            print("  not resolved yet, skipping")
             continue
 
         won = (outcome == p["direction"])
