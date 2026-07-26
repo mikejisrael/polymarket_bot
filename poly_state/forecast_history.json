@@ -28,9 +28,10 @@
     "last_probability": 0.18
   },
   "31195": {
-    "last_forecast_at": "2026-07-20T10:38:58.089816+00:00",
+    "last_forecast_at": "2026-07-26T09:42:28.800451+00:00",
     "event_slug": "putin-out-before-2027",
-    "last_probability": 0.09
+    "last_probability": 0.08,
+    "end_date": "2026-12-31T18:30:00Z"
   },
   "31875": {
     "last_forecast_at": "2026-07-20T10:39:21.719128+00:00",
@@ -100,9 +101,10 @@
     "last_probability": 0.72
   },
   "143691": {
-    "last_forecast_at": "2026-07-20T10:39:48.491446+00:00",
+    "last_forecast_at": "2026-07-26T09:42:44.901142+00:00",
     "event_slug": "will-the-us-invade-cuba-in-2026",
-    "last_probability": 0.08
+    "last_probability": 0.08,
+    "end_date": "2026-12-31T00:00:00Z"
   },
   "81557": {
     "last_forecast_at": "2026-07-25T17:02:19.047334+00:00",
@@ -133,14 +135,16 @@
     "last_probability": 0.06
   },
   "101936": {
-    "last_forecast_at": "2026-07-21T06:39:25.497674+00:00",
+    "last_forecast_at": "2026-07-26T09:42:54.592594+00:00",
     "event_slug": "fed-rate-hike-in-2026",
-    "last_probability": 0.72
+    "last_probability": 0.72,
+    "end_date": "2026-12-09T00:00:00Z"
   },
   "64731": {
-    "last_forecast_at": "2026-07-21T06:39:05.975229+00:00",
+    "last_forecast_at": "2026-07-26T09:42:18.247886+00:00",
     "event_slug": "billionaire-one-time-wealth-tax-passes-in-california-election-2026",
-    "last_probability": 0.92
+    "last_probability": 0.92,
+    "end_date": "2026-11-03T00:00:00Z"
   },
   "34052": {
     "last_forecast_at": "2026-07-21T06:39:45.770127+00:00",
@@ -159,9 +163,10 @@
     "last_probability": 0.08
   },
   "57096": {
-    "last_forecast_at": "2026-07-21T06:39:36.733456+00:00",
+    "last_forecast_at": "2026-07-26T09:42:36.309901+00:00",
     "event_slug": "california-governor-election-2026",
-    "last_probability": 0.08
+    "last_probability": 0.05,
+    "end_date": "2026-11-03T00:00:00Z"
   },
   "73056": {
     "last_forecast_at": "2026-07-21T06:40:16.842857+00:00",
