@@ -96,9 +96,10 @@
     "last_probability": 0.21
   },
   "237598": {
-    "last_forecast_at": "2026-07-20T10:39:58.753118+00:00",
+    "last_forecast_at": "2026-07-26T10:10:47.040318+00:00",
     "event_slug": "iran-leader-end-of-2026",
-    "last_probability": 0.72
+    "last_probability": 0.02,
+    "end_date": "2026-12-31T00:00:00Z"
   },
   "143691": {
     "last_forecast_at": "2026-07-26T09:42:44.901142+00:00",
@@ -419,6 +420,12 @@
     "last_forecast_at": "2026-07-26T09:58:19.987018+00:00",
     "event_slug": "x-games-new-orleans-2026-womens-bmx-park-20260722203841308",
     "last_probability": 0.82,
+    "end_date": "2026-07-26T23:59:00Z"
+  },
+  "741485": {
+    "last_forecast_at": "2026-07-26T10:10:55.375926+00:00",
+    "event_slug": "x-games-new-orleans-2026-womens-skateboard-park-20260722204404957",
+    "last_probability": 0.99,
     "end_date": "2026-07-26T23:59:00Z"
   }
 }

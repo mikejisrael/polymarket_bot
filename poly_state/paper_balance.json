@@ -1,6 +1,6 @@
 {
-  "balance": 1000.0,
+  "balance": 999.7,
   "starting_balance": 1000.0,
-  "realized_pnl": 0.0,
-  "last_updated": "2026-07-26T09:58:20.438002+00:00"
+  "realized_pnl": -0.3,
+  "last_updated": "2026-07-26T10:10:55.842170+00:00"
 }

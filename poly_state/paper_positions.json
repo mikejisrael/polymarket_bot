@@ -274,13 +274,13 @@
   {
     "event_id": "237598",
     "event_slug": "iran-leader-end-of-2026",
-    "question": "Will Mojtaba Khamenei be head of state in Iran end of 2026?",
-    "condition_id": "0x25fb28382075f418a944a781a9f8840e2f541152eea0d9798d1cabfa1466adbb",
+    "question": "Will Mohammad Khatami be head of state in Iran end of 2026?",
+    "condition_id": "0x4266ab921148974f104cbadd099e13bca989441bf58acfd2a08fc6cc7440e1a1",
     "direction": null,
-    "entry_price": 0.742,
+    "entry_price": 0.0025,
     "size_usd": 0.0,
-    "edge_at_entry": -0.022,
-    "opened_at": "2026-07-20T10:39:58.752975+00:00",
+    "edge_at_entry": 0.0175,
+    "opened_at": "2026-07-26T10:10:47.040109+00:00",
     "end_date": "2026-12-31T00:00:00Z",
     "status": "backfill_no_edge",
     "resolved_at": null,
@@ -570,10 +570,10 @@
     "edge_at_entry": -0.405,
     "opened_at": "2026-07-20T10:04:40.186368+00:00",
     "end_date": "2026-07-20T16:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "656320",
@@ -602,10 +602,10 @@
     "edge_at_entry": -0.08,
     "opened_at": "2026-07-20T10:05:42.882439+00:00",
     "end_date": "2026-07-21T04:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_win",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "NO",
+    "pnl_usd": 1.11
   },
   {
     "event_id": "697616",
@@ -618,10 +618,10 @@
     "edge_at_entry": 0.555,
     "opened_at": "2026-07-20T10:05:57.076185+00:00",
     "end_date": "2026-07-21T04:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "NO",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "690177",
@@ -634,10 +634,10 @@
     "edge_at_entry": -0.245,
     "opened_at": "2026-07-20T10:06:05.252382+00:00",
     "end_date": "2026-07-21T16:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "690175",
@@ -650,10 +650,10 @@
     "edge_at_entry": 0.217,
     "opened_at": "2026-07-20T10:06:16.648133+00:00",
     "end_date": "2026-07-21T16:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_win",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": 9.88
   },
   {
     "event_id": "690169",
@@ -666,10 +666,10 @@
     "edge_at_entry": -0.088,
     "opened_at": "2026-07-21T12:29:32.113152+00:00",
     "end_date": "2026-07-21T16:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "690174",
@@ -682,10 +682,10 @@
     "edge_at_entry": -0.075,
     "opened_at": "2026-07-21T12:29:43.224948+00:00",
     "end_date": "2026-07-21T16:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "690168",
@@ -698,10 +698,10 @@
     "edge_at_entry": -0.655,
     "opened_at": "2026-07-21T12:29:54.105342+00:00",
     "end_date": "2026-07-21T16:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "690171",
@@ -714,10 +714,10 @@
     "edge_at_entry": -0.09,
     "opened_at": "2026-07-21T12:30:06.977613+00:00",
     "end_date": "2026-07-21T16:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_win",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "NO",
+    "pnl_usd": 2.58
   },
   {
     "event_id": "659974",
@@ -730,10 +730,10 @@
     "edge_at_entry": -0.468,
     "opened_at": "2026-07-21T12:30:16.912613+00:00",
     "end_date": "2026-07-21T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "674528",
@@ -746,10 +746,10 @@
     "edge_at_entry": -0.34,
     "opened_at": "2026-07-21T17:02:04.749707+00:00",
     "end_date": "2026-07-21T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "715344",
@@ -762,10 +762,10 @@
     "edge_at_entry": 0.665,
     "opened_at": "2026-07-21T17:02:17.204550+00:00",
     "end_date": "2026-07-21T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "NO",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "659889",
@@ -810,10 +810,10 @@
     "edge_at_entry": 0.28,
     "opened_at": "2026-07-22T17:01:48.084540+00:00",
     "end_date": "2026-07-23T00:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "NO",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "534747",
@@ -826,10 +826,10 @@
     "edge_at_entry": -0.245,
     "opened_at": "2026-07-22T17:02:01.430022+00:00",
     "end_date": "2026-07-23T00:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_win",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "NO",
+    "pnl_usd": 123.33
   },
   {
     "event_id": "727303",
@@ -842,10 +842,10 @@
     "edge_at_entry": 0.668,
     "opened_at": "2026-07-22T17:02:12.793215+00:00",
     "end_date": "2026-07-22T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "NO",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "708407",
@@ -858,10 +858,10 @@
     "edge_at_entry": 0.095,
     "opened_at": "2026-07-22T17:02:22.322564+00:00",
     "end_date": "2026-07-22T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_win",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": 6.0
   },
   {
     "event_id": "413680",
@@ -874,10 +874,10 @@
     "edge_at_entry": 0.32,
     "opened_at": "2026-07-22T17:02:30.881842+00:00",
     "end_date": "2026-07-24T00:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_win",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": 5.87
   },
   {
     "event_id": "508138",
@@ -890,10 +890,10 @@
     "edge_at_entry": -0.355,
     "opened_at": "2026-07-23T17:03:04.514079+00:00",
     "end_date": "2026-07-24T00:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_win",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "NO",
+    "pnl_usd": 6.0
   },
   {
     "event_id": "701419",
@@ -906,10 +906,10 @@
     "edge_at_entry": -0.265,
     "opened_at": "2026-07-23T17:03:26.815944+00:00",
     "end_date": "2026-07-24T16:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "701417",
@@ -922,10 +922,10 @@
     "edge_at_entry": -0.845,
     "opened_at": "2026-07-23T17:03:36.395302+00:00",
     "end_date": "2026-07-24T16:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "701414",
@@ -938,10 +938,10 @@
     "edge_at_entry": -0.39,
     "opened_at": "2026-07-23T17:03:47.174309+00:00",
     "end_date": "2026-07-24T16:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "712216",
@@ -954,10 +954,10 @@
     "edge_at_entry": -0.5,
     "opened_at": "2026-07-24T17:02:45.464321+00:00",
     "end_date": "2026-07-24T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "715433",
@@ -970,10 +970,10 @@
     "edge_at_entry": 0.89,
     "opened_at": "2026-07-24T17:02:54.670478+00:00",
     "end_date": "2026-07-24T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "NO",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "715457",
@@ -1082,10 +1082,10 @@
     "edge_at_entry": 0.32,
     "opened_at": "2026-07-25T17:03:08.799421+00:00",
     "end_date": "2026-07-25T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_win",
+    "resolved_at": "2026-07-26T10:10:55.842170+00:00",
+    "outcome": "YES",
+    "pnl_usd": 4.93
   },
   {
     "event_id": "741486",
@@ -1097,6 +1097,22 @@
     "size_usd": 10.0,
     "edge_at_entry": 0.435,
     "opened_at": "2026-07-26T09:58:19.986824+00:00",
+    "end_date": "2026-07-26T23:59:00Z",
+    "status": "open",
+    "resolved_at": null,
+    "outcome": null,
+    "pnl_usd": null
+  },
+  {
+    "event_id": "741485",
+    "event_slug": "x-games-new-orleans-2026-womens-skateboard-park-20260722204404957",
+    "question": "Who will win the gold medal in Women's Skateboard Park at X Games New Orleans 2026?",
+    "condition_id": "0x5d7eed4fffb6fa2d54b234266e298523199a027d6d3ee3aae9206e03f62bdf19",
+    "direction": "YES",
+    "entry_price": 0.58,
+    "size_usd": 10.0,
+    "edge_at_entry": 0.41,
+    "opened_at": "2026-07-26T10:10:55.375726+00:00",
     "end_date": "2026-07-26T23:59:00Z",
     "status": "open",
     "resolved_at": null,
