@@ -520,7 +520,7 @@
     "entry_price": 0.095,
     "size_usd": 0.0,
     "edge_at_entry": -0.015,
-    "opened_at": "2026-07-21T06:40:27.533417+00:00",
+    "opened_at": "2026-07-27T17:02:25.064062+00:00",
     "end_date": "2026-12-31T00:00:00Z",
     "status": "backfill_no_edge",
     "resolved_at": null,
@@ -986,10 +986,10 @@
     "edge_at_entry": 0.205,
     "opened_at": "2026-07-24T17:03:05.695828+00:00",
     "end_date": "2026-07-24T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-27T17:03:53.459812+00:00",
+    "outcome": "NO",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "715442",
@@ -1034,10 +1034,10 @@
     "edge_at_entry": 0.0785,
     "opened_at": "2026-07-25T17:02:29.470930+00:00",
     "end_date": "2026-07-26T00:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-27T17:03:53.459812+00:00",
+    "outcome": "NO",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "725864",
@@ -1050,10 +1050,10 @@
     "edge_at_entry": 0.16,
     "opened_at": "2026-07-25T17:02:38.588436+00:00",
     "end_date": "2026-07-26T00:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_win",
+    "resolved_at": "2026-07-27T17:03:53.459812+00:00",
+    "outcome": "YES",
+    "pnl_usd": 2.2
   },
   {
     "event_id": "725843",
@@ -1066,10 +1066,10 @@
     "edge_at_entry": 0.505,
     "opened_at": "2026-07-25T17:02:49.460584+00:00",
     "end_date": "2026-07-26T00:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_win",
+    "resolved_at": "2026-07-27T17:03:53.459812+00:00",
+    "outcome": "YES",
+    "pnl_usd": 12.47
   },
   {
     "event_id": "741492",
@@ -1098,10 +1098,10 @@
     "edge_at_entry": 0.435,
     "opened_at": "2026-07-26T09:58:19.986824+00:00",
     "end_date": "2026-07-26T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_win",
+    "resolved_at": "2026-07-27T17:03:53.459812+00:00",
+    "outcome": "YES",
+    "pnl_usd": 15.97
   },
   {
     "event_id": "741485",
@@ -1114,10 +1114,10 @@
     "edge_at_entry": 0.41,
     "opened_at": "2026-07-26T10:10:55.375726+00:00",
     "end_date": "2026-07-26T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-27T17:03:53.459812+00:00",
+    "outcome": "NO",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "741487",
@@ -1130,10 +1130,10 @@
     "edge_at_entry": 0.285,
     "opened_at": "2026-07-26T17:02:29.072951+00:00",
     "end_date": "2026-07-26T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-27T17:03:53.459812+00:00",
+    "outcome": "NO",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "741501",
@@ -1146,10 +1146,10 @@
     "edge_at_entry": 0.545,
     "opened_at": "2026-07-26T17:02:39.109849+00:00",
     "end_date": "2026-07-26T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-27T17:03:53.459812+00:00",
+    "outcome": "NO",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "723717",
@@ -1162,10 +1162,10 @@
     "edge_at_entry": 0.845,
     "opened_at": "2026-07-26T17:02:48.520771+00:00",
     "end_date": "2026-07-26T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-27T17:03:53.459812+00:00",
+    "outcome": "NO",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "741477",
@@ -1178,10 +1178,10 @@
     "edge_at_entry": 0.335,
     "opened_at": "2026-07-26T17:02:58.963706+00:00",
     "end_date": "2026-07-26T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-27T17:03:53.459812+00:00",
+    "outcome": "NO",
+    "pnl_usd": -10.0
   },
   {
     "event_id": "741503",
@@ -1194,6 +1194,70 @@
     "edge_at_entry": 0.63,
     "opened_at": "2026-07-26T17:03:09.050244+00:00",
     "end_date": "2026-07-26T23:59:00Z",
+    "status": "resolved_loss",
+    "resolved_at": "2026-07-27T17:03:53.459812+00:00",
+    "outcome": "NO",
+    "pnl_usd": -10.0
+  },
+  {
+    "event_id": "716159",
+    "event_slug": "elon-musk-of-tweets-july-21-july-28",
+    "question": "Will Elon Musk post 260-279 tweets from July 21 to July 28, 2026?",
+    "condition_id": "0xc09ff99161aeb78f65907571f0d68888141f6bade830eb92f962142ef8bbcd26",
+    "direction": "NO",
+    "entry_price": 0.7085,
+    "size_usd": 10.0,
+    "edge_at_entry": -0.1315,
+    "opened_at": "2026-07-27T17:03:20.015085+00:00",
+    "end_date": "2026-07-28T16:00:00Z",
+    "status": "open",
+    "resolved_at": null,
+    "outcome": null,
+    "pnl_usd": null
+  },
+  {
+    "event_id": "716151",
+    "event_slug": "white-house-of-tweets-july-21-july-28-2026",
+    "question": "Will White House post 180-199 posts from July 21 to July 28, 2026?",
+    "condition_id": "0x0d40669103d257d529a720f5fffc407eb9669735e551149270e54b401fe95d34",
+    "direction": "NO",
+    "entry_price": 0.665,
+    "size_usd": 10.0,
+    "edge_at_entry": -0.055,
+    "opened_at": "2026-07-27T17:03:30.342276+00:00",
+    "end_date": "2026-07-28T16:00:00Z",
+    "status": "open",
+    "resolved_at": null,
+    "outcome": null,
+    "pnl_usd": null
+  },
+  {
+    "event_id": "716150",
+    "event_slug": "khamenei-of-tweets-july-21-july-28-2026",
+    "question": "Will Khamenei post 0-4 posts from July 21 to July 28, 2026?",
+    "condition_id": "0xb9c82d70ae3829f33c0f000c4f809292ae492264e4dfaed69ecefc4631a5798e",
+    "direction": "NO",
+    "entry_price": 0.165,
+    "size_usd": 10.0,
+    "edge_at_entry": -0.115,
+    "opened_at": "2026-07-27T17:03:41.933512+00:00",
+    "end_date": "2026-07-28T16:00:00Z",
+    "status": "open",
+    "resolved_at": null,
+    "outcome": null,
+    "pnl_usd": null
+  },
+  {
+    "event_id": "716153",
+    "event_slug": "nyc-mayor-of-tweets-july-21-july-28-2026",
+    "question": "Will NYC Mayor post 40-59 posts from July 21 to July 28, 2026?",
+    "condition_id": "0xaa0f89481fb224ef5be61b4e5f4fb626262abfbd1683d0e42c2745b279b4f315",
+    "direction": "NO",
+    "entry_price": 0.135,
+    "size_usd": 10.0,
+    "edge_at_entry": -0.145,
+    "opened_at": "2026-07-27T17:03:52.963285+00:00",
+    "end_date": "2026-07-28T16:00:00Z",
     "status": "open",
     "resolved_at": null,
     "outcome": null,
