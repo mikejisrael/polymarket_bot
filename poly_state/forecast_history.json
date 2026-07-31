@@ -495,5 +495,53 @@
     "event_slug": "nyc-mayor-of-tweets-july-21-july-28-2026",
     "last_probability": 0.72,
     "end_date": "2026-07-28T16:00:00Z"
+  },
+  "605661": {
+    "last_forecast_at": "2026-07-31T07:43:27.468524+00:00",
+    "event_slug": "us-anti-cartel-operation-outside-of-the-us-by-20260616214856017",
+    "last_probability": 0.08,
+    "end_date": "2026-07-31T11:59:00Z"
+  },
+  "605660": {
+    "last_forecast_at": "2026-07-31T07:43:37.040522+00:00",
+    "event_slug": "us-x-cuba-diplomatic-meeting-byptptpt-20260616212816384",
+    "last_probability": 0.92,
+    "end_date": "2026-07-31T11:59:00Z"
+  },
+  "727682": {
+    "last_forecast_at": "2026-07-31T07:43:49.970545+00:00",
+    "event_slug": "elon-musk-of-tweets-july-24-july-31",
+    "last_probability": 0.09,
+    "end_date": "2026-07-31T16:00:00Z"
+  },
+  "727674": {
+    "last_forecast_at": "2026-07-31T07:44:00.478191+00:00",
+    "event_slug": "white-house-of-tweets-july-24-july-31-2026",
+    "last_probability": 0.72,
+    "end_date": "2026-07-31T16:00:00Z"
+  },
+  "727673": {
+    "last_forecast_at": "2026-07-31T07:44:11.305355+00:00",
+    "event_slug": "donald-trump-of-truth-social-posts-july-24-july-31",
+    "last_probability": 0.68,
+    "end_date": "2026-07-31T16:00:00Z"
+  },
+  "727677": {
+    "last_forecast_at": "2026-07-31T07:44:24.652353+00:00",
+    "event_slug": "zelenskyy-of-tweets-july-24-july-31-2026",
+    "last_probability": 0.38,
+    "end_date": "2026-07-31T16:00:00Z"
+  },
+  "630845": {
+    "last_forecast_at": "2026-07-31T07:44:34.305757+00:00",
+    "event_slug": "largest-company-end-of-july-20260624192302727",
+    "last_probability": 0.02,
+    "end_date": "2026-07-31T23:59:00Z"
+  },
+  "631072": {
+    "last_forecast_at": "2026-07-31T07:44:44.139929+00:00",
+    "event_slug": "2nd-largest-company-end-of-july-20260624192727948",
+    "last_probability": 0.98,
+    "end_date": "2026-07-31T23:59:00Z"
   }
 }
