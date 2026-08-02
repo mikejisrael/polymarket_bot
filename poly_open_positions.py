@@ -46,7 +46,10 @@ For each event's MOST RECENT forecast in poly_state/forecasts_log.jsonl:
   (d) otherwise (brand-new event, or a placeholder not yet refreshed):
       opens a real paper position, sized as a % of current balance, if the
       forecast has a reliable probability (probability_extraction_method
-      == "explicit") and the edge vs. the market price clears EDGE_THRESHOLD.
+      == "explicit"), the edge vs. the market price clears EDGE_THRESHOLD,
+      AND the entry price of the side being bought clears MIN_ENTRY_PRICE
+      (see longshot filter note near that constant, added 2026-08-02) —
+      edge alone is no longer sufficient once the entry price is a longshot.
 
 Direction: BUY_YES if bot probability > market YES price (positive edge),
 BUY_NO if bot probability < market YES price (negative edge). Entry price
@@ -76,6 +79,21 @@ SKIP_IDS_FILE = STATE_DIR / "backfill_skip_ids.json"
 
 EDGE_THRESHOLD = 0.05   # minimum |bot probability - market price| to open a position
 SIZE_PCT = 0.01         # 1% of current paper balance per position
+
+# LONGSHOT FILTER (2026-08-02, per Mike): analysis of the first 49 resolved
+# paper positions showed the entire realized loss (-$107.16 of -$107.16) came
+# from positions where entry_price < 0.35 -- 25 such positions won only 1
+# time (4%), vs. 15/24 (63%) wins and roughly breakeven P&L for entry_price
+# >= 0.35. Edge magnitude alone was actually ANTI-correlated with win rate
+# (|edge| >= 0.45 won only 1/16) -- the model's biggest disagreements with
+# the market were its least reliable, concentrated almost entirely in
+# many-way/bracket-style markets (tweet-count brackets, "what will X say",
+# primary winners among several candidates, single-discipline tournament
+# outcomes) where it appears to assign individual narrow outcomes far more
+# probability than their base rate warrants. The market's low price was
+# usually right. This is a hard price gate on the side actually being
+# bought, independent of edge size -- a large edge no longer overrides it.
+MIN_ENTRY_PRICE = 0.35
 
 
 def _load_json(path: Path, default):
@@ -143,6 +161,7 @@ def main():
     refreshed_no_edge = 0
     placeholders = 0
     skipped_low_edge = 0
+    skipped_longshot = 0
     skipped_unreliable = 0
     skipped_already_real = 0
 
@@ -212,13 +231,26 @@ def main():
         if reliable and market_price is not None and probability is not None:
             edge = round(probability - market_price, 4)
 
-        tradeable = edge is not None and abs(edge) >= EDGE_THRESHOLD
+        # Direction/entry price now computed here (moved up from below the
+        # tradeable check) so the longshot price gate has something to test
+        # against before the trade decision is made.
+        direction = None
+        entry_price = None
+        if edge is not None:
+            direction = "YES" if edge > 0 else "NO"
+            entry_price = market_price if direction == "YES" else round(1 - market_price, 4)
+
+        clears_edge = edge is not None and abs(edge) >= EDGE_THRESHOLD
+        clears_price_gate = entry_price is not None and entry_price >= MIN_ENTRY_PRICE
+        tradeable = clears_edge and clears_price_gate
 
         if not tradeable:
             if not reliable:
                 skipped_unreliable += 1
-            elif edge is not None:
+            elif not clears_edge:
                 skipped_low_edge += 1
+            elif not clears_price_gate:
+                skipped_longshot += 1
             # else: edge is None because price/probability data was missing
             # entirely — nothing meaningful to record either way, counted
             # in neither bucket, same as before.
@@ -249,8 +281,8 @@ def main():
                 refreshed_no_edge += 1
             continue
 
-        direction = "YES" if edge > 0 else "NO"
-        entry_price = market_price if direction == "YES" else round(1 - market_price, 4)
+        # direction/entry_price already computed above, before the tradeable
+        # decision — reused here rather than recalculated.
         size_usd = round(balance * SIZE_PCT, 2)
 
         new_record = {
@@ -288,6 +320,7 @@ def main():
     print(f"Left {skipped_already_real} event(s) untouched (already have a real position).")
     print(f"Skipped {skipped_unreliable} forecast(s) with unreliable probability extraction.")
     print(f"Skipped {skipped_low_edge} forecast(s) below the {EDGE_THRESHOLD} edge threshold.")
+    print(f"Skipped {skipped_longshot} forecast(s) below the {MIN_ENTRY_PRICE} longshot price gate.")
     print(f"Paper balance: ${balance:.2f} (unchanged — only resolution moves the balance)")
 
 
