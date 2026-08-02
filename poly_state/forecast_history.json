@@ -18,9 +18,9 @@
     "end_date": "2028-11-07T00:00:00Z"
   },
   "72347": {
-    "last_forecast_at": "2026-07-23T17:02:53.375699+00:00",
+    "last_forecast_at": "2026-08-02T04:55:51.318970+00:00",
     "event_slug": "will-the-iranian-regime-fall-by-the-end-of-2026",
-    "last_probability": 0.085,
+    "last_probability": 0.12,
     "end_date": "2026-12-31T00:00:00Z"
   },
   "31552": {
@@ -71,9 +71,9 @@
     "end_date": "2026-12-31T00:00:00Z"
   },
   "149589": {
-    "last_forecast_at": "2026-07-23T17:02:42.928442+00:00",
+    "last_forecast_at": "2026-08-02T04:55:13.299397+00:00",
     "event_slug": "which-party-will-gain-most-seats-in-russian-parliamentary-election",
-    "last_probability": 0.92,
+    "last_probability": 0.72,
     "end_date": "2026-09-30T00:00:00Z"
   },
   "455875": {
@@ -83,9 +83,9 @@
     "end_date": "2026-12-31T00:00:00Z"
   },
   "100371": {
-    "last_forecast_at": "2026-07-24T17:01:52.227519+00:00",
+    "last_forecast_at": "2026-08-02T04:55:43.958467+00:00",
     "event_slug": "2026-f1-drivers-champion",
-    "last_probability": 0.015,
+    "last_probability": 0.03,
     "end_date": "2026-12-06T00:00:00Z"
   },
   "89502": {
@@ -130,9 +130,9 @@
     "last_probability": 0.58
   },
   "32225": {
-    "last_forecast_at": "2026-07-25T17:01:39.230216+00:00",
+    "last_forecast_at": "2026-08-02T04:55:34.133163+00:00",
     "event_slug": "which-party-will-win-the-house-in-2026",
-    "last_probability": 0.68,
+    "last_probability": 0.72,
     "end_date": "2026-11-03T00:00:00Z"
   },
   "153719": {
@@ -182,9 +182,9 @@
     "end_date": "2026-12-31T00:00:00Z"
   },
   "95248": {
-    "last_forecast_at": "2026-07-25T17:02:10.023778+00:00",
+    "last_forecast_at": "2026-08-02T04:55:22.370529+00:00",
     "event_slug": "berlin-state-election-winner",
-    "last_probability": 0.28,
+    "last_probability": 0.42,
     "end_date": "2026-09-20T00:00:00Z"
   },
   "48978": {
@@ -543,5 +543,35 @@
     "event_slug": "2nd-largest-company-end-of-july-20260624192727948",
     "last_probability": 0.98,
     "end_date": "2026-07-31T23:59:00Z"
+  },
+  "745692": {
+    "last_forecast_at": "2026-08-02T04:56:03.284689+00:00",
+    "event_slug": "what-will-trump-post-this-week-july-27-august-2-20260724154919527",
+    "last_probability": 0.72,
+    "end_date": "2026-08-02T23:59:00Z"
+  },
+  "745670": {
+    "last_forecast_at": "2026-08-02T04:56:13.951698+00:00",
+    "event_slug": "what-will-trump-say-this-week-july-27-august-2-20260724154805086",
+    "last_probability": 0.12,
+    "end_date": "2026-08-02T23:59:00Z"
+  },
+  "745669": {
+    "last_forecast_at": "2026-08-02T04:56:24.328514+00:00",
+    "event_slug": "what-will-the-nyt-front-page-headlines-say-this-week-july-27-august-2-20260724154704322",
+    "last_probability": 0.78,
+    "end_date": "2026-08-02T23:59:00Z"
+  },
+  "508140": {
+    "last_forecast_at": "2026-08-02T04:56:33.580490+00:00",
+    "event_slug": "mlp-2026-orlando-winner",
+    "last_probability": 0.02,
+    "end_date": "2026-08-03T00:00:00Z"
+  },
+  "688535": {
+    "last_forecast_at": "2026-08-02T04:56:43.119831+00:00",
+    "event_slug": "ism-manufacturing-pmi-july-2026-20260710154022499",
+    "last_probability": 0.08,
+    "end_date": "2026-08-03T06:00:00Z"
   }
 }
