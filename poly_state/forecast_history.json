@@ -1,20 +1,20 @@
 {
   "73130": {
-    "last_forecast_at": "2026-07-23T17:02:32.138491+00:00",
+    "last_forecast_at": "2026-08-02T05:15:34.083870+00:00",
     "event_slug": "will-the-us-invade-iran-before-2027",
-    "last_probability": 0.72,
+    "last_probability": 0.28,
     "end_date": "2026-12-31T00:00:00Z"
   },
   "90177": {
-    "last_forecast_at": "2026-07-24T17:02:25.931987+00:00",
+    "last_forecast_at": "2026-08-02T05:16:21.413094+00:00",
     "event_slug": "will-the-us-confirm-that-aliens-exist-before-2027",
-    "last_probability": 0.08,
+    "last_probability": 0.06,
     "end_date": "2026-12-31T00:00:00Z"
   },
   "30829": {
-    "last_forecast_at": "2026-07-26T17:02:08.660269+00:00",
+    "last_forecast_at": "2026-08-02T05:18:42.587128+00:00",
     "event_slug": "democratic-presidential-nominee-2028",
-    "last_probability": 0.008,
+    "last_probability": 0.02,
     "end_date": "2028-11-07T00:00:00Z"
   },
   "72347": {
@@ -24,21 +24,22 @@
     "end_date": "2026-12-31T00:00:00Z"
   },
   "31552": {
-    "last_forecast_at": "2026-07-26T17:02:16.663189+00:00",
+    "last_forecast_at": "2026-08-02T05:18:53.367143+00:00",
     "event_slug": "presidential-election-winner-2028",
-    "last_probability": 0.001,
+    "last_probability": 0.002,
     "end_date": "2028-11-07T00:00:00Z"
   },
   "31195": {
-    "last_forecast_at": "2026-07-26T09:42:28.800451+00:00",
+    "last_forecast_at": "2026-08-02T05:17:54.022636+00:00",
     "event_slug": "putin-out-before-2027",
     "last_probability": 0.08,
     "end_date": "2026-12-31T18:30:00Z"
   },
   "31875": {
-    "last_forecast_at": "2026-07-20T10:39:21.719128+00:00",
+    "last_forecast_at": "2026-08-02T05:17:26.704129+00:00",
     "event_slug": "republican-presidential-nominee-2028",
-    "last_probability": 0.62
+    "last_probability": 0.08,
+    "end_date": "2028-11-07T00:00:00Z"
   },
   "23784": {
     "last_forecast_at": "2026-07-27T17:02:12.818438+00:00",
@@ -47,25 +48,25 @@
     "end_date": "2026-07-31T12:00:00Z"
   },
   "148292": {
-    "last_forecast_at": "2026-07-25T17:01:48.013389+00:00",
+    "last_forecast_at": "2026-08-02T05:16:58.445072+00:00",
     "event_slug": "will-the-us-acquire-any-part-of-greenland-in-2026",
     "last_probability": 0.02,
     "end_date": "2026-12-31T00:00:00Z"
   },
   "73969": {
-    "last_forecast_at": "2026-07-24T17:02:14.524454+00:00",
+    "last_forecast_at": "2026-08-02T05:15:53.319312+00:00",
     "event_slug": "trump-out-as-president-before-2027",
     "last_probability": 0.08,
     "end_date": "2026-12-31T00:00:00Z"
   },
   "45915": {
-    "last_forecast_at": "2026-07-27T17:02:37.413850+00:00",
+    "last_forecast_at": "2026-08-02T05:17:08.242764+00:00",
     "event_slug": "brazil-presidential-election",
     "last_probability": 0.02,
     "end_date": "2026-10-04T00:00:00Z"
   },
   "51456": {
-    "last_forecast_at": "2026-07-24T17:02:02.104180+00:00",
+    "last_forecast_at": "2026-08-02T05:15:17.246206+00:00",
     "event_slug": "how-many-fed-rate-cuts-in-2026",
     "last_probability": 0.72,
     "end_date": "2026-12-31T00:00:00Z"
@@ -77,9 +78,9 @@
     "end_date": "2026-09-30T00:00:00Z"
   },
   "455875": {
-    "last_forecast_at": "2026-07-26T17:01:59.366926+00:00",
+    "last_forecast_at": "2026-08-02T05:18:32.596563+00:00",
     "event_slug": "strait-of-hormuz-traffic-returns-to-normal-by-december-31",
-    "last_probability": 0.62,
+    "last_probability": 0.25,
     "end_date": "2026-12-31T00:00:00Z"
   },
   "100371": {
@@ -89,33 +90,33 @@
     "end_date": "2026-12-06T00:00:00Z"
   },
   "89502": {
-    "last_forecast_at": "2026-07-27T17:02:58.444009+00:00",
+    "last_forecast_at": "2026-08-02T05:19:02.856216+00:00",
     "event_slug": "what-price-will-bitcoin-hit-before-2027",
-    "last_probability": 0.28,
+    "last_probability": 0.78,
     "end_date": "2027-01-01T05:00:00Z"
   },
   "255195": {
-    "last_forecast_at": "2026-07-26T17:01:49.714359+00:00",
+    "last_forecast_at": "2026-08-02T05:18:22.386340+00:00",
     "event_slug": "iran-leadership-change-by",
-    "last_probability": 0.18,
+    "last_probability": 0.14,
     "end_date": "2026-12-31T00:00:00Z"
   },
   "237598": {
-    "last_forecast_at": "2026-07-26T10:10:47.040318+00:00",
+    "last_forecast_at": "2026-08-02T05:18:03.768053+00:00",
     "event_slug": "iran-leader-end-of-2026",
-    "last_probability": 0.02,
+    "last_probability": 0.72,
     "end_date": "2026-12-31T00:00:00Z"
   },
   "143691": {
-    "last_forecast_at": "2026-07-26T09:42:44.901142+00:00",
+    "last_forecast_at": "2026-08-02T05:17:35.631388+00:00",
     "event_slug": "will-the-us-invade-cuba-in-2026",
     "last_probability": 0.08,
     "end_date": "2026-12-31T00:00:00Z"
   },
   "81557": {
-    "last_forecast_at": "2026-07-25T17:02:19.047334+00:00",
+    "last_forecast_at": "2026-08-02T05:16:40.683975+00:00",
     "event_slug": "who-will-be-the-next-prime-minister-of-israel-after-the-next-election",
-    "last_probability": 0.08,
+    "last_probability": 0.28,
     "end_date": "2026-12-31T00:00:00Z"
   },
   "287395": {
@@ -136,26 +137,27 @@
     "end_date": "2026-11-03T00:00:00Z"
   },
   "153719": {
-    "last_forecast_at": "2026-07-21T06:39:54.572724+00:00",
+    "last_forecast_at": "2026-08-02T05:17:17.320785+00:00",
     "event_slug": "will-satoshi-move-any-bitcoin-in-2026",
-    "last_probability": 0.06
+    "last_probability": 0.06,
+    "end_date": "2027-01-01T05:00:00Z"
   },
   "101936": {
-    "last_forecast_at": "2026-07-26T09:42:54.592594+00:00",
+    "last_forecast_at": "2026-08-02T05:16:11.421010+00:00",
     "event_slug": "fed-rate-hike-in-2026",
-    "last_probability": 0.72,
+    "last_probability": 0.62,
     "end_date": "2026-12-09T00:00:00Z"
   },
   "64731": {
-    "last_forecast_at": "2026-07-26T09:42:18.247886+00:00",
+    "last_forecast_at": "2026-08-02T05:15:24.429518+00:00",
     "event_slug": "billionaire-one-time-wealth-tax-passes-in-california-election-2026",
-    "last_probability": 0.92,
+    "last_probability": 0.58,
     "end_date": "2026-11-03T00:00:00Z"
   },
   "34052": {
-    "last_forecast_at": "2026-07-26T09:58:11.042165+00:00",
+    "last_forecast_at": "2026-08-02T05:16:31.045164+00:00",
     "event_slug": "zelenskyy-out-as-ukraine-president-before-2027",
-    "last_probability": 0.13,
+    "last_probability": 0.08,
     "end_date": "2026-12-31T00:00:00Z"
   },
   "362004": {
@@ -170,15 +172,15 @@
     "last_probability": 0.08
   },
   "57096": {
-    "last_forecast_at": "2026-07-26T09:42:36.309901+00:00",
+    "last_forecast_at": "2026-08-02T05:15:42.378244+00:00",
     "event_slug": "california-governor-election-2026",
-    "last_probability": 0.05,
+    "last_probability": 0.01,
     "end_date": "2026-11-03T00:00:00Z"
   },
   "73056": {
-    "last_forecast_at": "2026-07-27T17:02:47.830382+00:00",
+    "last_forecast_at": "2026-08-02T05:18:12.852441+00:00",
     "event_slug": "ukraine-signs-peace-deal-with-russia-before-2027",
-    "last_probability": 0.28,
+    "last_probability": 0.18,
     "end_date": "2026-12-31T00:00:00Z"
   },
   "95248": {
@@ -188,20 +190,21 @@
     "end_date": "2026-09-20T00:00:00Z"
   },
   "48978": {
-    "last_forecast_at": "2026-07-27T17:02:25.064286+00:00",
+    "last_forecast_at": "2026-08-02T05:17:45.078106+00:00",
     "event_slug": "will-ukraine-recapture-crimean-territory-by-june-30-2026",
     "last_probability": 0.08,
     "end_date": "2026-12-31T00:00:00Z"
   },
   "52130": {
-    "last_forecast_at": "2026-07-21T06:40:36.527614+00:00",
+    "last_forecast_at": "2026-08-02T05:16:49.794084+00:00",
     "event_slug": "opensea-fdv-above-one-day-after-launch",
-    "last_probability": 0.75
+    "last_probability": 0.62,
+    "end_date": "2027-01-01T05:00:00Z"
   },
   "32228": {
-    "last_forecast_at": "2026-07-26T17:01:39.541815+00:00",
+    "last_forecast_at": "2026-08-02T05:16:03.483737+00:00",
     "event_slug": "balance-of-power-2026-midterms",
-    "last_probability": 0.41,
+    "last_probability": 0.02,
     "end_date": "2026-11-03T00:00:00Z"
   },
   "710517": {
