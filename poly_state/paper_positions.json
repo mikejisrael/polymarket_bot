@@ -231,8 +231,8 @@
     "direction": null,
     "entry_price": 0.0005,
     "size_usd": 0.0,
-    "edge_at_entry": 0.0295,
-    "opened_at": "2026-08-02T04:55:43.958252+00:00",
+    "edge_at_entry": 0.0795,
+    "opened_at": "2026-08-05T17:02:22.651082+00:00",
     "end_date": "2026-12-06T00:00:00Z",
     "status": "backfill_no_edge",
     "resolved_at": null,
@@ -1274,10 +1274,10 @@
     "edge_at_entry": -0.655,
     "opened_at": "2026-07-31T07:43:27.468311+00:00",
     "end_date": "2026-07-31T11:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_win",
+    "resolved_at": "2026-08-05T17:02:33.792699+00:00",
+    "outcome": "NO",
+    "pnl_usd": 26.35
   },
   {
     "event_id": "605660",
@@ -1402,10 +1402,10 @@
     "edge_at_entry": 0.46,
     "opened_at": "2026-08-02T04:56:03.284464+00:00",
     "end_date": "2026-08-02T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-08-05T17:02:33.792699+00:00",
+    "outcome": "NO",
+    "pnl_usd": -9.39
   },
   {
     "event_id": "745670",
@@ -1418,10 +1418,10 @@
     "edge_at_entry": 0.07,
     "opened_at": "2026-08-02T04:56:13.951501+00:00",
     "end_date": "2026-08-02T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-08-05T17:02:33.792699+00:00",
+    "outcome": "NO",
+    "pnl_usd": -9.39
   },
   {
     "event_id": "745669",
@@ -1434,10 +1434,10 @@
     "edge_at_entry": 0.7265,
     "opened_at": "2026-08-02T04:56:24.328286+00:00",
     "end_date": "2026-08-02T23:59:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_loss",
+    "resolved_at": "2026-08-05T17:02:33.792699+00:00",
+    "outcome": "NO",
+    "pnl_usd": -9.39
   },
   {
     "event_id": "508140",
@@ -1450,10 +1450,10 @@
     "edge_at_entry": -0.455,
     "opened_at": "2026-08-02T04:56:33.580291+00:00",
     "end_date": "2026-08-03T00:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_win",
+    "resolved_at": "2026-08-05T17:02:33.792699+00:00",
+    "outcome": "NO",
+    "pnl_usd": 8.5
   },
   {
     "event_id": "688535",
@@ -1466,9 +1466,9 @@
     "edge_at_entry": -0.125,
     "opened_at": "2026-08-02T04:56:43.119619+00:00",
     "end_date": "2026-08-03T06:00:00Z",
-    "status": "open",
-    "resolved_at": null,
-    "outcome": null,
-    "pnl_usd": null
+    "status": "resolved_win",
+    "resolved_at": "2026-08-05T17:02:33.792699+00:00",
+    "outcome": "NO",
+    "pnl_usd": 2.42
   }
 ]

@@ -72,7 +72,7 @@
     "end_date": "2026-12-31T00:00:00Z"
   },
   "149589": {
-    "last_forecast_at": "2026-08-02T04:55:13.299397+00:00",
+    "last_forecast_at": "2026-08-05T17:01:58.481026+00:00",
     "event_slug": "which-party-will-gain-most-seats-in-russian-parliamentary-election",
     "last_probability": 0.72,
     "end_date": "2026-09-30T00:00:00Z"
@@ -84,9 +84,9 @@
     "end_date": "2026-12-31T00:00:00Z"
   },
   "100371": {
-    "last_forecast_at": "2026-08-02T04:55:43.958467+00:00",
+    "last_forecast_at": "2026-08-05T17:02:22.651281+00:00",
     "event_slug": "2026-f1-drivers-champion",
-    "last_probability": 0.03,
+    "last_probability": 0.08,
     "end_date": "2026-12-06T00:00:00Z"
   },
   "89502": {
@@ -131,9 +131,9 @@
     "last_probability": 0.58
   },
   "32225": {
-    "last_forecast_at": "2026-08-02T04:55:34.133163+00:00",
+    "last_forecast_at": "2026-08-05T17:02:11.191940+00:00",
     "event_slug": "which-party-will-win-the-house-in-2026",
-    "last_probability": 0.72,
+    "last_probability": 0.68,
     "end_date": "2026-11-03T00:00:00Z"
   },
   "153719": {
@@ -149,9 +149,9 @@
     "end_date": "2026-12-09T00:00:00Z"
   },
   "64731": {
-    "last_forecast_at": "2026-08-02T05:15:24.429518+00:00",
+    "last_forecast_at": "2026-08-05T17:02:33.441592+00:00",
     "event_slug": "billionaire-one-time-wealth-tax-passes-in-california-election-2026",
-    "last_probability": 0.58,
+    "last_probability": 0.62,
     "end_date": "2026-11-03T00:00:00Z"
   },
   "34052": {
@@ -184,9 +184,9 @@
     "end_date": "2026-12-31T00:00:00Z"
   },
   "95248": {
-    "last_forecast_at": "2026-08-02T04:55:22.370529+00:00",
+    "last_forecast_at": "2026-08-05T17:01:45.314482+00:00",
     "event_slug": "berlin-state-election-winner",
-    "last_probability": 0.42,
+    "last_probability": 0.28,
     "end_date": "2026-09-20T00:00:00Z"
   },
   "48978": {
